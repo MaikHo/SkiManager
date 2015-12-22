@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
+﻿using System.Numerics;
+
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+
+using SkiManager.Engine;
+using SkiManager.Engine.Features;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -25,6 +17,15 @@ namespace SkiManager.App
         public MainPage()
         {
             this.InitializeComponent();
+            Engine.Engine.Current.Attach(Canvas);
+
+            Engine.Engine.Current.AddFeature(new TrackMousePositionEngineFeature(true));
+            var entity = new Entity();
+            entity.Location = new GlobalLocation(Vector2.One);
+            entity.AddBehavior(new TestBehavior());
+            Engine.Engine.Current.AddFeature(new DebugRenderEntityEngineFeature(entity));
+
+            Engine.Engine.Current.StartOrResume();
         }
     }
 }
