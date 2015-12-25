@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 using Microsoft.Graphics.Canvas.UI.Xaml;

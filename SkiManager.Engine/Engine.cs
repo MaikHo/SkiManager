@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Microsoft.Graphics.Canvas.UI.Xaml;
 
@@ -24,6 +21,8 @@ namespace SkiManager.Engine
 
         private readonly List<EngineFeature> _features = new List<EngineFeature>();
         public IReadOnlyList<EngineFeature> Features => _features.AsReadOnly();
+
+        public Level CurrentLevel { get; private set; }
 
         private Engine()
         { }
@@ -57,6 +56,15 @@ namespace SkiManager.Engine
 
             feature.Detach(this);
             _features.Remove(feature);
+        }
+
+        public void LoadLevel(Level level)
+        {
+            CurrentLevel?.Unloading();
+
+            CurrentLevel = level;
+
+            CurrentLevel?.Loaded();
         }
 
         public void StartOrResume()

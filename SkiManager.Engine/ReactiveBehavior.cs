@@ -9,7 +9,7 @@ namespace SkiManager.Engine
 
         public bool IsEnabled { get; set; } = true;
 
-        public bool IsEffectivelyEnabled => IsEnabled && (Entity?.IsEnabled ?? false);
+        public bool IsEffectivelyEnabled => IsEnabled && (Entity?.IsEffectivelyEnabled ?? false);
 
 
         protected IObservable<EngineDrawEventArgs> Draw { get; }
@@ -18,10 +18,19 @@ namespace SkiManager.Engine
 
         protected ReactiveBehavior()
         {
-            Draw = Engine.Current.Events.Draw.Where(_ => IsEffectivelyEnabled).Publish().RefCount();
-            Update = Engine.Current.Events.Update.Where(_ => IsEffectivelyEnabled).Publish().RefCount();
-            PointerMoved = Engine.Current.Events.PointerMoved.Where(_ => IsEffectivelyEnabled).Publish().RefCount();
+            Draw = Engine.Current.Events.Draw.Where(CanReceiveEvent).Publish().RefCount();
+            Update = Engine.Current.Events.Update.Where(CanReceiveEvent).Publish().RefCount();
+            PointerMoved = Engine.Current.Events.PointerMoved.Where(CanReceiveEvent).Publish().RefCount();
         }
+
+        protected internal virtual void Loaded()
+        { }
+
+        protected internal virtual void Unloading()
+        { }
+
+        protected internal virtual void Destroyed()
+        { }
 
         internal void Attach(Entity entity)
         {
@@ -31,6 +40,11 @@ namespace SkiManager.Engine
         internal void Detach(Entity entity)
         {
             Entity = null;
+        }
+
+        private bool CanReceiveEvent(EngineEventArgs args)
+        {
+            return IsEffectivelyEnabled;
         }
     }
 }

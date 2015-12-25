@@ -2,6 +2,8 @@
 
 using Windows.UI;
 
+using SkiManager.Engine.Behaviors;
+
 namespace SkiManager.Engine.Features
 {
     public sealed class DebugRenderEntityEngineFeature : EngineFeature
@@ -28,8 +30,9 @@ namespace SkiManager.Engine.Features
 
         private void OnRender(EngineDrawEventArgs args)
         {
-            args.Arguments.DrawingSession.DrawRectangle(Entity.Location.Position.X, Entity.Location.Position.Y, 1, 1, Colors.Blue);
-            args.Arguments.DrawingSession.DrawRectangle(Entity.Location.Position.X - 25, Entity.Location.Position.Y - 25, 50, 50, Colors.Blue);
+            var pos = Entity.GetBehavior<TransformBehavior>().GetAbsolutePosition();
+            args.Arguments.DrawingSession.DrawRectangle(pos.X, pos.Y, 1, 1, Colors.Blue);
+            args.Arguments.DrawingSession.DrawRectangle(pos.X - 25, pos.Y - 25, 50, 50, Colors.Blue);
         }
     }
 }

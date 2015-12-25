@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Numerics;
-using System.Reactive.Linq;
-
+using Windows.Foundation;
 using SkiManager.Engine;
+using SkiManager.Engine.Behaviors;
 
 namespace SkiManager.App
 {
@@ -10,21 +10,22 @@ namespace SkiManager.App
     {
         private static readonly Random _random = new Random();
 
-        public TestBehavior()
+        private Size _canvasSize;
+
+        protected override void Loaded()
         {
-            var i = 0;
-            //Engine.Engine.Current.Events.Update.Subscribe(OnUpdate);
-            Update.Where(
-                _ =>
-                    {
-                        i = (i + 1) % 100;
-                        return i == 0;
-                    }).Subscribe(OnUpdate);
+            Update.Subscribe(OnUpdate);
+            Entity.GetBehavior<ShapeColliderBehavior>().Collision.Subscribe(_ => Move());
         }
 
         private void OnUpdate(EngineUpdateEventArgs args)
         {
-            Entity.Location = new GlobalLocation(new Vector2((float)(_random.NextDouble() * args.Sender.Size.Width), (float)(_random.NextDouble() * args.Sender.Size.Height)));
+            _canvasSize = args.Sender.Size;
+        }
+
+        private void Move()
+        {
+            Entity.GetBehavior<TransformBehavior>().Position = new Vector2((float)(_random.NextDouble() * _canvasSize.Width), (float)(_random.NextDouble() * _canvasSize.Height));
         }
     }
 }
