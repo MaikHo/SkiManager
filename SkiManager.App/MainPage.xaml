@@ -9,5 +9,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <xaml:CanvasAnimatedControl x:Name="Canvas" />
+
+        <Button Content="TerrainPage" Click="Button_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
     </Grid>
 </Page>

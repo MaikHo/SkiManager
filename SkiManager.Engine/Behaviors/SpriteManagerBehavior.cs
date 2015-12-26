@@ -5,6 +5,8 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Collections;
+using Windows.Foundation;
+using SkiManager.Engine.Interfaces;
 
 namespace SkiManager.Engine.Behaviors
 {
@@ -39,7 +41,7 @@ namespace SkiManager.Engine.Behaviors
         {
         }
 
-        public void AddSprite(string id, Uri source, Vector2 size)
+        public void Add(string id, Uri source, Vector2 size)
         {
             if (_sprites.ContainsKey(id))
                 throw new ArgumentException($"Sprite-ID '{id}' is already in use");
@@ -48,7 +50,7 @@ namespace SkiManager.Engine.Behaviors
             _sprites.Add(id, sprite);
         }
 
-        public bool RemoveSprite(string id)
+        public bool Remove(string id)
         {
             return _sprites.Remove(id);
         }
@@ -59,11 +61,17 @@ namespace SkiManager.Engine.Behaviors
 
         public Sprite this[string id]
         {
-            get { return _sprites[id]; }
+            get
+            {
+                Sprite sprite;
+                return _sprites.TryGetValue(id, out sprite) ? sprite : null;
+            }
         }
+
+        public Sprite this[SpriteReference spriteRef] => this[spriteRef.Id];
     }
 
-    
+    [RequiresBehavior(typeof(TransformBehavior))]
     public class SpriteRenderer : ReactiveBehavior
     {
         private IDisposable _drawSubscription;
@@ -82,8 +90,28 @@ namespace SkiManager.Engine.Behaviors
 
         private void OnDraw(EngineDrawEventArgs e)
         {
-            var transform = Entity.GetBehavior<TransformBehavior>();
+            if (Sprite == SpriteReference.Empty)
+                return;
 
+            var transform = Entity.GetBehavior<TransformBehavior>();
+            var coordinateSystem = Entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
+            var spriteManager = Entity.Level.RootEntity.GetBehavior<SpriteManagerBehavior>();
+            var sprite = spriteManager?.Sprites[Sprite];
+
+            if (transform != null && coordinateSystem != null && sprite != null)
+            {
+                var worldPos = transform.GetAbsolutePosition();
+
+                var worldRect = new Rect(
+                    worldPos.X - sprite.Size.X / 2,
+                    worldPos.Y - sprite.Size.Y / 2,
+                    sprite.Size.X,
+                    sprite.Size.Y);
+
+                var dipsRect = coordinateSystem.TransformToDips(worldRect);
+
+                e.Arguments.DrawingSession.DrawImage(sprite.Image, dipsRect);
+            }
         }
     }
 
@@ -114,9 +142,23 @@ namespace SkiManager.Engine.Behaviors
 
     public struct SpriteReference
     {
+        public static SpriteReference Empty { get; } = new SpriteReference();
+
         public string Id { get; private set; }
 
         public static implicit operator SpriteReference(string id)
             => new SpriteReference { Id = id };
+
+        public static bool operator ==(SpriteReference a, SpriteReference b)
+            => Equals(a, b);
+
+        public static bool operator !=(SpriteReference a, SpriteReference b)
+            => !Equals(a, b);
+
+        public override bool Equals(object obj)
+            => obj.GetType() == typeof(SpriteReference) && ((SpriteReference)obj).Id == Id;
+
+        public override int GetHashCode()
+            => Id.GetHashCode();
     }
 }

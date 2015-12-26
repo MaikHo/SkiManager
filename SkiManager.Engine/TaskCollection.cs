@@ -10,8 +10,8 @@ namespace SkiManager.Engine
     /// </summary>
     public class TaskCollection
     {
+        private readonly List<Task> _tasks = new List<Task>();
         private bool _completionStarted = false;
-        private List<Task> _tasks;
 
         internal Task CompleteAllAsync()
         {

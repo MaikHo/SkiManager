@@ -83,5 +83,10 @@ namespace SkiManager.App
                     ? Engine.Engine.Current.CurrentLevel.Entities.First(_ => _.Name == "Node2")
                     : Engine.Engine.Current.CurrentLevel.Entities.First(_ => _.Name == "Node1"));
         }
+
+        private void Button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(TerrainPage));
+        }
     }
 }

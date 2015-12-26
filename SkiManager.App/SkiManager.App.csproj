@@ -99,7 +99,6 @@
     <Compile Include="Behaviors\GraphNodeBehavior.cs" />
     <Compile Include="Behaviors\MovableBehavior.cs" />
     <Compile Include="Behaviors\TargetReachedEngineEventArgs.cs" />
-    <Compile Include="Behaviors\TerrainBehavior.cs" />
     <Compile Include="Interfaces\IGraphEdge.cs" />
     <Compile Include="Interfaces\IGraphNode.cs" />
     <Compile Include="Interfaces\ILocation.cs" />
@@ -109,6 +108,9 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TerrainPage.xaml.cs">
+      <DependentUpon>TerrainPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TestBehavior.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +120,10 @@
     <None Include="SkiManager.App_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Sprites\grass.jpg" />
+    <Content Include="Assets\Sprites\Kitzbüheler Alpen Height Map %28Merged%29.png" />
+    <Content Include="Assets\Sprites\snow%28deep%29.png" />
+    <Content Include="Assets\Sprites\terrain-cliffs-ground.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -135,6 +141,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TerrainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

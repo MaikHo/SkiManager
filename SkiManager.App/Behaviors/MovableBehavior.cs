@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Windows.UI;
 using SkiManager.App.Interfaces;
@@ -14,7 +15,7 @@ namespace SkiManager.App.Behaviors
         private IDisposable _subscription;
         private bool _hasTargetReached;
         private Entity _lastTarget;
-        private Subject<TargetReachedEngineEventArgs> _targetReached = new Subject<TargetReachedEngineEventArgs>();
+        private readonly Subject<TargetReachedEngineEventArgs> _targetReached = new Subject<TargetReachedEngineEventArgs>();
 
         public ILocation Location { get; private set; }
 
@@ -22,7 +23,7 @@ namespace SkiManager.App.Behaviors
 
         public float Speed { get; set; } = 100.0f;
 
-        public IObservable<TargetReachedEngineEventArgs> TargetReached => _targetReached;
+        public IObservable<TargetReachedEngineEventArgs> TargetReached => _targetReached.AsObservable();
 
         public void SetTarget(Entity entity)
         {
@@ -48,6 +49,11 @@ namespace SkiManager.App.Behaviors
         protected override void Unloading()
         {
             _subscription?.Dispose();
+        }
+
+        protected override void Destroyed()
+        {
+            _targetReached.Dispose();
         }
 
         private void OnUpdate(EngineUpdateEventArgs args)
