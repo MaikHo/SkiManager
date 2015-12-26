@@ -14,6 +14,7 @@ namespace SkiManager.Engine
 
         protected IObservable<EngineDrawEventArgs> Draw { get; private set; }
         protected IObservable<EngineUpdateEventArgs> Update { get; private set; }
+        protected IObservable<EngineCreateResourcesEventArgs> CreateResources { get; private set; }
         protected IObservable<EnginePointerMovedEventArgs> PointerMoved { get; private set; }
         protected IObservable<ChildEnterEngineEventArgs> ChildEnter { get; private set; }
         protected IObservable<ChildLeaveEngineEventArgs> ChildLeave { get; private set; }

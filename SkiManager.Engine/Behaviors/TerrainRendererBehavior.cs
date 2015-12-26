@@ -19,13 +19,13 @@ namespace SkiManager.Engine.Behaviors
         public SpriteReference SnowSprite { get; set; }
         public SpriteReference RockSprite { get; set; }
 
-        protected internal override void Loaded()
+        protected override void Loaded()
         {
             _drawSubscription = Draw.Subscribe(OnDraw);
             _createResourcesSubscription = CreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
         }
 
-        protected internal override void Unloading()
+        protected override void Unloading()
         {
             _drawSubscription.Dispose();
             _createResourcesSubscription.Dispose();

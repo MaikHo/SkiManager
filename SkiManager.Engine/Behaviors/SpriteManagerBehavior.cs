@@ -16,12 +16,12 @@ namespace SkiManager.Engine.Behaviors
 
         public SpriteCollection Sprites { get; } = new SpriteCollection();
 
-        protected internal override void Loaded()
+        protected override void Loaded()
         {
             _createResourcesSubscription = CreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
         }
 
-        protected internal override void Unloading()
+        protected override void Unloading()
         {
             _createResourcesSubscription.Dispose();
         }
@@ -78,12 +78,12 @@ namespace SkiManager.Engine.Behaviors
 
         public SpriteReference Sprite { get; set; }
 
-        protected internal override void Loaded()
+        protected override void Loaded()
         {
             _drawSubscription = Draw.Subscribe(OnDraw);
         }
 
-        protected internal override void Unloading()
+        protected override void Unloading()
         {
             _drawSubscription.Dispose();
         }
@@ -100,7 +100,7 @@ namespace SkiManager.Engine.Behaviors
 
             if (transform != null && coordinateSystem != null && sprite != null)
             {
-                var worldPos = transform.GetAbsolutePosition();
+                var worldPos = transform.Position;
 
                 var worldRect = new Rect(
                     worldPos.X - sprite.Size.X / 2,

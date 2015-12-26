@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace SkiManager.Engine
 {
@@ -7,10 +6,15 @@ namespace SkiManager.Engine
     {
         public Entity RootEntity { get; } = new Entity { Name = "Root" };
 
-        private readonly List<Entity> _entities = new List<Entity>();
+        private readonly List<Entity> _entities;
         public IReadOnlyList<Entity> Entities => _entities.AsReadOnly();
 
         internal IDictionary<Entity, IList<Entity>> ChildrenLookup { get; } = new Dictionary<Entity, IList<Entity>>();
+
+        public Level()
+        {
+            _entities = new List<Entity> { RootEntity };
+        }
 
         public void AddEntity(Entity entity)
         {
