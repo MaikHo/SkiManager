@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reactive.Subjects;
 
 namespace SkiManager.Engine
 {
@@ -26,6 +27,12 @@ namespace SkiManager.Engine
 
         internal bool IsDestroyed { get; set; }
 
+        internal Subject<ChildEnterEngineEventArgs> ChildEnter { get; } = new Subject<ChildEnterEngineEventArgs>();
+
+        internal Subject<ChildLeaveEngineEventArgs> ChildLeave { get; } = new Subject<ChildLeaveEngineEventArgs>();
+
+        internal Subject<ParentChangedEngineEventArgs> ParentChanged { get; } = new Subject<ParentChangedEngineEventArgs>();
+
         public void AddBehavior(ReactiveBehavior behavior)
         {
             behavior.Attach(this);
@@ -38,10 +45,24 @@ namespace SkiManager.Engine
             behavior.Detach(this);
         }
 
-        public void MoveToParent(Entity newParent, Level containingLevel)
+        internal void Destroyed()
         {
-            if (Parent != null)
+            ChildEnter.Dispose();
+            ChildLeave.Dispose();
+            ParentChanged.Dispose();
+        }
+
+        public void SetParent(Entity newParent, Level containingLevel)
+        {
+            var oldParent = Parent;
+            if (oldParent != null)
             {
+                oldParent.ChildLeave.OnNext(new ChildLeaveEngineEventArgs(Engine.Current, this));
+                if (Parent != oldParent)
+                {
+                    // Parent has been set in a childleave handler, therefore return
+                    return;
+                }
                 containingLevel.ChildrenLookup[Parent].Remove(this);
             }
 
@@ -52,6 +73,13 @@ namespace SkiManager.Engine
                 containingLevel.ChildrenLookup.Add(Parent, new List<Entity>());
             }
             containingLevel.ChildrenLookup[Parent].Add(this);
+            newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this));
+            if (Parent != newParent)
+            {
+                // Parent has been set in a childenter handler, therefore return
+                return;
+            }
+            ParentChanged.OnNext(new ParentChangedEngineEventArgs(Engine.Current, oldParent, newParent));
         }
     }
 }

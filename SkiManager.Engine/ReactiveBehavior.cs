@@ -15,12 +15,18 @@ namespace SkiManager.Engine
         protected IObservable<EngineDrawEventArgs> Draw { get; }
         protected IObservable<EngineUpdateEventArgs> Update { get; }
         protected IObservable<EnginePointerMovedEventArgs> PointerMoved { get; }
+        protected IObservable<ChildEnterEngineEventArgs> ChildEnter { get; }
+        protected IObservable<ChildLeaveEngineEventArgs> ChildLeave { get; }
+        protected IObservable<ParentChangedEngineEventArgs> ParentChanged { get; }
 
         protected ReactiveBehavior()
         {
             Draw = Engine.Current.Events.Draw.Where(CanReceiveEvent).Publish().RefCount();
             Update = Engine.Current.Events.Update.Where(CanReceiveEvent).Publish().RefCount();
             PointerMoved = Engine.Current.Events.PointerMoved.Where(CanReceiveEvent).Publish().RefCount();
+            ChildEnter = Entity.ChildEnter.Where(CanReceiveEvent).Publish().RefCount();
+            ChildLeave = Entity.ChildLeave.Where(CanReceiveEvent).Publish().RefCount();
+            ParentChanged = Entity.ParentChanged.Where(CanReceiveEvent).Publish().RefCount();
         }
 
         protected internal virtual void Loaded()

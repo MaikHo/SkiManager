@@ -29,6 +29,7 @@ namespace SkiManager.Engine
                 behavior.Unloading();
                 behavior.Destroyed();
             }
+            entity.Destroyed();
             entity.IsDestroyed = true;
         }
 
