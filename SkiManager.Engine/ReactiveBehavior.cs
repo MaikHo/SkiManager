@@ -16,6 +16,9 @@ namespace SkiManager.Engine
         protected IObservable<EngineUpdateEventArgs> Update { get; }
         protected IObservable<EngineCreateResourcesEventArgs> CreateResources { get; }
         protected IObservable<EnginePointerMovedEventArgs> PointerMoved { get; }
+        protected IObservable<ChildEnterEngineEventArgs> ChildEnter { get; }
+        protected IObservable<ChildLeaveEngineEventArgs> ChildLeave { get; }
+        protected IObservable<ParentChangedEngineEventArgs> ParentChanged { get; }
 
         protected ReactiveBehavior()
         {
@@ -23,6 +26,9 @@ namespace SkiManager.Engine
             Update = Engine.Current.Events.Update.Where(CanReceiveEvent).Publish().RefCount();
             CreateResources = Engine.Current.Events.CreateResources.Where(CanReceiveEvent).Publish().RefCount();
             PointerMoved = Engine.Current.Events.PointerMoved.Where(CanReceiveEvent).Publish().RefCount();
+            ChildEnter = Entity.ChildEnter.Where(CanReceiveEvent).Publish().RefCount();
+            ChildLeave = Entity.ChildLeave.Where(CanReceiveEvent).Publish().RefCount();
+            ParentChanged = Entity.ParentChanged.Where(CanReceiveEvent).Publish().RefCount();
         }
 
         protected internal virtual void Loaded()
@@ -44,9 +50,6 @@ namespace SkiManager.Engine
             Entity = null;
         }
 
-        private bool CanReceiveEvent(EngineEventArgs args)
-        {
-            return IsEffectivelyEnabled;
-        }
+        private bool CanReceiveEvent(EngineEventArgs args) => IsEffectivelyEnabled;
     }
 }

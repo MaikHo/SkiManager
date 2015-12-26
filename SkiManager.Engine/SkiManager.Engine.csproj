@@ -120,6 +120,8 @@
     <Compile Include="Behaviors\TransformBehavior.cs" />
     <Compile Include="CanvasEngineEventsArgs.cs" />
     <Compile Include="EngineCreateResourcesEventArgs.cs" />
+    <Compile Include="ChildEnterEngineEventArgs.cs" />
+    <Compile Include="ChildLeaveEngineEventArgs.cs" />
     <Compile Include="EngineUpdateEventArgs.cs" />
     <Compile Include="EntityExtensions.cs" />
     <Compile Include="Features\DebugRenderEntityEngineFeature.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="Interfaces\IRenderer.cs" />
     <Compile Include="Interfaces\ITransform.cs" />
     <Compile Include="Level.cs" />
+    <Compile Include="ParentChangedEngineEventArgs.cs" />
     <Compile Include="Mathf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Features\TrackMousePositionEngineFeature.cs" />
