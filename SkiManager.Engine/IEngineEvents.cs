@@ -8,6 +8,8 @@ namespace SkiManager.Engine
 
         IObservable<EngineUpdateEventArgs> Update { get; }
 
+        IObservable<EngineCreateResourcesEventArgs> CreateResources { get; }
+
         IObservable<EnginePointerMovedEventArgs> PointerMoved { get; }
     }
 }

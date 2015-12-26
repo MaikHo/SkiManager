@@ -14,12 +14,14 @@ namespace SkiManager.Engine
 
         protected IObservable<EngineDrawEventArgs> Draw { get; }
         protected IObservable<EngineUpdateEventArgs> Update { get; }
+        protected IObservable<EngineCreateResourcesEventArgs> CreateResources { get; }
         protected IObservable<EnginePointerMovedEventArgs> PointerMoved { get; }
 
         protected ReactiveBehavior()
         {
             Draw = Engine.Current.Events.Draw.Where(CanReceiveEvent).Publish().RefCount();
             Update = Engine.Current.Events.Update.Where(CanReceiveEvent).Publish().RefCount();
+            CreateResources = Engine.Current.Events.CreateResources.Where(CanReceiveEvent).Publish().RefCount();
             PointerMoved = Engine.Current.Events.PointerMoved.Where(CanReceiveEvent).Publish().RefCount();
         }
 

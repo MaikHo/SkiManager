@@ -99,6 +99,7 @@
     <Compile Include="Behaviors\GraphNodeBehavior.cs" />
     <Compile Include="Behaviors\MovableBehavior.cs" />
     <Compile Include="Behaviors\TargetReachedEngineEventArgs.cs" />
+    <Compile Include="Behaviors\TerrainBehavior.cs" />
     <Compile Include="Interfaces\IGraphEdge.cs" />
     <Compile Include="Interfaces\IGraphNode.cs" />
     <Compile Include="Interfaces\ILocation.cs" />
