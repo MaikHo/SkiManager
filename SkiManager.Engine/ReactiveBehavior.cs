@@ -48,9 +48,6 @@ namespace SkiManager.Engine
             Entity = null;
         }
 
-        private bool CanReceiveEvent(EngineEventArgs args)
-        {
-            return IsEffectivelyEnabled;
-        }
+        private bool CanReceiveEvent(EngineEventArgs args) => IsEffectivelyEnabled;
     }
 }

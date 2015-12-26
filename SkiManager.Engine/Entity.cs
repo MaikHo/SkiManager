@@ -52,7 +52,7 @@ namespace SkiManager.Engine
             ParentChanged.Dispose();
         }
 
-        public void SetParent(Entity newParent, Level containingLevel)
+        public void SetParent(Entity newParent)
         {
             var oldParent = Parent;
             if (oldParent != null)
@@ -63,17 +63,17 @@ namespace SkiManager.Engine
                     // Parent has been set in a childleave handler, therefore return
                     return;
                 }
-                containingLevel.ChildrenLookup[Parent].Remove(this);
+                Level.ChildrenLookup[Parent].Remove(this);
             }
 
             Parent = newParent;
 
-            if (!containingLevel.ChildrenLookup.ContainsKey(Parent))
+            if (!Level.ChildrenLookup.ContainsKey(Parent))
             {
-                containingLevel.ChildrenLookup.Add(Parent, new List<Entity>());
+                Level.ChildrenLookup.Add(Parent, new List<Entity>());
             }
-            containingLevel.ChildrenLookup[Parent].Add(this);
-            newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this));
+            Level.ChildrenLookup[Parent].Add(this);
+            newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this, oldParent));
             if (Parent != newParent)
             {
                 // Parent has been set in a childenter handler, therefore return
