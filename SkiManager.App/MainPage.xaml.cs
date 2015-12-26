@@ -52,8 +52,8 @@ namespace SkiManager.App
 
             var edge = new Entity { Name = "Edge" };
             edge.AddBehavior(new GraphEdgeBehavior { Start = node1, End = node2 });
-            edge.AddBehavior(new LineRendererBehavior(_ => _.GetBehavior<GraphEdgeBehavior>().Start.GetBehavior<TransformBehavior>().GetAbsolutePosition(),
-                _ => _.GetBehavior<GraphEdgeBehavior>().End.GetBehavior<TransformBehavior>().GetAbsolutePosition())
+            edge.AddBehavior(new LineRendererBehavior(_ => _.GetBehavior<GraphEdgeBehavior>().Start.GetBehavior<TransformBehavior>().Position,
+                _ => _.GetBehavior<GraphEdgeBehavior>().End.GetBehavior<TransformBehavior>().Position)
             { Color = Colors.Blue });
             level.AddEntity(edge);
 
