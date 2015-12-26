@@ -1,0 +1,17 @@
+﻿namespace SkiManager.Engine
+{
+    public static class Mathf
+    {
+        public static float Lerp(float min, float max, float t)
+            => (1 - t) * min + t * max;
+
+        public static float InverseLerp(float value, float min, float max)
+            => (value - min) / (max - min);
+
+        public static float Clamp(float value, float min, float max)
+            => value < min ? min : (value > max ? max : value);
+
+        public static float Clamp01(float value)
+            => Clamp(value, 0, 1);
+    }
+}
