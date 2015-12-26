@@ -24,7 +24,7 @@ namespace SkiManager.Engine.Behaviors
             EndPointSelector = endPointSelector;
         }
 
-        protected internal override void Loaded()
+        protected override void Loaded()
         {
             Draw.Subscribe(OnRender);
         }

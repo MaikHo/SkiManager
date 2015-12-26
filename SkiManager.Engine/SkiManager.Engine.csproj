@@ -117,7 +117,6 @@
     <Compile Include="ChildLeaveEngineEventArgs.cs" />
     <Compile Include="EngineUpdateEventArgs.cs" />
     <Compile Include="EntityExtensions.cs" />
-    <Compile Include="Features\DebugRenderEntityEngineFeature.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="EngineDrawEventArgs.cs" />
     <Compile Include="EngineEventArgs.cs" />

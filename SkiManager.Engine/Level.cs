@@ -26,8 +26,8 @@ namespace SkiManager.Engine
             }
             foreach (var behavior in entity.Behaviors)
             {
-                behavior.Unloading();
-                behavior.Destroyed();
+                behavior.UnloadingInternal();
+                behavior.DestroyedInternal();
             }
             entity.Destroyed();
             entity.IsDestroyed = true;
@@ -40,7 +40,7 @@ namespace SkiManager.Engine
                 entity.IsLoaded = false;
                 foreach (var behavior in entity.Behaviors)
                 {
-                    behavior.Unloading();
+                    behavior.UnloadingInternal();
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace SkiManager.Engine
             {
                 foreach (var behavior in entity.Behaviors)
                 {
-                    behavior.Loaded();
+                    behavior.LoadedInternal();
                 }
                 entity.IsLoaded = true;
             }

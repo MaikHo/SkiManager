@@ -12,14 +12,14 @@ namespace SkiManager.Engine
         public bool IsEffectivelyEnabled => IsEnabled && (Entity?.IsEffectivelyEnabled ?? false);
 
 
-        protected IObservable<EngineDrawEventArgs> Draw { get; }
-        protected IObservable<EngineUpdateEventArgs> Update { get; }
-        protected IObservable<EnginePointerMovedEventArgs> PointerMoved { get; }
-        protected IObservable<ChildEnterEngineEventArgs> ChildEnter { get; }
-        protected IObservable<ChildLeaveEngineEventArgs> ChildLeave { get; }
-        protected IObservable<ParentChangedEngineEventArgs> ParentChanged { get; }
+        protected IObservable<EngineDrawEventArgs> Draw { get; private set; }
+        protected IObservable<EngineUpdateEventArgs> Update { get; private set; }
+        protected IObservable<EnginePointerMovedEventArgs> PointerMoved { get; private set; }
+        protected IObservable<ChildEnterEngineEventArgs> ChildEnter { get; private set; }
+        protected IObservable<ChildLeaveEngineEventArgs> ChildLeave { get; private set; }
+        protected IObservable<ParentChangedEngineEventArgs> ParentChanged { get; private set; }
 
-        protected ReactiveBehavior()
+        internal void LoadedInternal()
         {
             Draw = Engine.Current.Events.Draw.Where(CanReceiveEvent).Publish().RefCount();
             Update = Engine.Current.Events.Update.Where(CanReceiveEvent).Publish().RefCount();
@@ -27,16 +27,31 @@ namespace SkiManager.Engine
             ChildEnter = Entity.ChildEnter.Where(CanReceiveEvent).Publish().RefCount();
             ChildLeave = Entity.ChildLeave.Where(CanReceiveEvent).Publish().RefCount();
             ParentChanged = Entity.ParentChanged.Where(CanReceiveEvent).Publish().RefCount();
+
+            Loaded();
         }
 
-        protected internal virtual void Loaded()
-        { }
+        protected virtual void Loaded()
+        {
+        }
 
-        protected internal virtual void Unloading()
-        { }
+        internal void UnloadingInternal()
+        {
+            Unloading();
+        }
 
-        protected internal virtual void Destroyed()
-        { }
+        protected virtual void Unloading()
+        {
+        }
+
+        internal void DestroyedInternal()
+        {
+            Destroyed();
+        }
+
+        protected virtual void Destroyed()
+        {
+        }
 
         internal void Attach(Entity entity)
         {
@@ -51,3 +66,4 @@ namespace SkiManager.Engine
         private bool CanReceiveEvent(EngineEventArgs args) => IsEffectivelyEnabled;
     }
 }
+    ;

@@ -20,12 +20,12 @@ namespace SkiManager.Engine.Behaviors
 
         public ColliderType ColliderTypes { get; set; }
 
-        protected internal override void Loaded()
+        protected override void Loaded()
         {
             _subscription = PointerMoved.Subscribe(OnPointerMoved);
         }
 
-        protected internal override void Destroyed()
+        protected override void Destroyed()
         {
             _collisionEventSubject?.Dispose();
         }
@@ -38,7 +38,7 @@ namespace SkiManager.Engine.Behaviors
             }
 
             var mousePoint = args.Arguments.GetCurrentPoint(args.Sender as UIElement).Position.ToVector2();
-            var point = Entity.GetBehavior<TransformBehavior>().GetAbsolutePosition();
+            var point = Entity.GetBehavior<TransformBehavior>().Position;
             var collides = false;
             switch (Shape)
             {

@@ -18,14 +18,14 @@ namespace SkiManager.Engine.Behaviors
 
         public bool DrawCenter { get; set; } = true;
 
-        protected internal override void Loaded()
+        protected override void Loaded()
         {
             Draw.Subscribe(OnRender);
         }
 
         private void OnRender(EngineDrawEventArgs args)
         {
-            var absolutePosition = Entity.GetBehavior<TransformBehavior>().GetAbsolutePosition();
+            var absolutePosition = Entity.GetBehavior<TransformBehavior>().Position;
             var halfSize = new Vector2((float)(Size.Width / 2), (float)(Size.Height / 2));
             switch (Geometry)
             {

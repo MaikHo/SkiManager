@@ -17,8 +17,6 @@ namespace SkiManager.App.Behaviors
         private Entity _lastTarget;
         private readonly Subject<TargetReachedEngineEventArgs> _targetReached = new Subject<TargetReachedEngineEventArgs>();
 
-        public ILocation Location { get; private set; }
-
         public Entity Target { get; private set; }
 
         public float Speed { get; set; } = 100.0f;
@@ -41,8 +39,8 @@ namespace SkiManager.App.Behaviors
             // TODO remove debug code
             Draw.Subscribe(args =>
             {
-                args.Arguments.DrawingSession.DrawText("Location: " + ((Location as ReactiveBehavior)?.Entity.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
-                    Entity.GetBehavior<TransformBehavior>().GetAbsolutePosition() + new Vector2(0, -20), Colors.DarkGray);
+                args.Arguments.DrawingSession.DrawText("Location: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
+                    Entity.GetBehavior<TransformBehavior>().Position + new Vector2(0, -20), Colors.DarkGray);
             });
         }
 
@@ -63,14 +61,14 @@ namespace SkiManager.App.Behaviors
                 return;
             }
 
-            var thisPosition = Entity.GetBehavior<TransformBehavior>().GetAbsolutePosition();
-            var targetPosition = Target?.GetBehavior<TransformBehavior>()?.GetAbsolutePosition() ?? Vector2.Zero;
+            var thisPosition = Entity.GetBehavior<TransformBehavior>().Position;
+            var targetPosition = Target?.GetBehavior<TransformBehavior>()?.Position ?? Vector2.Zero;
             if (Vector2.Distance(thisPosition, targetPosition) <= float.Epsilon)
             {
                 if (!_hasTargetReached)
                 {
                     _hasTargetReached = true;
-                    Location = Target?.GetImplementation<ILocation>();
+                    Entity.SetParent(Target);
                     _targetReached.OnNext(new TargetReachedEngineEventArgs(Engine.Engine.Current, Target));
                 }
             }
@@ -79,13 +77,13 @@ namespace SkiManager.App.Behaviors
                 if (_hasTargetReached)
                 {
                     _hasTargetReached = false;
-                    Location =
+                    var location =
                         _lastTarget?.GetImplementation<IGraphNode>()?
                             .AdjacentEdges.FirstOrDefault(
                                 _ =>
                                     (_.GetImplementation<IGraphEdge>().Start == _lastTarget && _.GetImplementation<IGraphEdge>().End == Target)
-                                    || (_.GetImplementation<IGraphEdge>().End == _lastTarget && _.GetImplementation<IGraphEdge>().Start == Target))
-                                        ?.GetImplementation<ILocation>();
+                                    || (_.GetImplementation<IGraphEdge>().End == _lastTarget && _.GetImplementation<IGraphEdge>().Start == Target));
+                    Entity.SetParent(location);
                 }
                 var movementVector = Vector2.Normalize(targetPosition - thisPosition);
                 var movementFactor = Speed * (float)args.Arguments.Timing.ElapsedTime.TotalSeconds;
