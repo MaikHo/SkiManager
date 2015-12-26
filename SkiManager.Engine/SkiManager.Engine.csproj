@@ -134,6 +134,8 @@
     <Compile Include="Features\TrackMousePositionEngineFeature.cs" />
     <Compile Include="Features\TrackMousePositionEngineFeatureEngineExtensions.cs" />
     <Compile Include="ReactiveBehavior.cs" />
+    <Compile Include="RequiresBehaviorAttribute.cs" />
+    <Compile Include="RequiresImplementationAttribute.cs" />
     <Compile Include="TransformExtensions.cs" />
     <EmbeddedResource Include="Properties\SkiManager.Engine.rd.xml" />
   </ItemGroup>

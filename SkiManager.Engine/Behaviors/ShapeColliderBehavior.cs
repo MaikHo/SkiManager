@@ -6,9 +6,12 @@ using Windows.UI.Xaml;
 
 namespace SkiManager.Engine.Behaviors
 {
+    [RequiresBehavior(typeof(TransformBehavior))]
     public sealed class ShapeColliderBehavior : ReactiveBehavior
     {
         private readonly Subject<CollisionEventArgs> _collisionEventSubject = new Subject<CollisionEventArgs>();
+        private IDisposable _subscription;
+
         public IObservable<CollisionEventArgs> Collision => _collisionEventSubject;
 
         public SimpleGeometry Shape { get; set; }
@@ -19,7 +22,12 @@ namespace SkiManager.Engine.Behaviors
 
         protected internal override void Loaded()
         {
-            PointerMoved.Subscribe(OnPointerMoved);
+            _subscription = PointerMoved.Subscribe(OnPointerMoved);
+        }
+
+        protected internal override void Destroyed()
+        {
+            _collisionEventSubject?.Dispose();
         }
 
         private void OnPointerMoved(EnginePointerMovedEventArgs args)
