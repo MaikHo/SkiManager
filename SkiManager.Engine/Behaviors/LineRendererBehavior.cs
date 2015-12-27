@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-
+using System.Reactive.Linq;
 using Windows.UI;
 
 using SkiManager.Engine.Interfaces;
@@ -15,6 +15,8 @@ namespace SkiManager.Engine.Behaviors
 
         public Color Color { get; set; } = Colors.Black;
 
+        public bool IsVisible { get; set; }
+
         public LineRendererBehavior() : this(null, null)
         { }
 
@@ -26,7 +28,7 @@ namespace SkiManager.Engine.Behaviors
 
         protected override void Loaded()
         {
-            Draw.Subscribe(OnRender);
+            Draw.Where(_ => IsVisible).Subscribe(OnRender);
         }
 
         private void OnRender(EngineDrawEventArgs args)

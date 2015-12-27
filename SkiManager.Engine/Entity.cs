@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Subjects;
+using Newtonsoft.Json;
 
 namespace SkiManager.Engine
 {
@@ -18,6 +19,9 @@ namespace SkiManager.Engine
         public string Name { get; set; } = nameof(Entity);
 
         public Entity Parent { get; private set; }
+
+        private readonly List<Entity> _children = new List<Entity>();
+        public IReadOnlyList<Entity> Children => _children.AsReadOnly();
 
         public Level Level { get; internal set; }
 
@@ -63,23 +67,34 @@ namespace SkiManager.Engine
                     // Parent has been set in a childleave handler, therefore return
                     return;
                 }
-                Level.ChildrenLookup[Parent].Remove(this);
+                Parent._children.Remove(this);
             }
 
             Parent = newParent;
 
-            if (!Level.ChildrenLookup.ContainsKey(Parent))
+            if (Parent != null)
             {
-                Level.ChildrenLookup.Add(Parent, new List<Entity>());
-            }
-            Level.ChildrenLookup[Parent].Add(this);
-            newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this, oldParent));
-            if (Parent != newParent)
-            {
-                // Parent has been set in a childenter handler, therefore return
-                return;
+                Parent._children.Add(this);
+                newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this, oldParent));
+                if (Parent != newParent)
+                {
+                    // Parent has been set in a childenter handler, therefore return
+                    return;
+                }
             }
             ParentChanged.OnNext(new ParentChangedEngineEventArgs(Engine.Current, oldParent, newParent));
+        }
+
+        internal Entity Clone()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                TypeNameHandling = TypeNameHandling.All
+            };
+            var objectString = JsonConvert.SerializeObject(this, Formatting.None, settings);
+            return JsonConvert.DeserializeObject<Entity>(objectString);
         }
     }
 }

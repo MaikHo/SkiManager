@@ -5,15 +5,6 @@ namespace SkiManager.Engine
 {
     public static class EntityExtensions
     {
-        public static IReadOnlyList<Entity> GetChildren(this Entity entity)
-        {
-            if (Engine.Current.CurrentLevel.ChildrenLookup.ContainsKey(entity))
-            {
-                return Engine.Current.CurrentLevel.ChildrenLookup[entity].ToList().AsReadOnly();
-            }
-            return new List<Entity>().AsReadOnly();
-        }
-
         public static string GetPath(this Entity entity)
         {
             if (entity == null)
@@ -29,5 +20,7 @@ namespace SkiManager.Engine
         public static bool Implements<T>(this Entity entity) => entity.Behaviors.OfType<T>().Any();
 
         public static T GetImplementation<T>(this Entity entity) => entity.Behaviors.OfType<T>().FirstOrDefault();
+
+        public static IEnumerable<T> GetImplementations<T>(this Entity entity) => entity.Behaviors.OfType<T>().ToList();
     }
 }

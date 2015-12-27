@@ -7,17 +7,19 @@ namespace SkiManager.App.Behaviors
 {
     public abstract class TransporterBaseBehavior : ReactiveBehavior, ITransporter
     {
-        private readonly List<Entity> _transportees = new List<Entity>();
+        private readonly List<Entity> _passengers = new List<Entity>();
 
         public int Slots { get; set; }
 
-        public int UsedSlots => _transportees.Count;
+        public int UsedSlots => _passengers.Count;
 
         public int FreeSlots => Slots - UsedSlots;
 
         public bool RequiresDriver { get; set; }
 
-        public bool HasDriver => _transportees.Any(EntityCanBeDriver);
+        public bool HasDriver => _passengers.Any(EntityCanBeDriver);
+
+        public IReadOnlyList<Entity> Passengers => _passengers.AsReadOnly();
 
         public Skill RequiredDriverSkills { get; set; }
 
@@ -34,17 +36,17 @@ namespace SkiManager.App.Behaviors
             }
 
             entityToLoad.SetParent(Entity);
-            _transportees.Add(entityToLoad);
+            _passengers.Add(entityToLoad);
             return true;
         }
 
         public void UnloadAllTo(Entity target)
         {
-            _transportees.ForEach(_ => _.SetParent(target));
-            _transportees.Clear();
+            _passengers.ForEach(_ => _.SetParent(target));
+            _passengers.Clear();
         }
 
-        private bool EntityCanBeDriver(Entity entity)
+        public virtual bool EntityCanBeDriver(Entity entity)
         {
             return true; // TODO: check for required skill
         }

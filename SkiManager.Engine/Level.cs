@@ -9,8 +9,6 @@ namespace SkiManager.Engine
         private readonly List<Entity> _entities;
         public IReadOnlyList<Entity> Entities => _entities.AsReadOnly();
 
-        internal IDictionary<Entity, IList<Entity>> ChildrenLookup { get; } = new Dictionary<Entity, IList<Entity>>();
-
         public Level()
         {
             _entities = new List<Entity> { RootEntity };
@@ -20,6 +18,13 @@ namespace SkiManager.Engine
         {
             entity.Level = this;
             _entities.Add(entity);
+        }
+
+        public Entity Instantiate(Entity entity)
+        {
+            var newEntity = entity.Clone();
+            AddEntity(newEntity);
+            return newEntity;
         }
 
         public void Destroy(Entity entity)
