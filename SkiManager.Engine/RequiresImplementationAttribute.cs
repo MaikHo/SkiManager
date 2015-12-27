@@ -3,7 +3,7 @@
 namespace SkiManager.Engine
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    sealed class RequiresImplementationAttribute : Attribute
+    public sealed class RequiresImplementationAttribute : Attribute
     {
         public Type InterfaceType { get; }
 

@@ -99,19 +99,24 @@
     <Compile Include="Behaviors\CustomerBehavior.cs" />
     <Compile Include="Behaviors\GraphEdgeBehavior.cs" />
     <Compile Include="Behaviors\GraphNodeBehavior.cs" />
-    <Compile Include="Behaviors\InvisibleGraphConnectorNodeBehavior.cs" />
+    <Compile Include="Behaviors\GraphConnectorNodeBehavior.cs" />
+    <Compile Include="Behaviors\MapExitBehavior.cs" />
     <Compile Include="Behaviors\MovableBehavior.cs" />
     <Compile Include="Behaviors\ParkingLotBehavior.cs" />
     <Compile Include="Behaviors\RoadBehavior.cs" />
+    <Compile Include="Behaviors\SpawnerBehavior.cs" />
     <Compile Include="Behaviors\TargetReachedEngineEventArgs.cs" />
     <Compile Include="Behaviors\TransporterBaseBehavior.cs" />
     <Compile Include="EntityTemplates.cs" />
+    <Compile Include="GraphExtensions.cs" />
     <Compile Include="Interfaces\IGraphEdge.cs" />
     <Compile Include="Interfaces\IGraphNode.cs" />
     <Compile Include="Interfaces\ILocation.cs" />
+    <Compile Include="Interfaces\IMapExit.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
     <Compile Include="Interfaces\ISubgraphIONode.cs" />
     <Compile Include="Interfaces\ITransporter.cs" />
+    <Compile Include="InvalidLevelConfigurationException.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

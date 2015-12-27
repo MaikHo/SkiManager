@@ -10,6 +10,9 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <xaml:CanvasVirtualControl x:Name="Canvas" />
 
-        <Button Content="TerrainPage" Click="Button_Click" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+        <Button HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Click="Button_Click"
+                Content="TerrainPage" />
     </Grid>
 </Page>

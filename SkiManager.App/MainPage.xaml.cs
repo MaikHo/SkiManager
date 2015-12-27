@@ -24,7 +24,13 @@ namespace SkiManager.App
 
             var level = new Level();
 
+            var mapio = level.Instantiate(EntityTemplates.MapIO);
+            mapio.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Circle, Color = Colors.Blue });
+            mapio.GetBehavior<TransformBehavior>().Position = new Vector2(100, 100);
 
+            var parkingLot = level.Instantiate(EntityTemplates.ParkingLot);
+            parkingLot.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Square, Color = Colors.Gray });
+            parkingLot.GetBehavior<TransformBehavior>().Position = new Vector2(250, 250);
 
             Engine.Engine.Current.LoadLevel(level);
 
