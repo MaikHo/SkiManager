@@ -13,6 +13,8 @@ namespace SkiManager.App.Interfaces
 
         bool HasDriver { get; }
 
+        bool IsParked { get; set; }
+
         Skill RequiredDriverSkills { get; }
 
         IReadOnlyList<Entity> Passengers { get; }

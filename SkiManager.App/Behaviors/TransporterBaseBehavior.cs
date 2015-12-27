@@ -17,6 +17,8 @@ namespace SkiManager.App.Behaviors
 
         public bool RequiresDriver { get; set; }
 
+        public bool IsParked { get; set; }
+
         public bool HasDriver => _passengers.Any(EntityCanBeDriver);
 
         public IReadOnlyList<Entity> Passengers => _passengers.AsReadOnly();
