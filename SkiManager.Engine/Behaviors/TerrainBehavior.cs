@@ -2,37 +2,37 @@
 using System.Numerics;
 using Windows.Foundation;
 using System;
-using Microsoft.Graphics.Canvas;
-using System.Threading.Tasks;
-using Microsoft.Graphics.Canvas.Effects;
+using SkiManager.Engine.Sprites;
 
 namespace SkiManager.Engine.Behaviors
 {
     public class TerrainBehavior : ReactiveBehavior, ICoordinateSystem
     {
         private IDisposable _createResourcesSubscription;
+        private Sprite _heightMap;
 
-        /// <summary>
-        /// A combination of the supplied height map (A channel)
-        /// and a normal map (R, G, B channels).
-        /// </summary>
-        internal CanvasBitmap NormalHeightMap { get; private set; }
+        // Note that the TerrainRenderer adjusts the size of the
+        // canvas control to match the height map pixel size.
+        private Vector2 _worldToPixels => new Vector2(
+            _heightMap.Image.SizeInPixels.Width / _heightMap.Size.X,
+            _heightMap.Image.SizeInPixels.Height / _heightMap.Size.Y);
+
+        private Vector2 _pixelsToWorld => new Vector2(
+            _heightMap.Size.X / _heightMap.Image.SizeInPixels.Width,
+            _heightMap.Size.Y / _heightMap.Image.SizeInPixels.Height);
 
         /// <summary>
         /// The grayscale height map image.
         /// </summary>
-        public Uri HeightMapSource { get; set; }
-
+        public SpriteReference HeightMap { get; set; }
+        
         /// <summary>
-        /// The size of the terrain in world coordinates.
+        /// The absolute height represented by white height map pixels.
+        /// This means that <see cref="Height"/> - <see cref="BaseHeight"/>
+        /// is the maximum height difference that can be represented by
+        /// the height map.
         /// </summary>
-        /// <remarks>
-        /// The Y coordinate is the absolute height represented by
-        /// white height map pixels. This means that
-        /// Size.Y - <see cref="BaseHeight"/> is the maximum height
-        /// difference that can be represented by the height map.
-        /// </remarks>
-        public Vector3 Size { get; set; }
+        public float Height { get; set; }
 
         /// <summary>
         /// The minimum height that can be represented.
@@ -42,13 +42,11 @@ namespace SkiManager.Engine.Behaviors
         /// </remarks>
         public float BaseHeight { get; set; }
 
-        public float SampleHeight(Vector2 position)
-        {
-            var worldToPixels = new Vector2(
-                NormalHeightMap.SizeInPixels.Width / Size.X,
-                NormalHeightMap.SizeInPixels.Height / Size.Z);
+        Vector2 ICoordinateSystem.Size => HeightMap.Resolve(Entity).Size; // Can't use _heightMap here because CreateResources might not have fired yet
 
-            var pixelPos = position * worldToPixels;
+        public float SampleHeight(Vector2 worldPosition)
+        {
+            var pixelPos = TransformToDips(worldPosition);
 
             var minX = (int)Math.Floor(pixelPos.X);
             var minY = (int)Math.Floor(pixelPos.Y);
@@ -56,7 +54,7 @@ namespace SkiManager.Engine.Behaviors
             var tx = Mathf.InverseLerp(minX, minX + 1, pixelPos.X);
             var ty = Mathf.InverseLerp(minY, minY + 1, pixelPos.Y);
 
-            var colors = NormalHeightMap.GetPixelColors(minX, minY, 2, 2);
+            var colors = _heightMap.Image.GetPixelColors(minX, minY, 2, 2);
 
             var height1 = Mathf.Lerp(ByteToWorldHeight(colors[0].A), ByteToWorldHeight(colors[1].A), tx);
             var height2 = Mathf.Lerp(ByteToWorldHeight(colors[2].A), ByteToWorldHeight(colors[3].A), tx);
@@ -66,39 +64,37 @@ namespace SkiManager.Engine.Behaviors
         }
 
         public Rect TransformToDips(Rect worldRect)
-        {
-            throw new NotImplementedException();
-        }
+            => new Rect(
+                TransformToDips(worldRect.Position()).ToPoint(),
+                TransformToDips(worldRect.Size()).ToSize());
 
         public Vector2 TransformToDips(Vector3 worldPosition)
-        {
-            throw new NotImplementedException();
-        }
+            => TransformToDips(worldPosition.XZ());
 
         public Vector2 TransformToDips(Vector2 worldPosition)
-        {
-            throw new NotImplementedException();
-        }
+            => worldPosition * _worldToPixels;
 
         public Rect TransformToWorld(Rect dipsRect)
-        {
-            throw new NotImplementedException();
-        }
+            => new Rect(
+                TransformToWorld(dipsRect.Position()).ToPoint(),
+                TransformToWorld(dipsRect.Size()).ToSize());
 
-        public Vector3 TransformToWorld(Vector2 dipsPosition)
-        {
-            throw new NotImplementedException();
-        }
+        public Vector2 TransformToWorld(Vector2 dipsPosition)
+            => dipsPosition * _pixelsToWorld;
 
         protected override void Loaded()
         {
-            _createResourcesSubscription = EarlyCreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
+            _createResourcesSubscription = CreateResources.Subscribe(OnCreateResources);
         }
 
-        private async Task OnCreateResourcesAsync(EngineCreateResourcesEventArgs e)
+        protected override void Unloading()
         {
-            var heightMap = await CanvasBitmap.LoadAsync(e.Sender, HeightMapSource);
-            NormalHeightMap = await RenderNormalHeightMapAsync(e.Sender, heightMap, Size.Y - BaseHeight);
+            _createResourcesSubscription.Dispose();
+        }
+
+        private void OnCreateResources(EngineCreateResourcesEventArgs e)
+        {
+            _heightMap = HeightMap.Resolve(Entity);
         }
 
 
@@ -109,49 +105,9 @@ namespace SkiManager.Engine.Behaviors
         /// <param name="normalizedHeight">Height in range [0..1]</param>
         /// <returns>Height in meters</returns>
         private float NormalizedToWorldHeight(float normalizedHeight)
-            => BaseHeight + normalizedHeight * Size.Y;
+            => BaseHeight + normalizedHeight * Height;
 
         private float ByteToWorldHeight(byte b)
             => NormalizedToWorldHeight(b / 255f);
-
-
-
-
-        /// <summary>
-        /// Renders a texture that contains surface normals
-        /// in the R, G and B channels and height information in
-        /// the A channel based on the specified height map.
-        /// </summary>
-        /// <param name="resourceCreator">Resource creator</param>
-        /// <param name="heightMap">Height map</param>
-        /// <returns>A combination of a normal map and the height map</returns>
-        private static async Task<CanvasBitmap> RenderNormalHeightMapAsync(ICanvasResourceCreatorWithDpi resourceCreator, CanvasBitmap heightMap, float heightDifference)
-        {
-            var bytes = await Utilities.ReadBytesFromEmbeddedResourceAsync("SkiManager.Engine.Shaders.NormalMapFromHeightMapShader.bin");
-            
-            var heightMapConverterEffect = new PixelShaderEffect(bytes)
-            {
-                Source1 = heightMap,
-                Source1Mapping = SamplerCoordinateMapping.Offset,
-                MaxSamplerOffset = 1,
-            };
-
-            heightMapConverterEffect.Properties["dpi"] = resourceCreator.Dpi;
-            heightMapConverterEffect.Properties["height"] = heightDifference;
-
-            var normalHeightMap = new CanvasRenderTarget(
-                resourceCreator,
-                (float)heightMap.Size.Width,
-                (float)heightMap.Size.Height,
-                heightMap.Dpi);
-
-            using (var g = normalHeightMap.CreateDrawingSession())
-            {
-                g.DrawImage(heightMapConverterEffect);
-            }
-
-            return normalHeightMap;
-        }
-
     }
 }

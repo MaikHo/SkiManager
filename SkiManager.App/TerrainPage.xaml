@@ -21,6 +21,8 @@
             x:Name="scrollViewer">
                
             <xaml:CanvasVirtualControl
+                Width="500"
+                Height="500"
                 x:Name="canvas"/>
         </ScrollViewer>
     </Grid>

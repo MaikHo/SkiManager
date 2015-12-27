@@ -1,5 +1,6 @@
 ﻿using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
+using SkiManager.Engine.Sprites;
 using System;
 using System.Numerics;
 using Windows.UI.Xaml.Controls;
@@ -22,15 +23,16 @@ namespace SkiManager.App
             var level = new Level();
 
             var spriteManager = new SpriteManagerBehavior();
-            spriteManager.Sprites.Add("Terrain.Grass", new Uri("ms-appx:///Assets/Sprites/grass.jpg"), new Vector2(10, 10));
+            spriteManager.Sprites.Add("Terrain.Grass", new Uri("ms-appx:///Assets/Sprites/grassTest.jpg"), new Vector2(10, 10));
             spriteManager.Sprites.Add("Terrain.Snow", new Uri("ms-appx:///Assets/Sprites/snow(deep).png"), new Vector2(10, 10));
             spriteManager.Sprites.Add("Terrain.Rock", new Uri("ms-appx:///Assets/Sprites/terrain-cliffs-ground.png"), new Vector2(2, 2));
+            spriteManager.Sprites.Add("Terrain.HeightMap", new Uri("ms-appx:///Assets/Sprites/Kitzbüheler Alpen Height Map (Merged).png"), new Vector2(20000, 20000));
 
             var terrain = new TerrainBehavior
             {
+                Height = 2328,
                 BaseHeight = 719,
-                Size = new Vector3(20000, 2328, 20000),
-                HeightMapSource = new Uri("ms-appx:///Assets/Sprites/Kitzbüheler Alpen Height Map (Merged).png")
+                HeightMap = "Terrain.HeightMap"
             };
 
             var terrainRenderer = new TerrainRendererBehavior
