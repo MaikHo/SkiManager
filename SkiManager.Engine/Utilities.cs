@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.UI;
 
 namespace SkiManager.Engine
 {
@@ -50,5 +51,14 @@ namespace SkiManager.Engine
 
         public static Vector2 Size(this Rect rect)
             => new Vector2((float)rect.Width, (float)rect.Height);
+
+        /// <summary>
+        /// Converts the <see cref="Color"/> to a <see cref="Vector4"/>
+        /// with R, G, B, A values between 0 and 1.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public static Vector4 ToVector4(this Color color)
+            => new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
     }
 }

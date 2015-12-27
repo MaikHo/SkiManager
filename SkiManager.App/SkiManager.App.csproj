@@ -129,12 +129,14 @@
     <None Include="SkiManager.App_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Sprites\grass.jpg" />
+    <Content Include="Assets\Sprites\Grass0202_1_S.jpg" />
     <Content Include="Assets\Sprites\grassTest.jpg" />
-    <Content Include="Assets\Sprites\heightMap2.png" />
-    <Content Include="Assets\Sprites\Kitzbüheler Alpen Height Map %28Merged%29.png" />
-    <Content Include="Assets\Sprites\snow%28deep%29.png" />
+    <Content Include="Assets\Sprites\HeightMaps\heightMap2.png" />
+    <Content Include="Assets\Sprites\HeightMaps\Kitzbüheler Alpen Height Map %28Merged%29.png" />
+    <Content Include="Assets\Sprites\HeightMaps\ZillertalArena Height Map %28Merged%29.png" />
+    <Content Include="Assets\Sprites\Snow0080_1_S.jpg" />
     <Content Include="Assets\Sprites\terrain-cliffs-ground.png" />
+    <Content Include="Assets\Sprites\HeightMaps\Wildkogel8x8 Height Map %28Merged%29.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

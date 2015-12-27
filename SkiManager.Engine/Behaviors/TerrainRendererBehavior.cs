@@ -6,6 +6,7 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Xaml;
 
 namespace SkiManager.Engine.Behaviors
@@ -17,6 +18,9 @@ namespace SkiManager.Engine.Behaviors
         private IDisposable _createResourcesSubscription;
         private PixelShaderEffect _terrainMap;
         private TerrainBehavior _terrain;
+        private Color _grassColor;
+        private Color _snowColor;
+        private Color _rockColor;
 
         /// <summary>
         /// A combination of the supplied height map (A channel)
@@ -46,7 +50,11 @@ namespace SkiManager.Engine.Behaviors
         {
             _terrainMap.Properties["dpi"] = e.Sender.Dpi;
             _terrainMap.Properties["baseHeight"] = _terrain.BaseHeight;
-            _terrainMap.Properties["height"] = _terrain.Height - _terrain.BaseHeight;
+            _terrainMap.Properties["heightDiff"] = _terrain.Height - _terrain.BaseHeight;
+            _terrainMap.Properties["grassColor"] = _grassColor.ToVector4();
+            _terrainMap.Properties["snowColor"] = _snowColor.ToVector4();
+            _terrainMap.Properties["rockColor"] = _rockColor.ToVector4();
+            _terrainMap.Properties["snowMinHeight"] = 2000f;
 
             e.DrawingSession.DrawImage(_terrainMap);
         }
@@ -57,6 +65,14 @@ namespace SkiManager.Engine.Behaviors
             var snow = SnowSprite.Resolve(Entity);
             var rock = RockSprite.Resolve(Entity);
             var heightMap = _terrain.HeightMap.Resolve(Entity);
+
+            if (!heightMap.IsPreScaled || !grass.IsPreScaled || !snow.IsPreScaled || !rock.IsPreScaled)
+                throw new ArgumentException("The heightmap, grass, snow and rock textures must be prescaled in order to be used for terrain rendering");
+
+            // Calculate average colors (these are used at small zoom levels)
+            _grassColor = GetAverageColor(e.Sender, grass.Image);
+            _snowColor = GetAverageColor(e.Sender, snow.Image);
+            _rockColor = GetAverageColor(e.Sender, rock.Image);
 
             _normalHeightMap = await RenderNormalHeightMapAsync(e.Sender, heightMap.Image, _terrain.Height - _terrain.BaseHeight);
 
@@ -75,28 +91,16 @@ namespace SkiManager.Engine.Behaviors
                 Source4 = rockTiled,
                 CacheOutput = true
             };
-
-            // TODO: Delete
-            // Resize the canvas control to match the size of the height map
-            //var canvasControl = e.Sender as FrameworkElement;
-            //canvasControl.Width = _terrain.NormalHeightMap.Size.Width;
-            //canvasControl.Height = _terrain.NormalHeightMap.Size.Height;
         }
 
-        private void DrawSprite(EngineDrawEventArgs e, SpriteReference spriteRef, Vector2 position, Vector2 scale)
+        private static Color GetAverageColor(ICanvasResourceCreatorWithDpi resourceCreator, CanvasBitmap image)
         {
-            var coords = Entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
-            var sprite = spriteRef.Resolve(Entity);
+            var miniImage = new CanvasRenderTarget(resourceCreator, 1, 1, 96);
 
-            var worldRect = new Rect(
-                position.X - (scale.X * sprite.Size.X) / 2,
-                position.Y - (scale.Y * sprite.Size.Y) / 2,
-                scale.X * sprite.Size.X,
-                scale.Y * sprite.Size.Y);
+            using (var g = miniImage.CreateDrawingSession())
+                g.DrawImage(image, new Rect(0, 0, 1, 1));
 
-            var dipsRect = coords.TransformToDips(worldRect);
-
-            e.DrawingSession.DrawImage(sprite.Image, dipsRect);
+            return miniImage.GetPixelColors(0, 0, 1, 1)[0];
         }
 
         /// <summary>

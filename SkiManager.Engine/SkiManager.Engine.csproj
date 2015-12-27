@@ -152,7 +152,6 @@
     <Compile Include="Sprites\SpriteReference.cs" />
     <Compile Include="Sprites\SpriteRendererBehavior.cs" />
     <Compile Include="TaskCollection.cs" />
-    <Compile Include="TransformExtensions.cs" />
     <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="Properties\SkiManager.Engine.rd.xml" />
   </ItemGroup>
