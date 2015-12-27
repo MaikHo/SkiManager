@@ -6,41 +6,55 @@ using Newtonsoft.Json;
 namespace SkiManager.Engine
 {
     [DebuggerDisplay("Entity \"{Name}\"")]
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Entity
     {
+        [JsonProperty]
         private readonly List<ReactiveBehavior> _behaviors = new List<ReactiveBehavior>();
 
         public IReadOnlyList<ReactiveBehavior> Behaviors => _behaviors;
 
         public bool IsEffectivelyEnabled => IsEnabled && IsLoaded && !IsDestroyed && (Parent?.IsEffectivelyEnabled ?? true);
 
+        [JsonProperty]
         public bool IsEnabled { get; set; } = true;
 
+        [JsonProperty]
         public string Name { get; set; } = nameof(Entity);
 
+        [JsonProperty]
         public Entity Parent { get; private set; }
 
+        [JsonProperty]
         private readonly List<Entity> _children = new List<Entity>();
         public IReadOnlyList<Entity> Children => _children.AsReadOnly();
 
+        [JsonProperty]
         public Level Level { get; internal set; }
 
+        [JsonProperty]
         public IDictionary<string, object> Tags { get; } = new Dictionary<string, object>();
 
+        [JsonProperty]
         internal bool IsLoaded { get; set; }
 
+        [JsonProperty]
         internal bool IsDestroyed { get; set; }
 
+        [JsonProperty]
         internal Subject<ChildEnterEngineEventArgs> ChildEnter { get; } = new Subject<ChildEnterEngineEventArgs>();
 
+        [JsonProperty]
         internal Subject<ChildLeaveEngineEventArgs> ChildLeave { get; } = new Subject<ChildLeaveEngineEventArgs>();
 
+        [JsonProperty]
         internal Subject<ParentChangedEngineEventArgs> ParentChanged { get; } = new Subject<ParentChangedEngineEventArgs>();
 
-        public void AddBehavior(ReactiveBehavior behavior)
+        public T AddBehavior<T>(T behavior) where T : ReactiveBehavior
         {
             behavior.Attach(this);
             _behaviors.Add(behavior);
+            return behavior;
         }
 
         public void RemoveBehavior(ReactiveBehavior behavior)

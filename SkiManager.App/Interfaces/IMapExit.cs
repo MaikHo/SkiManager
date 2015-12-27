@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkiManager.App.Behaviors
+namespace SkiManager.App.Interfaces
 {
-    public sealed class InvisibleGraphConnectorNodeBehavior : GraphNodeBehavior
+    public interface IMapExit
     {
     }
 }

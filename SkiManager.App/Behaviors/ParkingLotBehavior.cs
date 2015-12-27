@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
 
@@ -62,17 +60,19 @@ namespace SkiManager.App.Behaviors
             }
             else if (args.EnteringChild.HasBehavior<CarBehavior>())
             {
+                var car = args.EnteringChild.GetBehavior<CarBehavior>();
                 // car enters
                 if (FreeSlots == 0)
                 {
-                    // disallow entering of car since there is no space
+                    // disallow entering of car since there is no space, mark that it already tried this parkinglot
+                    car.TriedParkingLots.Add(Entity);
                     args.EnteringChild.SetParent(args.OldParent);
+                    car.SetTargetToNextPointTowardsParkingLot(args.OldParent.GetImplementation<IGraphNode>());
                     return;
                 }
 
                 // there is space -> unload passengers to IO node and increase used slots
                 UsedSlots++;
-                var car = args.EnteringChild.GetBehavior<CarBehavior>();
                 car.Entity.IsEnabled = false;
                 var passengers = new List<Entity>(car.Passengers);
                 _carToPassengerMappings.Add(car.Entity, passengers);

@@ -10,6 +10,7 @@ using SkiManager.Engine.Behaviors;
 
 namespace SkiManager.App.Behaviors
 {
+    [RequiresBehavior(typeof(TransformBehavior))]
     public class MovableBehavior : ReactiveBehavior, IMovable
     {
         private IDisposable _subscription;

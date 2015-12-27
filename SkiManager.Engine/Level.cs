@@ -30,6 +30,7 @@ namespace SkiManager.Engine
 
         public void Destroy(Entity entity)
         {
+            // TODO: do this hierarchically for the whole subtree
             if (_entities.Contains(entity))
             {
                 _entities.Remove(entity);

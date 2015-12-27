@@ -10,6 +10,7 @@ namespace SkiManager.App.Behaviors
     {
         public RoadBehavior()
         {
+            IsBidirectional = true;
             BaseSpeedModifier = 1.2f;
         }
     }
