@@ -1,4 +1,6 @@
-﻿using SkiManager.Engine.Behaviors;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Effects;
+using SkiManager.Engine.Behaviors;
 using SkiManager.Engine.Interfaces;
 using System;
 using Windows.Foundation;
@@ -9,6 +11,8 @@ namespace SkiManager.Engine.Sprites
     public class SpriteRenderer : ReactiveBehavior
     {
         private IDisposable _drawSubscription;
+        private StraightenEffect _rotateEffect;
+        private SpriteReference _oldSprite;
 
         public SpriteReference Sprite { get; set; }
 
@@ -24,6 +28,13 @@ namespace SkiManager.Engine.Sprites
 
         private void OnDraw(EngineDrawEventArgs e)
         {
+            if (Sprite != _oldSprite)
+            {
+                // Sprite has changed since last draw
+                _rotateEffect?.Dispose();
+                _rotateEffect = null;
+            }
+
             if (Sprite == SpriteReference.Empty)
                 return;
 
@@ -46,8 +57,25 @@ namespace SkiManager.Engine.Sprites
 
                 var dipsRect = coords.TransformToDips(worldRect);
 
-                e.DrawingSession.DrawImage(sprite.Image, dipsRect);
+                ICanvasImage renderImage;
+
+                // If rotation is 0 we can draw the sprite directly.
+                // Otherwise, use a StraightenEffect to rotate.
+                if (Math.Abs(transform.Rotation) <= float.Epsilon)
+                {
+                    renderImage = sprite.Image;
+                }
+                else
+                {
+                    _rotateEffect = _rotateEffect ?? new StraightenEffect { Source = sprite.Image };
+                    _rotateEffect.Angle = transform.RotationRadians;
+                    renderImage = _rotateEffect;
+                }
+
+                e.DrawingSession.DrawImage(renderImage, dipsRect, renderImage.GetBounds(e.DrawingSession));
             }
+
+            _oldSprite = Sprite;
         }
     }
 }

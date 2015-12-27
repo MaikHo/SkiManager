@@ -43,23 +43,10 @@ namespace SkiManager.App
                 SnowSprite = "Terrain.Snow",
                 RockSprite = "Terrain.Rock"
             };
-
-            var spriteRenderer = new SpriteRenderer
-            {
-                Sprite = "Terrain.Grass"
-            };
-
-            var transform = new TransformBehavior
-            {
-                Position = new Vector2(10000, 10000),
-                Scale = new Vector2(2, 2)
-            };
-
+                        
             level.RootEntity.AddBehavior(spriteManager);
             level.RootEntity.AddBehavior(terrain);
             level.RootEntity.AddBehavior(terrainRenderer);
-            level.RootEntity.AddBehavior(spriteRenderer);
-            level.RootEntity.AddBehavior(transform);
 
             Engine.Engine.Current.LoadLevel(level);
             Engine.Engine.Current.StartOrResume();
