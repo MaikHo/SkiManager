@@ -114,7 +114,6 @@
     <Compile Include="Behaviors\LineRendererBehavior.cs" />
     <Compile Include="Behaviors\ShapeColliderBehavior.cs" />
     <Compile Include="Behaviors\SimpleGeometryRendererBehavior.cs" />
-    <Compile Include="Behaviors\SpriteManagerBehavior.cs" />
     <Compile Include="Behaviors\TerrainBehavior.cs" />
     <Compile Include="Behaviors\TerrainRendererBehavior.cs" />
     <Compile Include="Behaviors\TransformBehavior.cs" />
@@ -147,6 +146,11 @@
     <Compile Include="ReactiveBehavior.cs" />
     <Compile Include="RequiresBehaviorAttribute.cs" />
     <Compile Include="RequiresImplementationAttribute.cs" />
+    <Compile Include="Sprites\Sprite.cs" />
+    <Compile Include="Sprites\SpriteCollection.cs" />
+    <Compile Include="Sprites\SpriteManagerBehavior.cs" />
+    <Compile Include="Sprites\SpriteReference.cs" />
+    <Compile Include="Sprites\SpriteRendererBehavior.cs" />
     <Compile Include="TaskCollection.cs" />
     <Compile Include="TransformExtensions.cs" />
     <Compile Include="Utilities.cs" />

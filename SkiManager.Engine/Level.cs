@@ -4,13 +4,14 @@ namespace SkiManager.Engine
 {
     public sealed class Level
     {
-        public Entity RootEntity { get; } = new Entity { Name = "Root" };
+        public Entity RootEntity { get; }
 
         private readonly List<Entity> _entities;
         public IReadOnlyList<Entity> Entities => _entities.AsReadOnly();
 
         public Level()
         {
+            RootEntity = new Entity { Name = "Root", Level = this };
             _entities = new List<Entity> { RootEntity };
         }
 

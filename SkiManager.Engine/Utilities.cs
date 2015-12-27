@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Storage;
 
 namespace SkiManager.Engine
@@ -39,5 +41,14 @@ namespace SkiManager.Engine
                 return bytes;
             }
         }
+
+        public static Vector2 XZ(this Vector3 v)
+            => new Vector2(v.X, v.Z);
+
+        public static Vector2 Position(this Rect rect)
+            => new Vector2((float)rect.X, (float)rect.Y);
+
+        public static Vector2 Size(this Rect rect)
+            => new Vector2((float)rect.Width, (float)rect.Height);
     }
 }
