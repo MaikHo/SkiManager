@@ -4,9 +4,9 @@ using SkiManager.Engine;
 
 namespace SkiManager.App.Behaviors
 {
-    public class GraphNodeBehavior : ReactiveBehavior, IGraphNode
+    public abstract class GraphNodeBehavior : ReactiveBehavior, IGraphNode
     {
-        private List<Entity> _adjacentEdges = new List<Entity>();
+        private readonly List<Entity> _adjacentEdges = new List<Entity>();
         public IList<Entity> AdjacentEdges => _adjacentEdges;
     }
 }

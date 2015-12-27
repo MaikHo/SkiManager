@@ -1,4 +1,5 @@
-﻿using SkiManager.Engine;
+﻿using System.Collections.Generic;
+using SkiManager.Engine;
 
 namespace SkiManager.App.Interfaces
 {
@@ -13,6 +14,8 @@ namespace SkiManager.App.Interfaces
         bool HasDriver { get; }
 
         Skill RequiredDriverSkills { get; }
+
+        IReadOnlyList<Entity> Passengers { get; }
 
         bool TryLoad(Entity entityToLoad);
 
