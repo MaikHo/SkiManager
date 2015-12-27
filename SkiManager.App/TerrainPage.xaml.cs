@@ -5,17 +5,19 @@ using System;
 using System.Numerics;
 using Windows.UI.Xaml.Controls;
 
-// Die Elementvorlage "Leere Seite" ist unter http://go.microsoft.com/fwlink/?LinkId=234238 dokumentiert.
-
 namespace SkiManager.App
 {
-    /// <summary>
-    /// Eine leere Seite, die eigenständig verwendet oder zu der innerhalb eines Rahmens navigiert werden kann.
-    /// </summary>
     public sealed partial class TerrainPage : Page
     {
         public TerrainPage()
         {
+            /*
+            HEIGHT MAP INFO:
+            - Kitzbüheler Alpen: 20x20 km, BaseHeight: 719 m, MaxHeight: 2328 m
+            - Wildkogel        :  8x8  km, BaseHeight: 779 m, MaxHeight: 2264 m
+            - Zillertal Arena  : 20x20 km, BaseHeight: 524 m, MaxHeight: 3049 m
+            */
+
             InitializeComponent();
 
             Engine.Engine.Current.Attach(canvas);
@@ -23,15 +25,15 @@ namespace SkiManager.App
             var level = new Level();
 
             var spriteManager = new SpriteManagerBehavior();
-            spriteManager.Sprites.Add("Terrain.Grass", new Uri("ms-appx:///Assets/Sprites/grassTest.jpg"), new Vector2(10, 10));
-            spriteManager.Sprites.Add("Terrain.Snow", new Uri("ms-appx:///Assets/Sprites/snow(deep).png"), new Vector2(10, 10));
-            spriteManager.Sprites.Add("Terrain.Rock", new Uri("ms-appx:///Assets/Sprites/terrain-cliffs-ground.png"), new Vector2(2, 2));
-            spriteManager.Sprites.Add("Terrain.HeightMap", new Uri("ms-appx:///Assets/Sprites/Kitzbüheler Alpen Height Map (Merged).png"), new Vector2(20000, 20000));
+            spriteManager.Sprites.Add("Terrain.Grass", new Uri("ms-appx:///Assets/Sprites/Grass0202_1_S.jpg"), new Vector2(20, 20));
+            spriteManager.Sprites.Add("Terrain.Snow", new Uri("ms-appx:///Assets/Sprites/Snow0080_1_S.jpg"), new Vector2(20, 20));
+            spriteManager.Sprites.Add("Terrain.Rock", new Uri("ms-appx:///Assets/Sprites/terrain-cliffs-ground.png"), new Vector2(20, 20));
+            spriteManager.Sprites.Add("Terrain.HeightMap", new Uri("ms-appx:///Assets/Sprites/HeightMaps/Wildkogel8x8 Height Map (Merged).png"), new Vector2(8000, 8000));
 
             var terrain = new TerrainBehavior
             {
-                Height = 2328,
-                BaseHeight = 719,
+                Height = 2264,
+                BaseHeight = 779,
                 HeightMap = "Terrain.HeightMap"
             };
 
@@ -42,9 +44,22 @@ namespace SkiManager.App
                 RockSprite = "Terrain.Rock"
             };
 
+            var spriteRenderer = new SpriteRenderer
+            {
+                Sprite = "Terrain.Grass"
+            };
+
+            var transform = new TransformBehavior
+            {
+                Position = new Vector2(10000, 10000),
+                Scale = new Vector2(2, 2)
+            };
+
             level.RootEntity.AddBehavior(spriteManager);
             level.RootEntity.AddBehavior(terrain);
             level.RootEntity.AddBehavior(terrainRenderer);
+            level.RootEntity.AddBehavior(spriteRenderer);
+            level.RootEntity.AddBehavior(transform);
 
             Engine.Engine.Current.LoadLevel(level);
             Engine.Engine.Current.StartOrResume();

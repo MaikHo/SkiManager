@@ -3,6 +3,7 @@ using System.Numerics;
 using Windows.Foundation;
 using System;
 using SkiManager.Engine.Sprites;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace SkiManager.Engine.Behaviors
 {
@@ -10,16 +11,17 @@ namespace SkiManager.Engine.Behaviors
     {
         private IDisposable _createResourcesSubscription;
         private Sprite _heightMap;
+        private CanvasVirtualControl _canvasControl;
 
         // Note that the TerrainRenderer adjusts the size of the
         // canvas control to match the height map pixel size.
         private Vector2 _worldToPixels => new Vector2(
-            _heightMap.Image.SizeInPixels.Width / _heightMap.Size.X,
-            _heightMap.Image.SizeInPixels.Height / _heightMap.Size.Y);
+            (float)_canvasControl.Size.Width / _heightMap.Size.X,
+            (float)_canvasControl.Size.Height / _heightMap.Size.Y);
 
         private Vector2 _pixelsToWorld => new Vector2(
-            _heightMap.Size.X / _heightMap.Image.SizeInPixels.Width,
-            _heightMap.Size.Y / _heightMap.Image.SizeInPixels.Height);
+            _heightMap.Size.X / (float)_canvasControl.Size.Width,
+            _heightMap.Size.Y / (float)_canvasControl.Size.Height);
 
         /// <summary>
         /// The grayscale height map image.
@@ -94,6 +96,7 @@ namespace SkiManager.Engine.Behaviors
 
         private void OnCreateResources(EngineCreateResourcesEventArgs e)
         {
+            _canvasControl = e.Sender;
             _heightMap = HeightMap.Resolve(Entity);
         }
 

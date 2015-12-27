@@ -28,20 +28,23 @@ namespace SkiManager.Engine.Sprites
                 return;
 
             var transform = Entity.GetBehavior<TransformBehavior>();
-            var coordinateSystem = Entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
+            var coords = Entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
             var sprite = Sprite.Resolve(Entity);
 
-            if (transform != null && coordinateSystem != null && sprite != null)
+            if (transform == null)
+                throw new InvalidOperationException($"No {nameof(TransformBehavior)} is attached");
+
+            if (coords != null && sprite != null)
             {
                 var worldPos = transform.Position;
 
                 var worldRect = new Rect(
-                    worldPos.X - sprite.Size.X / 2,
-                    worldPos.Y - sprite.Size.Y / 2,
-                    sprite.Size.X,
-                    sprite.Size.Y);
+                    worldPos.X - transform.Scale.X * sprite.Size.X / 2,
+                    worldPos.Y - transform.Scale.X * sprite.Size.Y / 2,
+                    transform.Scale.X * sprite.Size.X,
+                    transform.Scale.X * sprite.Size.Y);
 
-                var dipsRect = coordinateSystem.TransformToDips(worldRect);
+                var dipsRect = coords.TransformToDips(worldRect);
 
                 e.DrawingSession.DrawImage(sprite.Image, dipsRect);
             }
