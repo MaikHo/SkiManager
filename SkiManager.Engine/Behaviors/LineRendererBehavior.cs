@@ -36,7 +36,7 @@ namespace SkiManager.Engine.Behaviors
                 return;
             }
 
-            args.Arguments.DrawingSession.DrawLine(StartPointSelector(this.Entity), EndPointSelector(this.Entity), Color);
+            args.DrawingSession.DrawLine(StartPointSelector(this.Entity), EndPointSelector(this.Entity), Color);
         }
     }
 }

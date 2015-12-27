@@ -4,9 +4,9 @@ namespace SkiManager.Engine
 {
     public abstract class CanvasEngineEventArgs : EngineEventArgs
     {
-        public ICanvasAnimatedControl Sender { get; }
+        public CanvasVirtualControl Sender { get; }
 
-        protected CanvasEngineEventArgs(Engine engine, ICanvasAnimatedControl sender)
+        protected CanvasEngineEventArgs(Engine engine, CanvasVirtualControl sender)
             : base(engine)
         {
             Sender = sender;

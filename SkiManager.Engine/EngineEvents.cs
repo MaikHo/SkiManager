@@ -2,6 +2,8 @@
 using System.Reactive.Subjects;
 
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.Graphics.Canvas.UI;
+using System.Threading.Tasks;
 
 namespace SkiManager.Engine
 {
@@ -13,6 +15,8 @@ namespace SkiManager.Engine
 
         public IObservable<EngineUpdateEventArgs> Update { get; private set; }
 
+        public IObservable<EngineCreateResourcesEventArgs> EarlyCreateResources { get; private set; }
+
         public IObservable<EngineCreateResourcesEventArgs> CreateResources { get; private set; }
 
         public IObservable<EnginePointerMovedEventArgs> PointerMoved { get; private set; }
@@ -21,33 +25,62 @@ namespace SkiManager.Engine
         {
         }
 
-        public static EngineEvents Attach(Engine engine, CanvasAnimatedControl control)
+        public static EngineEvents Attach(Engine engine, CanvasVirtualControl control)
         {
             var events = new EngineEvents();
             events._engine = engine;
 
             var draw = new Subject<EngineDrawEventArgs>();
             events.Draw = draw;
-            control.Draw += (_, __) => draw.OnNext(new EngineDrawEventArgs(Engine.Current, _, __));
+            control.RegionsInvalidated += (s, e) =>
+            {
+                var args = new EngineDrawEventArgs(Engine.Current, s, e);
+                foreach (var region in e.InvalidatedRegions)
+                {
+                    using (var drawingSession = control.CreateDrawingSession(region))
+                    {
+                        args.DrawingSession = drawingSession;
+                        draw.OnNext(args);
+                    }
+                }
+            };
 
             var update = new Subject<EngineUpdateEventArgs>();
             events.Update = update;
-            control.Update += (_, __) => update.OnNext(new EngineUpdateEventArgs(Engine.Current, _, __));
+            // TODO: Update manually
+            //control.Update += (s, e) => update.OnNext(new EngineUpdateEventArgs(Engine.Current, s, e));
 
             var createResources = new Subject<EngineCreateResourcesEventArgs>();
             events.CreateResources = createResources;
+            var earlyCreateResources = new Subject<EngineCreateResourcesEventArgs>();
+            events.EarlyCreateResources = earlyCreateResources;
+
             control.CreateResources += (sender, e) =>
             {
-                var args = new EngineCreateResourcesEventArgs(Engine.Current, sender, e);
-                createResources.OnNext(args);
-                e.TrackAsyncAction(args.Tasks.CompleteAllAsync().AsAsyncAction());
+                if (e.Reason == CanvasCreateResourcesReason.DpiChanged)
+                    return;
+
+                var task = OnCreateResources(earlyCreateResources, createResources, sender, e);
+                e.TrackAsyncAction(task.AsAsyncAction());
             };
+
 
             var pointerMoved = new Subject<EnginePointerMovedEventArgs>();
             events.PointerMoved = pointerMoved;
-            control.PointerMoved += (_, __) => pointerMoved.OnNext(new EnginePointerMovedEventArgs(Engine.Current, _ as ICanvasAnimatedControl, __));
+            control.PointerMoved += (s, e) => pointerMoved.OnNext(new EnginePointerMovedEventArgs(Engine.Current, s as CanvasVirtualControl, e));
 
             return events;
+        }
+
+        private static async Task OnCreateResources(Subject<EngineCreateResourcesEventArgs> earlyCreateResources, Subject<EngineCreateResourcesEventArgs> createResources, CanvasVirtualControl sender, CanvasCreateResourcesEventArgs e)
+        {
+            var args = new EngineCreateResourcesEventArgs(Engine.Current, sender, e);
+            earlyCreateResources.OnNext(args);
+            await args.Tasks.CompleteAllAsync();
+
+            args = new EngineCreateResourcesEventArgs(Engine.Current, sender, e);
+            createResources.OnNext(args);
+            await args.Tasks.CompleteAllAsync();
         }
     }
 }

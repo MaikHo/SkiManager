@@ -8,7 +8,20 @@
     xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <xaml:CanvasAnimatedControl x:Name="Canvas" />
+    <Grid Background="Black">
+        <ScrollViewer
+            HorizontalScrollMode="Enabled"
+            HorizontalScrollBarVisibility="Visible"
+            VerticalScrollMode="Enabled"
+            VerticalScrollBarVisibility="Visible"
+            ZoomMode="Enabled"
+            MinZoomFactor=".1"
+            MaxZoomFactor="100"
+            ViewChanged="scrollViewer_ViewChanged"
+            x:Name="scrollViewer">
+               
+            <xaml:CanvasVirtualControl
+                x:Name="canvas"/>
+        </ScrollViewer>
     </Grid>
 </Page>

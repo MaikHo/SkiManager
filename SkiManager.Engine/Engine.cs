@@ -11,7 +11,7 @@ namespace SkiManager.Engine
     {
         public static Engine Current { get; } = new Engine();
 
-        private CanvasAnimatedControl _control;
+        private CanvasVirtualControl _control;
 
         private EngineEvents _events;
         public IEngineEvents Events => _events;
@@ -27,10 +27,9 @@ namespace SkiManager.Engine
         private Engine()
         { }
 
-        public void Attach(CanvasAnimatedControl control)
+        public void Attach(CanvasVirtualControl control)
         {
             _control = control;
-            _control.Paused = true;
 
             _events = EngineEvents.Attach(this, control);
             _status.IsPaused = true;
@@ -69,13 +68,11 @@ namespace SkiManager.Engine
 
         public void StartOrResume()
         {
-            _control.Paused = false;
             _status.IsPaused = false;
         }
 
         public void Pause()
         {
-            _control.Paused = true;
             _status.IsPaused = true;
         }
     }

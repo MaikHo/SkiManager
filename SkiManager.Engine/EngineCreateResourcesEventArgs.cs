@@ -9,7 +9,7 @@ namespace SkiManager.Engine
 
         public CanvasCreateResourcesEventArgs Arguments { get; }
 
-        public EngineCreateResourcesEventArgs(Engine engine, ICanvasAnimatedControl sender, CanvasCreateResourcesEventArgs args) : base(engine, sender)
+        public EngineCreateResourcesEventArgs(Engine engine, CanvasVirtualControl sender, CanvasCreateResourcesEventArgs args) : base(engine, sender)
         {
             Arguments = args;
         }

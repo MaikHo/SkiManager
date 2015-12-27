@@ -30,16 +30,16 @@ namespace SkiManager.Engine.Behaviors
             switch (Geometry)
             {
                 case SimpleGeometry.Circle:
-                    args.Arguments.DrawingSession.DrawCircle(absolutePosition, (float)(Size.Width / 2), Color);
+                    args.DrawingSession.DrawCircle(absolutePosition, (float)(Size.Width / 2), Color);
                     break;
                 case SimpleGeometry.Square:
                     var pos = absolutePosition - halfSize;
-                    args.Arguments.DrawingSession.DrawRectangle(new Rect(pos.X, pos.Y, Size.Width, Size.Height), Color);
+                    args.DrawingSession.DrawRectangle(new Rect(pos.X, pos.Y, Size.Width, Size.Height), Color);
                     break;
             }
             if (DrawCenter)
             {
-                args.Arguments.DrawingSession.DrawCircle(absolutePosition, 1.0f, Color);
+                args.DrawingSession.DrawCircle(absolutePosition, 1.0f, Color);
             }
         }
     }

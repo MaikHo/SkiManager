@@ -5,6 +5,7 @@ using System;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 
 namespace SkiManager.Engine.Behaviors
 {
@@ -14,6 +15,7 @@ namespace SkiManager.Engine.Behaviors
         private IDisposable _drawSubscription;
         private IDisposable _createResourcesSubscription;
         private PixelShaderEffect _terrainMap;
+        private TerrainBehavior _terrain;
 
         public SpriteReference GrassSprite { get; set; }
         public SpriteReference SnowSprite { get; set; }
@@ -23,6 +25,8 @@ namespace SkiManager.Engine.Behaviors
         {
             _drawSubscription = Draw.Subscribe(OnDraw);
             _createResourcesSubscription = CreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
+
+            _terrain = Entity.GetBehavior<TerrainBehavior>();
         }
 
         protected override void Unloading()
@@ -33,7 +37,11 @@ namespace SkiManager.Engine.Behaviors
 
         private void OnDraw(EngineDrawEventArgs e)
         {
-            e.Arguments.DrawingSession.DrawImage(_terrainMap);
+            _terrainMap.Properties["dpi"] = e.Sender.Dpi;
+            _terrainMap.Properties["baseHeight"] = _terrain.BaseHeight;
+            _terrainMap.Properties["height"] = _terrain.Size.Y - _terrain.BaseHeight;
+
+            e.DrawingSession.DrawImage(_terrainMap);
         }
 
         private async Task OnCreateResourcesAsync(EngineCreateResourcesEventArgs e)
@@ -52,12 +60,17 @@ namespace SkiManager.Engine.Behaviors
 
             _terrainMap = new PixelShaderEffect(shaderBytes)
             {
-                Source1 = Entity.GetBehavior<TerrainBehavior>().NormalHeightMap,
+                Source1 = _terrain.NormalHeightMap,
                 Source2 = grassTiled,
                 Source3 = snowTiled,
                 Source4 = rockTiled,
                 CacheOutput = true
             };
+
+            // Resize the canvas control to match the size of the height map
+            var canvasControl = e.Sender as FrameworkElement;
+            canvasControl.Width = _terrain.NormalHeightMap.Size.Width;
+            canvasControl.Height = _terrain.NormalHeightMap.Size.Height;
         }
 
         private void DrawSprite(EngineDrawEventArgs e, SpriteReference spriteRef, Vector2 position, Vector2 scale)
@@ -75,7 +88,7 @@ namespace SkiManager.Engine.Behaviors
 
             var dipsRect = coords.TransformToDips(worldRect);
 
-            e.Arguments.DrawingSession.DrawImage(sprite.Image, dipsRect);
+            e.DrawingSession.DrawImage(sprite.Image, dipsRect);
         }
     }
 }

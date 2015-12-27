@@ -6,7 +6,7 @@ namespace SkiManager.Engine
     {
         public CanvasAnimatedUpdateEventArgs Arguments { get; }
 
-        public EngineUpdateEventArgs(Engine engine, ICanvasAnimatedControl sender, CanvasAnimatedUpdateEventArgs args)
+        public EngineUpdateEventArgs(Engine engine, CanvasVirtualControl sender, CanvasAnimatedUpdateEventArgs args)
             : base(engine, sender)
         {
             Arguments = args;

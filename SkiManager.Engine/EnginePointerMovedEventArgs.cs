@@ -7,7 +7,7 @@ namespace SkiManager.Engine
     {
         public PointerRoutedEventArgs Arguments { get; }
 
-        public EnginePointerMovedEventArgs(Engine engine, ICanvasAnimatedControl sender, PointerRoutedEventArgs args)
+        public EnginePointerMovedEventArgs(Engine engine, CanvasVirtualControl sender, PointerRoutedEventArgs args)
             : base(engine, sender)
         {
             Arguments = args;

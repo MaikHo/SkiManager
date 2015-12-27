@@ -26,7 +26,7 @@ namespace SkiManager.Engine.Features
             {
                 _debugSubscription =
                     Engine.Events.Draw.Subscribe(
-                        _ => { _.Arguments.DrawingSession.DrawCircle(LastMouseScreenPos, 10.0f, Colors.Red); });
+                        _ => { _.DrawingSession.DrawCircle(LastMouseScreenPos, 10.0f, Colors.Red); });
             }
         }
 

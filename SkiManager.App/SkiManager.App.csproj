@@ -124,6 +124,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Sprites\grass.jpg" />
+    <Content Include="Assets\Sprites\grassTest.jpg" />
+    <Content Include="Assets\Sprites\heightMap2.png" />
     <Content Include="Assets\Sprites\Kitzbüheler Alpen Height Map %28Merged%29.png" />
     <Content Include="Assets\Sprites\snow%28deep%29.png" />
     <Content Include="Assets\Sprites\terrain-cliffs-ground.png" />

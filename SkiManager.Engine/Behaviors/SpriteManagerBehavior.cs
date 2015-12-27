@@ -18,7 +18,7 @@ namespace SkiManager.Engine.Behaviors
 
         protected override void Loaded()
         {
-            _createResourcesSubscription = CreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
+            _createResourcesSubscription = EarlyCreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
         }
 
         protected override void Unloading()
@@ -29,7 +29,9 @@ namespace SkiManager.Engine.Behaviors
         private async Task OnCreateResourcesAsync(EngineCreateResourcesEventArgs e)
         {
             // Load all registered sprites
-            await Task.WhenAll(Sprites.Select(sprite => sprite.LoadAsync(e.Sender)));
+
+            var coords = Entity.GetImplementation<ICoordinateSystem>();
+            await Task.WhenAll(Sprites.Select(sprite => sprite.LoadAsync(e.Sender, coords)));
         }
     }
 
@@ -110,7 +112,7 @@ namespace SkiManager.Engine.Behaviors
 
                 var dipsRect = coordinateSystem.TransformToDips(worldRect);
 
-                e.Arguments.DrawingSession.DrawImage(sprite.Image, dipsRect);
+                e.DrawingSession.DrawImage(sprite.Image, dipsRect);
             }
         }
     }
@@ -118,6 +120,7 @@ namespace SkiManager.Engine.Behaviors
     public class Sprite
     {
         public string Id { get; }
+
         public Uri Source { get; }
 
         /// <summary>
@@ -134,9 +137,34 @@ namespace SkiManager.Engine.Behaviors
             Size = size;
         }
 
-        internal async Task LoadAsync(ICanvasResourceCreator resourceCreator)
+        internal async Task LoadAsync(ICanvasResourceCreator resourceCreator, ICoordinateSystem coords)
         {
+            // TODO: This should use the TerrainBehavior to obtain these values
+            //       etc. etc.
+            var heightMapSizeInPixels = new Vector2(1081, 1081);
+            var worldSize = new Vector2(20000, 20000);
+
             Image = await CanvasBitmap.LoadAsync(resourceCreator, Source);
+            var spriteSizeInPixels = new Vector2(Image.SizeInPixels.Width, Image.SizeInPixels.Height);
+
+            var pixelRatio = spriteSizeInPixels / heightMapSizeInPixels;
+            var worldSizeRatio = Size / worldSize;
+
+            if (pixelRatio.X == pixelRatio.Y && worldSizeRatio.X == worldSizeRatio.Y)
+            {
+                // If world and sprite have the same aspect ratio we can load
+                // the sprite with manipulated DPI so we do not need to scale
+                // it in DrawImage(...) or using a ScaleEffect
+                var dpi = (96 * pixelRatio.X) / worldSizeRatio.X;
+                Image.Dispose();
+                Image = await CanvasBitmap.LoadAsync(resourceCreator, Source, dpi);
+            }
+            else
+            {
+                // TODO: Fallback to ScaleEffect
+                throw new NotImplementedException();
+            }
+
         }
     }
 
@@ -160,5 +188,8 @@ namespace SkiManager.Engine.Behaviors
 
         public override int GetHashCode()
             => Id.GetHashCode();
+
+        public override string ToString()
+            => Id;
     }
 }

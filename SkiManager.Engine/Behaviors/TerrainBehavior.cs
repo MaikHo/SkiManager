@@ -92,7 +92,7 @@ namespace SkiManager.Engine.Behaviors
 
         protected override void Loaded()
         {
-            _createResourcesSubscription = CreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
+            _createResourcesSubscription = EarlyCreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
         }
 
         private async Task OnCreateResourcesAsync(EngineCreateResourcesEventArgs e)
@@ -127,7 +127,7 @@ namespace SkiManager.Engine.Behaviors
         /// <returns>A combination of a normal map and the height map</returns>
         private static async Task<CanvasBitmap> RenderNormalHeightMapAsync(ICanvasResourceCreatorWithDpi resourceCreator, CanvasBitmap heightMap, float heightDifference)
         {
-            var bytes = await Utilities.ReadBytesAsync(new Uri("SkiManager.Engine.Shaders.NormalMapFromHeightMapShader.bin"));
+            var bytes = await Utilities.ReadBytesFromEmbeddedResourceAsync("SkiManager.Engine.Shaders.NormalMapFromHeightMapShader.bin");
             
             var heightMapConverterEffect = new PixelShaderEffect(bytes)
             {

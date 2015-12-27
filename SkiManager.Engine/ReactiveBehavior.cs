@@ -14,6 +14,7 @@ namespace SkiManager.Engine
 
         protected IObservable<EngineDrawEventArgs> Draw { get; private set; }
         protected IObservable<EngineUpdateEventArgs> Update { get; private set; }
+        protected IObservable<EngineCreateResourcesEventArgs> EarlyCreateResources { get; private set; }
         protected IObservable<EngineCreateResourcesEventArgs> CreateResources { get; private set; }
         protected IObservable<EnginePointerMovedEventArgs> PointerMoved { get; private set; }
         protected IObservable<ChildEnterEngineEventArgs> ChildEnter { get; private set; }
@@ -24,6 +25,7 @@ namespace SkiManager.Engine
         {
             Draw = Engine.Current.Events.Draw.Where(CanReceiveEvent).Publish().RefCount();
             Update = Engine.Current.Events.Update.Where(CanReceiveEvent).Publish().RefCount();
+            EarlyCreateResources = Engine.Current.Events.EarlyCreateResources.Where(CanReceiveEvent).Publish().RefCount();
             CreateResources = Engine.Current.Events.CreateResources.Where(CanReceiveEvent).Publish().RefCount();
             PointerMoved = Engine.Current.Events.PointerMoved.Where(CanReceiveEvent).Publish().RefCount();
             ChildEnter = Entity.ChildEnter.Where(CanReceiveEvent).Publish().RefCount();

@@ -39,7 +39,7 @@ namespace SkiManager.App.Behaviors
             // TODO remove debug code
             Draw.Subscribe(args =>
             {
-                args.Arguments.DrawingSession.DrawText("Location: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
+                args.DrawingSession.DrawText("Location: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
                     Entity.GetBehavior<TransformBehavior>().Position + new Vector2(0, -20), Colors.DarkGray);
             });
         }
