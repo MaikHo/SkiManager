@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SkiManager.Engine.Behaviors;
 
 namespace SkiManager.Engine
 {
@@ -21,10 +22,31 @@ namespace SkiManager.Engine
             _entities.Add(entity);
         }
 
-        public Entity Instantiate(Entity entity)
+        public Entity Instantiate(Entity entity, Entity newEntityParent = null)
         {
             var newEntity = entity.Clone();
+            newEntity.SetParent(newEntityParent);
+            if (newEntityParent != null && newEntityParent.HasBehavior<TransformBehavior>())
+            {
+                newEntity.GetBehavior<TransformBehavior>().Position = newEntityParent.GetBehavior<TransformBehavior>().Position;
+            }
             AddEntity(newEntity);
+            // restore behavior attachment
+            foreach (var behavior in entity.Behaviors)
+            {
+                behavior.Attach(newEntity);
+            }
+            return newEntity;
+        }
+
+        public Entity InstantiateAndLoad(Entity entity, Entity newEntityParent = null)
+        {
+            var newEntity = Instantiate(entity, newEntityParent);
+            foreach (var behavior in newEntity.Behaviors)
+            {
+                behavior.LoadedInternal();
+            }
+            newEntity.IsLoaded = true;
             return newEntity;
         }
 

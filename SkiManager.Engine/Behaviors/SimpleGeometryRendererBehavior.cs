@@ -16,13 +16,15 @@ namespace SkiManager.Engine.Behaviors
 
         public Color Color { get; set; } = Colors.Black;
 
-        public bool IsVisible { get; set; }
+        public bool IsVisible { get; set; } = true;
 
         public bool DrawCenter { get; set; } = true;
 
+        public bool FillGeometry { get; set; }
+
         protected override void Loaded()
         {
-            Draw.Where(_ => IsVisible).Subscribe(OnRender);
+            Draw.Where(CanRender).Subscribe(OnRender);
         }
 
         private void OnRender(EngineDrawEventArgs args)
@@ -32,18 +34,39 @@ namespace SkiManager.Engine.Behaviors
             switch (Geometry)
             {
                 case SimpleGeometry.Circle:
-                    args.DrawingSession.DrawCircle(absolutePosition, (float)(Size.Width / 2), Color);
+                    if (FillGeometry)
+                    {
+                        args.DrawingSession.FillCircle(absolutePosition, (float)(Size.Width / 2), Color);
+                    }
+                    else
+                    {
+                        args.DrawingSession.DrawCircle(absolutePosition, (float)(Size.Width / 2), Color);
+                    }
                     break;
                 case SimpleGeometry.Square:
                     var pos = absolutePosition - halfSize;
-                    args.DrawingSession.DrawRectangle(new Rect(pos.X, pos.Y, Size.Width, Size.Height), Color);
+                    if (FillGeometry)
+                    {
+                        args.DrawingSession.FillRectangle(new Rect(pos.X, pos.Y, Size.Width, Size.Height), Color);
+                    }
+                    else
+                    {
+                        args.DrawingSession.DrawRectangle(new Rect(pos.X, pos.Y, Size.Width, Size.Height), Color);
+                    }
                     break;
             }
             if (DrawCenter)
             {
-                args.DrawingSession.DrawCircle(absolutePosition, 1.0f, Color);
+                var color = Color;
+                if (FillGeometry)
+                {
+                    color = Colors.Black;
+                }
+                args.DrawingSession.DrawCircle(absolutePosition, 1.0f, color);
             }
         }
+
+        private bool CanRender(EngineDrawEventArgs args) => IsVisible;
     }
 
     public enum SimpleGeometry

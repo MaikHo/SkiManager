@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Numerics;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using SkiManager.App.Behaviors;
+using SkiManager.App.Interfaces;
 using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
-using SkiManager.Engine.Features;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -25,12 +24,25 @@ namespace SkiManager.App
             var level = new Level();
 
             var mapio = level.Instantiate(EntityTemplates.MapIO);
-            mapio.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Circle, Color = Colors.Blue });
+            mapio.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Circle, Color = Colors.Blue, Size = new Windows.Foundation.Size(15, 15) });
             mapio.GetBehavior<TransformBehavior>().Position = new Vector2(100, 100);
 
             var parkingLot = level.Instantiate(EntityTemplates.ParkingLot);
-            parkingLot.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Square, Color = Colors.Gray });
+            parkingLot.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Square, Color = Colors.Gray, Size = new Windows.Foundation.Size(35, 25), FillGeometry = true });
             parkingLot.GetBehavior<TransformBehavior>().Position = new Vector2(250, 250);
+            parkingLot.GetBehavior<ParkingLotBehavior>().Slots = 100;
+
+            var road = level.Instantiate(EntityTemplates.Road);
+            road.AddBehavior(
+                new LineRendererBehavior(
+                    _ => _.GetBehavior<RoadBehavior>().Start.GetBehavior<TransformBehavior>().Position,
+                    _ => _.GetBehavior<RoadBehavior>().End.GetBehavior<TransformBehavior>().Position)
+                {
+                    Color = Colors.DarkGray
+                });
+            var roadB = road.GetBehavior<RoadBehavior>();
+            roadB.Start = mapio;
+            roadB.End = parkingLot;
 
             Engine.Engine.Current.LoadLevel(level);
 

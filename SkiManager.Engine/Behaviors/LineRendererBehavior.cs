@@ -15,7 +15,7 @@ namespace SkiManager.Engine.Behaviors
 
         public Color Color { get; set; } = Colors.Black;
 
-        public bool IsVisible { get; set; }
+        public bool IsVisible { get; set; } = true;
 
         public LineRendererBehavior() : this(null, null)
         { }

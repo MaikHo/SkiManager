@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Reactive.Linq;
+using Newtonsoft.Json;
 
 namespace SkiManager.Engine
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public abstract class ReactiveBehavior
     {
+        [JsonProperty]
         public Entity Entity { get; private set; }
 
+        [JsonProperty]
         public bool IsEnabled { get; set; } = true;
 
         public bool IsEffectivelyEnabled => IsEnabled && (Entity?.IsEffectivelyEnabled ?? false);

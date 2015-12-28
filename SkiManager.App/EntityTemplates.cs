@@ -1,4 +1,5 @@
-﻿using SkiManager.App.Behaviors;
+﻿using Windows.UI;
+using SkiManager.App.Behaviors;
 using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
 
@@ -6,8 +7,6 @@ namespace SkiManager.App
 {
     public static class EntityTemplates
     {
-        public static Entity BasicRoad { get; }
-
         public static Entity Car { get; }
 
         public static Entity Customer { get; }
@@ -20,19 +19,31 @@ namespace SkiManager.App
 
         static EntityTemplates()
         {
-            BasicRoad = new Entity();
-            BasicRoad.AddBehavior(new TransformBehavior());
-            BasicRoad.AddBehavior(new RoadBehavior());
-
             Car = new Entity();
             Car.AddBehavior(new TransformBehavior());
-            Car.AddBehavior(new MovableBehavior());
+            Car.AddBehavior(new MovableBehavior { Speed = 0.5f });
             Car.AddBehavior(new CarBehavior());
+            Car.AddBehavior(new SimpleGeometryRendererBehavior
+            {
+                Geometry = SimpleGeometry.Square,
+                DrawCenter = false,
+                Color = Colors.DarkGreen,
+                FillGeometry = true,
+                Size = new Windows.Foundation.Size(6, 2)
+            });
 
             Customer = new Entity();
             Customer.AddBehavior(new TransformBehavior());
             Customer.AddBehavior(new MovableBehavior());
             Customer.AddBehavior(new CustomerBehavior());
+            Customer.AddBehavior(new SimpleGeometryRendererBehavior
+            {
+                Geometry = SimpleGeometry.Circle,
+                DrawCenter = false,
+                Color = Colors.Cyan,
+                FillGeometry = true,
+                Size = new Windows.Foundation.Size(1, 1)
+            });
 
             Road = new Entity();
             Road.AddBehavior(new TransformBehavior());

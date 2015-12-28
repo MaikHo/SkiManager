@@ -70,7 +70,7 @@ namespace SkiManager.App.Behaviors
                 path.Insert(0, current.Entity);
             }
             var movable = Entity.GetBehavior<MovableBehavior>();
-            movable.SetTarget(path[1]);
+            movable.SetTarget(path.Count > 1 ? path[1] : targetedParkingLot);
         }
 
         internal void SetTargetToNextPointTowardsRandomOfClosestThreeMapExits(IGraphNode currentNode)

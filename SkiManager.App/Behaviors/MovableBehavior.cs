@@ -20,7 +20,7 @@ namespace SkiManager.App.Behaviors
 
         public Entity Target { get; private set; }
 
-        public float Speed { get; set; } = 100.0f;
+        public float Speed { get; set; } = 10.0f;
 
         public IObservable<TargetReachedEngineEventArgs> TargetReached => _targetReached.AsObservable();
 
@@ -87,7 +87,7 @@ namespace SkiManager.App.Behaviors
                     Entity.SetParent(location);
                 }
                 var movementVector = Vector2.Normalize(targetPosition - thisPosition);
-                var movementFactor = Speed * (float)args.Arguments.Timing.ElapsedTime.TotalSeconds;
+                var movementFactor = Speed * 0.1f; // TODO add correct timing from eventargs (this assumes 10 updates per second)
                 var maxMovementFactor = Vector2.Distance(thisPosition, targetPosition);
                 var newPosition = thisPosition + Math.Min(movementFactor, maxMovementFactor) * movementVector;
                 Entity.GetBehavior<TransformBehavior>().Position = newPosition;

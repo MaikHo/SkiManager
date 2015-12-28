@@ -108,7 +108,7 @@ namespace SkiManager.Engine
                 TypeNameHandling = TypeNameHandling.All
             };
             var objectString = JsonConvert.SerializeObject(this, Formatting.None, settings);
-            return JsonConvert.DeserializeObject<Entity>(objectString);
+            return JsonConvert.DeserializeObject<Entity>(objectString, settings);
         }
     }
 }

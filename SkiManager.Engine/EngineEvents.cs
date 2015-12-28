@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 using Microsoft.Graphics.Canvas.UI.Xaml;
@@ -45,10 +46,8 @@ namespace SkiManager.Engine
                 }
             };
 
-            var update = new Subject<EngineUpdateEventArgs>();
-            events.Update = update;
-            // TODO: Update manually
-            //control.Update += (s, e) => update.OnNext(new EngineUpdateEventArgs(Engine.Current, s, e));
+            // TODO: Correct arguments, make interval configurable
+            events.Update = Observable.Interval(TimeSpan.FromMilliseconds(100)).Select(_ => new EngineUpdateEventArgs(Engine.Current, null, null)).Publish().RefCount();
 
             var createResources = new Subject<EngineCreateResourcesEventArgs>();
             events.CreateResources = createResources;

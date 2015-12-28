@@ -14,10 +14,11 @@ namespace SkiManager.App.Behaviors
         {
             var i = 0;
             _subscription = Update.Where(_ =>
-             {
-                 i = i + 1 % 100;
-                 return i == 0;
-             }).Subscribe(OnUpdate);
+            {
+                var result = i == 0;
+                i = (i + 1) % 200;
+                return result;
+            }).Subscribe(OnUpdate);
         }
 
         protected override void Unloading()
@@ -27,7 +28,7 @@ namespace SkiManager.App.Behaviors
 
         private void OnUpdate(EngineUpdateEventArgs args)
         {
-            var carEntity = Entity.Level.Instantiate(EntityTemplates.Car);
+            var carEntity = Entity.Level.InstantiateAndLoad(EntityTemplates.Car, Entity);
             var car = carEntity.GetBehavior<CarBehavior>();
             var passengerCount = new Random().Next(5) + 1;
             car.Slots = passengerCount;
@@ -35,8 +36,6 @@ namespace SkiManager.App.Behaviors
             {
                 car.TryLoad(Entity.Level.Instantiate(EntityTemplates.Customer));
             }
-            carEntity.SetParent(Entity); // this effectively requires GraphNodeBehavior
-            car.SetTargetToNextPointTowardsParkingLot(Entity.GetImplementation<IGraphNode>());
         }
     }
 }
