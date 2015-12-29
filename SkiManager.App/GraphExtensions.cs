@@ -39,7 +39,7 @@ namespace SkiManager.App
                     }
 
                     var neighborDistance = distances[neighborTuple.Item1];
-                    var alternativeDistance = neighborDistance + neighborTuple.Item2;
+                    var alternativeDistance = distances[currentNode] + neighborTuple.Item2;
                     if (alternativeDistance < neighborDistance)
                     {
                         distances[neighborTuple.Item1] = alternativeDistance;
@@ -71,7 +71,7 @@ namespace SkiManager.App
                 {
                     yield return Tuple.Create(edge.End.GetImplementation<IGraphNode>(), edge.Length);
                 }
-                else if (ignoreDirection)
+                else if (ignoreDirection || edge.IsBidirectional)
                 {
                     yield return Tuple.Create(edge.Start.GetImplementation<IGraphNode>(), edge.Length);
                 }

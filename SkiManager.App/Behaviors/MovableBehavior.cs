@@ -40,7 +40,7 @@ namespace SkiManager.App.Behaviors
             // TODO remove debug code
             Draw.Subscribe(args =>
             {
-                args.DrawingSession.DrawText("Location: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
+                args.DrawingSession.DrawText(Entity?.Name + ", Loc: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
                     Entity.GetBehavior<TransformBehavior>().Position + new Vector2(0, -20), Colors.DarkGray);
             });
         }
@@ -92,6 +92,12 @@ namespace SkiManager.App.Behaviors
                 var newPosition = thisPosition + Math.Min(movementFactor, maxMovementFactor) * movementVector;
                 Entity.GetBehavior<TransformBehavior>().Position = newPosition;
             }
+        }
+
+        public void SetLastTarget(Entity lastTarget)
+        {
+            _lastTarget = lastTarget;
+            _hasTargetReached = true;
         }
     }
 }

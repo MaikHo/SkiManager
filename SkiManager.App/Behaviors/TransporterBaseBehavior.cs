@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
+using SkiManager.Engine.Behaviors;
 
 namespace SkiManager.App.Behaviors
 {
@@ -38,13 +40,23 @@ namespace SkiManager.App.Behaviors
             }
 
             entityToLoad.SetParent(Entity);
+            entityToLoad.IsEnabled = false;
             _passengers.Add(entityToLoad);
             return true;
         }
 
         public void UnloadAllTo(Entity target)
         {
-            _passengers.ForEach(_ => _.SetParent(target));
+            _passengers.ForEach(_ =>
+            {
+                _.SetParent(target);
+                _.GetBehavior<MovableBehavior>()?.SetLastTarget(target);
+                if (_.HasBehavior<TransformBehavior>() && target.HasBehavior<TransformBehavior>())
+                {
+                    _.GetBehavior<TransformBehavior>().Position = target.GetBehavior<TransformBehavior>().Position;
+                }
+                _.IsEnabled = true;
+            });
             _passengers.Clear();
         }
 

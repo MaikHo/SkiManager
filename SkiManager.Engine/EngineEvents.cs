@@ -28,8 +28,10 @@ namespace SkiManager.Engine
 
         public static EngineEvents Attach(Engine engine, CanvasVirtualControl control)
         {
-            var events = new EngineEvents();
-            events._engine = engine;
+            var events = new EngineEvents
+            {
+                _engine = engine
+            };
 
             var draw = new Subject<EngineDrawEventArgs>();
             events.Draw = draw;
@@ -45,6 +47,8 @@ namespace SkiManager.Engine
                     }
                 }
             };
+            // TODO make configurable
+            Observable.Interval(TimeSpan.FromMilliseconds(100)).Subscribe(_ => control.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => control.Invalidate()));
 
             // TODO: Correct arguments, make interval configurable
             events.Update = Observable.Interval(TimeSpan.FromMilliseconds(100)).Select(_ => new EngineUpdateEventArgs(Engine.Current, null, null)).Publish().RefCount();

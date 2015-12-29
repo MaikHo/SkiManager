@@ -25,6 +25,7 @@ namespace SkiManager.Engine
         public Entity Instantiate(Entity entity, Entity newEntityParent = null)
         {
             var newEntity = entity.Clone();
+            newEntity.Name += " (Clone)";
             newEntity.SetParent(newEntityParent);
             if (newEntityParent != null && newEntityParent.HasBehavior<TransformBehavior>())
             {
@@ -32,7 +33,7 @@ namespace SkiManager.Engine
             }
             AddEntity(newEntity);
             // restore behavior attachment
-            foreach (var behavior in entity.Behaviors)
+            foreach (var behavior in newEntity.Behaviors)
             {
                 behavior.Attach(newEntity);
             }

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace SkiManager.Engine
 {
-    [DebuggerDisplay("Entity \"{Name}\"")]
+    [DebuggerDisplay("Entity {Name}")]
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Entity
     {
