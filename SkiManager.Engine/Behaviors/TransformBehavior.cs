@@ -20,7 +20,7 @@ namespace SkiManager.Engine.Behaviors
         /// The absolute scale of the <see cref="Entity"/>
         /// in world space.
         /// </summary>
-        public Vector2 Scale { get; set; }
+        public Vector2 Scale { get; set; } = Vector2.One;
 
         /// <summary>
         /// The absolute rotation of the <see cref="Entity"/>

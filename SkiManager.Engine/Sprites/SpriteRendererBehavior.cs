@@ -3,6 +3,7 @@ using Microsoft.Graphics.Canvas.Effects;
 using SkiManager.Engine.Behaviors;
 using SkiManager.Engine.Interfaces;
 using System;
+using System.Numerics;
 using Windows.Foundation;
 
 namespace SkiManager.Engine.Sprites
@@ -11,7 +12,7 @@ namespace SkiManager.Engine.Sprites
     public class SpriteRenderer : ReactiveBehavior
     {
         private IDisposable _drawSubscription;
-        private StraightenEffect _rotateEffect;
+        private Transform2DEffect _rotateEffect;
         private SpriteReference _oldSprite;
 
         public SpriteReference Sprite { get; set; }
@@ -60,15 +61,15 @@ namespace SkiManager.Engine.Sprites
                 ICanvasImage renderImage;
 
                 // If rotation is 0 we can draw the sprite directly.
-                // Otherwise, use a StraightenEffect to rotate.
+                // Otherwise, use a Transform2DEffect to rotate.
                 if (Math.Abs(transform.Rotation) <= float.Epsilon)
                 {
                     renderImage = sprite.Image;
                 }
                 else
                 {
-                    _rotateEffect = _rotateEffect ?? new StraightenEffect { Source = sprite.Image };
-                    _rotateEffect.Angle = transform.RotationRadians;
+                    _rotateEffect = _rotateEffect ?? new Transform2DEffect { Source = sprite.Image };
+                    _rotateEffect.TransformMatrix = Matrix3x2.CreateRotation(transform.RotationRadians);
                     renderImage = _rotateEffect;
                 }
 

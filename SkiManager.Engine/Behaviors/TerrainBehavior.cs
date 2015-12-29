@@ -65,6 +65,15 @@ namespace SkiManager.Engine.Behaviors
             return heightResult;
         }
 
+        /// <summary>
+        /// Converts a 2D position in world space without height
+        /// to a 3D position in world space with height.
+        /// </summary>
+        /// <param name="worldPosition">2D world position</param>
+        /// <returns>3D world position</returns>
+        public Vector3 Transform3D(Vector2 worldPosition)
+            => new Vector3(worldPosition.X, SampleHeight(worldPosition), worldPosition.Y);
+
         public Rect TransformToDips(Rect worldRect)
             => new Rect(
                 TransformToDips(worldRect.Position()).ToPoint(),
