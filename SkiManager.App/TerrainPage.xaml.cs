@@ -28,6 +28,7 @@ namespace SkiManager.App
             spriteManager.Sprites.Add("Terrain.Grass", new Uri("ms-appx:///Assets/Sprites/Grass0202_1_S.jpg"), new Vector2(20, 20));
             spriteManager.Sprites.Add("Terrain.Snow", new Uri("ms-appx:///Assets/Sprites/Snow0080_1_S.jpg"), new Vector2(20, 20));
             spriteManager.Sprites.Add("Terrain.Rock", new Uri("ms-appx:///Assets/Sprites/terrain-cliffs-ground.png"), new Vector2(20, 20));
+            spriteManager.Sprites.Add("Terrain.Rock2", new Uri("ms-appx:///Assets/Sprites/terrain-cliffs-ground.png"), new Vector2(4000, 4000));
             spriteManager.Sprites.Add("Terrain.HeightMap", new Uri("ms-appx:///Assets/Sprites/HeightMaps/Wildkogel8x8 Height Map (Merged).png"), new Vector2(8000, 8000));
 
             var terrain = new TerrainBehavior
@@ -43,7 +44,7 @@ namespace SkiManager.App
                 SnowSprite = "Terrain.Snow",
                 RockSprite = "Terrain.Rock"
             };
-                        
+            
             level.RootEntity.AddBehavior(spriteManager);
             level.RootEntity.AddBehavior(terrain);
             level.RootEntity.AddBehavior(terrainRenderer);
@@ -51,7 +52,7 @@ namespace SkiManager.App
             Engine.Engine.Current.LoadLevel(level);
             Engine.Engine.Current.StartOrResume();
         }
-
+        
         private void scrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             var scaleChangeRatio = canvas.DpiScale / scrollViewer.ZoomFactor;
