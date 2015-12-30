@@ -35,7 +35,7 @@ namespace SkiManager.App
 
         private void Move()
         {
-            Entity.GetBehavior<TransformBehavior>().Position = new Vector2((float)(_random.NextDouble() * _canvasSize.Width), (float)(_random.NextDouble() * _canvasSize.Height));
+            Entity.GetBehavior<TransformBehavior>().Position = new Vector3((float)(_random.NextDouble() * _canvasSize.Width), 0, (float)(_random.NextDouble() * _canvasSize.Height));
         }
     }
 }

@@ -50,7 +50,7 @@ namespace SkiManager.App.Behaviors
             }
         }
 
-        public float Length => Vector2.Distance(Start.GetBehavior<TransformBehavior>().Position, End.GetBehavior<TransformBehavior>().Position);
+        public float Length => Vector3.Distance(Start.GetBehavior<TransformBehavior>().Position, End.GetBehavior<TransformBehavior>().Position);
 
         public bool IsBidirectional { get; set; }
 

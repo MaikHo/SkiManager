@@ -29,7 +29,7 @@ namespace SkiManager.Engine.Behaviors
 
         private void OnRender(EngineDrawEventArgs args)
         {
-            var absolutePosition = Entity.GetBehavior<TransformBehavior>().Position;
+            var absolutePosition = Entity.GetBehavior<TransformBehavior>().Position.XZ();
             var halfSize = new Vector2((float)(Size.Width / 2), (float)(Size.Height / 2));
             switch (Geometry)
             {

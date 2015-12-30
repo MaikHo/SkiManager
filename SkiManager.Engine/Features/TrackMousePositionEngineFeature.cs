@@ -6,13 +6,13 @@ using Windows.UI.Xaml;
 
 namespace SkiManager.Engine.Features
 {
-    public sealed class TrackMousePositionEngineFeature : EngineFeature
+    public class TrackMousePositionEngineFeature : EngineFeature
     {
         private readonly bool _highlightMousePosition;
         private IDisposable _subscription;
         private IDisposable _debugSubscription;
 
-        public Vector2 LastMouseScreenPos { get; private set; }
+        public Vector2 LastMouseScreenPosition { get; private set; }
 
         public TrackMousePositionEngineFeature(bool highlightMousePosition = false)
         {
@@ -24,9 +24,7 @@ namespace SkiManager.Engine.Features
             _subscription = Engine.Events.PointerMoved.Subscribe(OnPointerMoved);
             if (_highlightMousePosition)
             {
-                _debugSubscription =
-                    Engine.Events.Draw.Subscribe(
-                        _ => { _.DrawingSession.DrawCircle(LastMouseScreenPos, 10.0f, Colors.Red); });
+                _debugSubscription = Engine.Events.Draw.Subscribe(Draw);
             }
         }
 
@@ -40,7 +38,12 @@ namespace SkiManager.Engine.Features
 
         private void OnPointerMoved(EnginePointerMovedEventArgs args)
         {
-            LastMouseScreenPos = args.Arguments.GetCurrentPoint(args.Sender as UIElement).RawPosition.ToVector2();
+            LastMouseScreenPosition = args.Arguments.GetCurrentPoint(args.Sender as UIElement).RawPosition.ToVector2();
+        }
+
+        protected virtual void Draw(EngineDrawEventArgs e)
+        {
+            e.DrawingSession.DrawCircle(LastMouseScreenPosition, 10, Colors.Red);
         }
     }
 }

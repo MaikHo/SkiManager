@@ -108,6 +108,7 @@
     <Compile Include="Behaviors\TargetReachedEngineEventArgs.cs" />
     <Compile Include="Behaviors\TransporterBaseBehavior.cs" />
     <Compile Include="EntityTemplates.cs" />
+    <Compile Include="Features\TrackTerrainMousePositionEngineFeature.cs" />
     <Compile Include="GraphExtensions.cs" />
     <Compile Include="Interfaces\IGraphEdge.cs" />
     <Compile Include="Interfaces\IGraphNode.cs" />

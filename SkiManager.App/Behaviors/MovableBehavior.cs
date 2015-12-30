@@ -41,7 +41,7 @@ namespace SkiManager.App.Behaviors
             Draw.Subscribe(args =>
             {
                 args.DrawingSession.DrawText("Location: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
-                    Entity.GetBehavior<TransformBehavior>().Position + new Vector2(0, -20), Colors.DarkGray);
+                    Entity.GetBehavior<TransformBehavior>().Position.XZ() + new Vector2(0, -20), Colors.DarkGray);
             });
         }
 
@@ -63,8 +63,8 @@ namespace SkiManager.App.Behaviors
             }
 
             var thisPosition = Entity.GetBehavior<TransformBehavior>().Position;
-            var targetPosition = Target?.GetBehavior<TransformBehavior>()?.Position ?? Vector2.Zero;
-            if (Vector2.Distance(thisPosition, targetPosition) <= float.Epsilon)
+            var targetPosition = Target?.GetBehavior<TransformBehavior>()?.Position ?? Vector3.Zero;
+            if (Vector3.Distance(thisPosition, targetPosition) <= float.Epsilon)
             {
                 if (!_hasTargetReached)
                 {
@@ -86,9 +86,9 @@ namespace SkiManager.App.Behaviors
                                     || (_.GetImplementation<IGraphEdge>().End == _lastTarget && _.GetImplementation<IGraphEdge>().Start == Target));
                     Entity.SetParent(location);
                 }
-                var movementVector = Vector2.Normalize(targetPosition - thisPosition);
+                var movementVector = Vector3.Normalize(targetPosition - thisPosition);
                 var movementFactor = Speed * 0.1f; // TODO add correct timing from eventargs (this assumes 10 updates per second)
-                var maxMovementFactor = Vector2.Distance(thisPosition, targetPosition);
+                var maxMovementFactor = Vector3.Distance(thisPosition, targetPosition);
                 var newPosition = thisPosition + Math.Min(movementFactor, maxMovementFactor) * movementVector;
                 Entity.GetBehavior<TransformBehavior>().Position = newPosition;
             }

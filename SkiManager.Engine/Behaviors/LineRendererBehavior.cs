@@ -9,9 +9,9 @@ namespace SkiManager.Engine.Behaviors
 {
     public sealed class LineRendererBehavior : ReactiveBehavior, IRenderer
     {
-        public Func<Entity, Vector2> StartPointSelector { get; set; }
+        public Func<Entity, Vector3> StartPointSelector { get; set; }
 
-        public Func<Entity, Vector2> EndPointSelector { get; set; }
+        public Func<Entity, Vector3> EndPointSelector { get; set; }
 
         public Color Color { get; set; } = Colors.Black;
 
@@ -20,7 +20,7 @@ namespace SkiManager.Engine.Behaviors
         public LineRendererBehavior() : this(null, null)
         { }
 
-        public LineRendererBehavior(Func<Entity, Vector2> startPointSelector, Func<Entity, Vector2> endPointSelector)
+        public LineRendererBehavior(Func<Entity, Vector3> startPointSelector, Func<Entity, Vector3> endPointSelector)
         {
             StartPointSelector = startPointSelector;
             EndPointSelector = endPointSelector;
@@ -38,7 +38,11 @@ namespace SkiManager.Engine.Behaviors
                 return;
             }
 
-            args.DrawingSession.DrawLine(StartPointSelector(this.Entity), EndPointSelector(this.Entity), Color);
+            var coordinateSystem = Entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
+            var startPoint = coordinateSystem.TransformToDips(StartPointSelector(Entity));
+            var endPoint = coordinateSystem.TransformToDips(EndPointSelector(Entity));
+
+            args.DrawingSession.DrawLine(startPoint, endPoint, Color);
         }
     }
 }

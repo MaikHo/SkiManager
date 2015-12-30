@@ -14,7 +14,7 @@ namespace SkiManager.Engine.Behaviors
         /// The absolute position of the <see cref="Entity"/>
         /// in world space.
         /// </summary>
-        public Vector2 Position { get; set; }
+        public Vector3 Position { get; set; }
 
         /// <summary>
         /// The absolute scale of the <see cref="Entity"/>
@@ -42,9 +42,9 @@ namespace SkiManager.Engine.Behaviors
         /// Returns the position relative to the parent <see cref="Entity"/>.
         /// </summary>
         /// <returns></returns>
-        public Vector2 GetRelativePosition()
+        public Vector3 GetRelativePosition()
         {
-            var parentPosition = Entity.Parent?.GetBehavior<TransformBehavior>()?.Position ?? Vector2.Zero;
+            var parentPosition = Entity.Parent?.GetBehavior<TransformBehavior>()?.Position ?? Vector3.Zero;
             return Position - parentPosition;
         }
 

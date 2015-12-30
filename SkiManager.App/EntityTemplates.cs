@@ -17,6 +17,8 @@ namespace SkiManager.App
 
         public static Entity ParkingLot { get; }
 
+        public static Entity GraphConnector { get; }
+
         static EntityTemplates()
         {
             Car = new Entity();
@@ -57,6 +59,10 @@ namespace SkiManager.App
             ParkingLot = new Entity();
             ParkingLot.AddBehavior(new TransformBehavior());
             ParkingLot.AddBehavior(new ParkingLotBehavior());
+
+            GraphConnector = new Entity();
+            GraphConnector.AddBehavior(new TransformBehavior());
+            GraphConnector.AddBehavior(new GraphConnectorNodeBehavior());
         }
     }
 }

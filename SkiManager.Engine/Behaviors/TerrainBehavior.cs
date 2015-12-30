@@ -15,11 +15,15 @@ namespace SkiManager.Engine.Behaviors
 
         // Note that the TerrainRenderer adjusts the size of the
         // canvas control to match the height map pixel size.
-        private Vector2 _worldToPixels => new Vector2(
+        private Vector2 _worldToDips => new Vector2(
             (float)_canvasControl.Size.Width / _heightMap.Size.X,
             (float)_canvasControl.Size.Height / _heightMap.Size.Y);
 
-        private Vector2 _pixelsToWorld => new Vector2(
+        private Vector2 _worldToHeightMapPixels => new Vector2(
+            _heightMap.Image.SizeInPixels.Width / _heightMap.Size.X,
+            _heightMap.Image.SizeInPixels.Height / _heightMap.Size.Y);
+
+        private Vector2 _dipsToWorld => new Vector2(
             _heightMap.Size.X / (float)_canvasControl.Size.Width,
             _heightMap.Size.Y / (float)_canvasControl.Size.Height);
 
@@ -27,7 +31,7 @@ namespace SkiManager.Engine.Behaviors
         /// The grayscale height map image.
         /// </summary>
         public SpriteReference HeightMap { get; set; }
-        
+
         /// <summary>
         /// The absolute height represented by white height map pixels.
         /// This means that <see cref="Height"/> - <see cref="BaseHeight"/>
@@ -46,33 +50,53 @@ namespace SkiManager.Engine.Behaviors
 
         Vector2 ICoordinateSystem.Size => HeightMap.Resolve(Entity).Size; // Can't use _heightMap here because CreateResources might not have fired yet
 
+        /// <summary>
+        /// Gets the height in world space at the specified world position.
+        /// </summary>
+        /// <param name="worldPosition">2D world position (clamped to size of terrain)</param>
+        /// <returns>Height</returns>
         public float SampleHeight(Vector2 worldPosition)
         {
-            var pixelPos = TransformToDips(worldPosition);
+            var pixelPos = Vector2.Clamp(worldPosition * _worldToHeightMapPixels, Vector2.Zero, new Vector2(_heightMap.Image.SizeInPixels.Width - 1, _heightMap.Image.SizeInPixels.Height - 1));
 
             var minX = (int)Math.Floor(pixelPos.X);
             var minY = (int)Math.Floor(pixelPos.Y);
 
-            var tx = Mathf.InverseLerp(minX, minX + 1, pixelPos.X);
-            var ty = Mathf.InverseLerp(minY, minY + 1, pixelPos.Y);
+            var tx = Mathf.InverseLerp(pixelPos.X, minX, minX + 1);
+            var ty = Mathf.InverseLerp(pixelPos.Y, minY, minY + 1);
 
-            var colors = _heightMap.Image.GetPixelColors(minX, minY, 2, 2);
+            // Calculate how many pixels we can read from heightmap
+            // At the right and bottom edges we can only read a 1x1 rect of colors.
+            var width = (minX == _heightMap.Image.SizeInPixels.Width - 1) ? 1 : 2;
+            var height = (minY == _heightMap.Image.SizeInPixels.Height - 1) ? 1 : 2;
 
-            var height1 = Mathf.Lerp(ByteToWorldHeight(colors[0].A), ByteToWorldHeight(colors[1].A), tx);
-            var height2 = Mathf.Lerp(ByteToWorldHeight(colors[2].A), ByteToWorldHeight(colors[3].A), tx);
+            var colors = _heightMap.Image.GetPixelColors(minX, minY, width, height);
 
-            var heightResult = Mathf.Lerp(height1, height2, ty);
-            return heightResult;
+            if (width == 1)
+            {
+                if (height == 1)
+                { // 1x1 pixel rect => no interpolation
+                    return ByteToWorldHeight(colors[0].R);
+                }
+                else
+                { // 1x2 pixel rect => interpolate with ty
+                    return Mathf.Lerp(ByteToWorldHeight(colors[0].R), ByteToWorldHeight(colors[1].R), ty);
+                }
+            }
+            else
+            {
+                if (height == 1)
+                { // 2x1 pixel rect => interpolate with tx
+                    return Mathf.Lerp(ByteToWorldHeight(colors[0].R), ByteToWorldHeight(colors[1].R), tx);
+                }
+                else
+                { // 2x2 pixels => bilinear interpolation
+                    var height2 = Mathf.Lerp(ByteToWorldHeight(colors[2].R), ByteToWorldHeight(colors[3].R), tx);
+                    var height1 = Mathf.Lerp(ByteToWorldHeight(colors[0].R), ByteToWorldHeight(colors[1].R), tx);
+                    return Mathf.Lerp(height1, height2, ty);
+                }
+            }
         }
-
-        /// <summary>
-        /// Converts a 2D position in world space without height
-        /// to a 3D position in world space with height.
-        /// </summary>
-        /// <param name="worldPosition">2D world position</param>
-        /// <returns>3D world position</returns>
-        public Vector3 Transform3D(Vector2 worldPosition)
-            => new Vector3(worldPosition.X, SampleHeight(worldPosition), worldPosition.Y);
 
         public Rect TransformToDips(Rect worldRect)
             => new Rect(
@@ -83,15 +107,21 @@ namespace SkiManager.Engine.Behaviors
             => TransformToDips(worldPosition.XZ());
 
         public Vector2 TransformToDips(Vector2 worldPosition)
-            => worldPosition * _worldToPixels;
+            => worldPosition * _worldToDips;
 
-        public Rect TransformToWorld(Rect dipsRect)
+        public Rect TransformToWorld2D(Rect dipsRect)
             => new Rect(
-                TransformToWorld(dipsRect.Position()).ToPoint(),
-                TransformToWorld(dipsRect.Size()).ToSize());
+                TransformToWorld2D(dipsRect.Position()).ToPoint(),
+                TransformToWorld2D(dipsRect.Size()).ToSize());
 
-        public Vector2 TransformToWorld(Vector2 dipsPosition)
-            => dipsPosition * _pixelsToWorld;
+        public Vector3 TransformToWorld3D(Vector2 dipsPosition)
+            => new Vector3(dipsPosition.X * _dipsToWorld.X, SampleHeight(dipsPosition * _dipsToWorld), dipsPosition.Y * _dipsToWorld.Y);
+
+        public Vector2 TransformToWorld2D(Vector2 dipsPosition)
+            => dipsPosition * _dipsToWorld;
+
+        public Vector3 Transform2DTo3D(Vector2 worldPosition)
+            => new Vector3(worldPosition.X, SampleHeight(worldPosition), worldPosition.Y);
 
         protected override void Loaded()
         {
@@ -117,7 +147,7 @@ namespace SkiManager.Engine.Behaviors
         /// <param name="normalizedHeight">Height in range [0..1]</param>
         /// <returns>Height in meters</returns>
         private float NormalizedToWorldHeight(float normalizedHeight)
-            => BaseHeight + normalizedHeight * Height;
+            => Mathf.Lerp(BaseHeight, Height, normalizedHeight);
 
         private float ByteToWorldHeight(byte b)
             => NormalizedToWorldHeight(b / 255f);

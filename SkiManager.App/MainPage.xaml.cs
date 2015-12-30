@@ -18,18 +18,21 @@ namespace SkiManager.App
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             Engine.Engine.Current.Attach(Canvas);
 
             var level = new Level();
 
+            var coordinateSystem = new BasicCoordinateSystem();
+            level.RootEntity.AddBehavior(coordinateSystem);
+
             var mapio = level.Instantiate(EntityTemplates.MapIO);
             mapio.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Circle, Color = Colors.Blue, Size = new Windows.Foundation.Size(15, 15) });
-            mapio.GetBehavior<TransformBehavior>().Position = new Vector2(100, 100);
+            mapio.GetBehavior<TransformBehavior>().Position = new Vector3(100, 0, 100);
 
             var parkingLot = level.Instantiate(EntityTemplates.ParkingLot);
             parkingLot.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Square, Color = Colors.Gray, Size = new Windows.Foundation.Size(35, 25), FillGeometry = true });
-            parkingLot.GetBehavior<TransformBehavior>().Position = new Vector2(250, 250);
+            parkingLot.GetBehavior<TransformBehavior>().Position = new Vector3(250, 0, 250);
             parkingLot.GetBehavior<ParkingLotBehavior>().Slots = 100;
 
             var road = level.Instantiate(EntityTemplates.Road);

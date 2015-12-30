@@ -38,7 +38,7 @@ namespace SkiManager.Engine.Behaviors
             }
 
             var mousePoint = args.Arguments.GetCurrentPoint(args.Sender as UIElement).Position.ToVector2();
-            var point = Entity.GetBehavior<TransformBehavior>().Position;
+            var point = Entity.GetBehavior<TransformBehavior>().Position.XZ();
             var collides = false;
             switch (Shape)
             {

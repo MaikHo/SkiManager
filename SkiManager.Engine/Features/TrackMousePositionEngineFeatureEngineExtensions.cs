@@ -12,7 +12,7 @@ namespace SkiManager.Engine.Features
                 throw new InvalidOperationException("Engine does not contain the feature.");
             }
 
-            return engine.GetFeature<TrackMousePositionEngineFeature>().LastMouseScreenPos;
+            return engine.GetFeature<TrackMousePositionEngineFeature>().LastMouseScreenPosition;
         }
     }
 }
