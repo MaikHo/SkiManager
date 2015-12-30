@@ -8,6 +8,7 @@ namespace SkiManager.App.Behaviors
 {
     public sealed class ParkingLotBehavior : GraphNodeBehavior
     {
+        private bool _isUnloading;
         private IDisposable _subscription;
         private readonly Dictionary<Entity, List<Entity>> _carToPassengerMappings = new Dictionary<Entity, List<Entity>>();
 
@@ -31,6 +32,12 @@ namespace SkiManager.App.Behaviors
         {
             if (args.EnteringChild.HasBehavior<CustomerBehavior>())
             {
+                if (_isUnloading)
+                {
+                    // customer enters because he is being unloaded from a car
+                    return;
+                }
+
                 var correspondingEntry =
                     _carToPassengerMappings.FirstOrDefault(_ => _.Value.Contains(args.EnteringChild));
                 if (correspondingEntry.Key == null)
@@ -76,7 +83,9 @@ namespace SkiManager.App.Behaviors
                 car.Entity.IsEnabled = false;
                 var passengers = new List<Entity>(car.Passengers);
                 _carToPassengerMappings.Add(car.Entity, passengers);
+                _isUnloading = true;
                 car.UnloadAllTo(Entity);
+                _isUnloading = false;
             }
             else
             {

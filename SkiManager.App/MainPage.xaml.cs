@@ -29,11 +29,13 @@ namespace SkiManager.App
             var mapio = level.Instantiate(EntityTemplates.MapIO);
             mapio.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Circle, Color = Colors.Blue, Size = new Windows.Foundation.Size(15, 15) });
             mapio.GetBehavior<TransformBehavior>().Position = new Vector3(100, 0, 100);
+            mapio.IsEnabled = true;
 
             var parkingLot = level.Instantiate(EntityTemplates.ParkingLot);
             parkingLot.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Square, Color = Colors.Gray, Size = new Windows.Foundation.Size(35, 25), FillGeometry = true });
             parkingLot.GetBehavior<TransformBehavior>().Position = new Vector3(250, 0, 250);
             parkingLot.GetBehavior<ParkingLotBehavior>().Slots = 100;
+            parkingLot.IsEnabled = true;
 
             var road = level.Instantiate(EntityTemplates.Road);
             road.AddBehavior(
@@ -46,6 +48,7 @@ namespace SkiManager.App
             var roadB = road.GetBehavior<RoadBehavior>();
             roadB.Start = mapio;
             roadB.End = parkingLot;
+            road.IsEnabled = true;
 
             Engine.Engine.Current.LoadLevel(level);
 
