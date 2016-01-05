@@ -148,6 +148,7 @@
     <Content Include="Assets\Sprites\HeightMaps\heightMap2.png" />
     <Content Include="Assets\Sprites\HeightMaps\Kitzbüheler Alpen Height Map %28Merged%29.png" />
     <Content Include="Assets\Sprites\HeightMaps\ZillertalArena Height Map %28Merged%29.png" />
+    <Content Include="Assets\Sprites\Roads0059_1_S.jpg" />
     <Content Include="Assets\Sprites\Snow0080_1_S.jpg" />
     <Content Include="Assets\Sprites\terrain-cliffs-ground.png" />
     <Content Include="Assets\Sprites\HeightMaps\Wildkogel8x8 Height Map %28Merged%29.png" />

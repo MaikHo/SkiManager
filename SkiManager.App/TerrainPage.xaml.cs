@@ -34,6 +34,7 @@ namespace SkiManager.App
             spriteManager.Sprites.Add("Terrain.Snow", new Uri("ms-appx:///Assets/Sprites/Snow0080_1_S.jpg"), new Vector2(20, 20));
             spriteManager.Sprites.Add("Terrain.Rock", new Uri("ms-appx:///Assets/Sprites/terrain-cliffs-ground.png"), new Vector2(20, 20));
             spriteManager.Sprites.Add("Terrain.HeightMap", new Uri("ms-appx:///Assets/Sprites/HeightMaps/Wildkogel8x8 Height Map (Merged).png"), new Vector2(8000, 8000));
+            spriteManager.Sprites.Add("Road", new Uri("ms-appx:///Assets/Sprites/Roads0059_1_S.jpg"), new Vector2(10, 10));
 
             var terrain = new TerrainBehavior
             {
@@ -58,10 +59,10 @@ namespace SkiManager.App
             Engine.Engine.Current.LoadLevel(level);
             Engine.Engine.Current.StartOrResume();
 
-            canvas.CreateResources += Canvas_CreateResources;
+            Engine.Engine.Current.Events.CreateResources.Subscribe(Canvas_CreateResources);
         }
 
-        private async void Canvas_CreateResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasVirtualControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
+        private async void Canvas_CreateResources(EngineCreateResourcesEventArgs e)
         {
             await Task.Delay(1000);
 
@@ -83,24 +84,26 @@ namespace SkiManager.App
 
             var connectors = points.Select(p =>
             {
-                var conn = container.Level.InstantiateAndLoad(EntityTemplates.GraphConnector, container);
+                var conn = container.Level.Instantiate(EntityTemplates.GraphConnector, container);
+                conn.Name = $"RoadConnector{p}";
                 conn.GetBehavior<TransformBehavior>().Position = p;
                 return conn;
             }).ToArray();
 
             var roads = Enumerable.Range(0, connectors.Length - 1).Select(i =>
             {
-                var road = container.Level.InstantiateAndLoad(EntityTemplates.Road, container);
+                var road = container.Level.Instantiate(EntityTemplates.Road, container);
+                road.Name = $"Road{i}";
                 road.AddBehavior(new LineRendererBehavior(
                     e => e.GetBehavior<GraphEdgeBehavior>().Start.GetBehavior<TransformBehavior>().Position,
                     e => e.GetBehavior<GraphEdgeBehavior>().End.GetBehavior<TransformBehavior>().Position));
+                road.GetBehavior<LineRendererBehavior>().Sprite = "Road";
                 var edge = road.GetBehavior<GraphEdgeBehavior>();
                 edge.Start = connectors[i];
                 edge.End = connectors[i + 1];
+
                 return road;
             }).ToArray();
-
-            Engine.Engine.Current.LoadLevel(Engine.Engine.Current.CurrentLevel);
         }
         
         private void scrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)

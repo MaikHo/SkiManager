@@ -54,6 +54,10 @@ namespace SkiManager.Engine
         {
             behavior.Attach(this);
             _behaviors.Add(behavior);
+
+            if (IsLoaded)
+                behavior.LoadedInternal();
+
             return behavior;
         }
 

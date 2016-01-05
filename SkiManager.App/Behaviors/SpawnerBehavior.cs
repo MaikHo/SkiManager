@@ -28,14 +28,14 @@ namespace SkiManager.App.Behaviors
 
         private void OnUpdate(EngineUpdateEventArgs args)
         {
-            var carEntity = Entity.Level.InstantiateAndLoad(EntityTemplates.Car, Entity);
+            var carEntity = Entity.Level.Instantiate(EntityTemplates.Car, Entity);
             carEntity.GetBehavior<MovableBehavior>().SetLastTarget(Entity);
             var car = carEntity.GetBehavior<CarBehavior>();
             var passengerCount = new Random().Next(5) + 1;
             car.Slots = passengerCount;
             for (var i = 0; i < passengerCount; i++)
             {
-                car.TryLoad(Entity.Level.InstantiateAndLoad(EntityTemplates.Customer, carEntity));
+                car.TryLoad(Entity.Level.Instantiate(EntityTemplates.Customer, carEntity));
             }
             carEntity.IsEnabled = true;
         }

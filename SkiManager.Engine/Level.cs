@@ -22,6 +22,14 @@ namespace SkiManager.Engine
             _entities.Add(entity);
         }
 
+        /// <summary>
+        /// Creates a clone of the specified <see cref="Entity"/> and sets
+        /// its parent to the specified parent entity.
+        /// If the parent entity is loaded the new entity will also be loaded.
+        /// </summary>
+        /// <param name="entity">Entity to be cloned</param>
+        /// <param name="newEntityParent">Parent of the instantiated entity</param>
+        /// <returns>The entity clone</returns>
         public Entity Instantiate(Entity entity, Entity newEntityParent = null)
         {
             var newEntity = entity.Clone();
@@ -36,21 +44,19 @@ namespace SkiManager.Engine
             foreach (var behavior in newEntity.Behaviors)
             {
                 behavior.Attach(newEntity);
+
+                if (newEntityParent?.IsLoaded ?? false)
+                    behavior.LoadedInternal();
             }
+
+            if (newEntityParent?.IsLoaded ?? false)
+                newEntity.IsLoaded = true;
+
+            // TODO: Deep loading of all descendants and their behaviors
+
             return newEntity;
         }
-
-        public Entity InstantiateAndLoad(Entity entity, Entity newEntityParent = null)
-        {
-            var newEntity = Instantiate(entity, newEntityParent);
-            foreach (var behavior in newEntity.Behaviors)
-            {
-                behavior.LoadedInternal();
-            }
-            newEntity.IsLoaded = true;
-            return newEntity;
-        }
-
+        
         public void Destroy(Entity entity)
         {
             // TODO: do this hierarchically for the whole subtree

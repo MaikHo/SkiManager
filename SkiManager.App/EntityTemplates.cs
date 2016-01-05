@@ -21,7 +21,7 @@ namespace SkiManager.App
 
         static EntityTemplates()
         {
-            Car = new Entity { Name = nameof(Car), IsEnabled = false };
+            Car = new Entity { Name = nameof(Car) };
             Car.AddBehavior(new TransformBehavior());
             Car.AddBehavior(new MovableBehavior { Speed = 0.5f });
             Car.AddBehavior(new CarBehavior());
@@ -34,7 +34,7 @@ namespace SkiManager.App
                 Size = new Windows.Foundation.Size(6, 2)
             });
 
-            Customer = new Entity { Name = nameof(Customer), IsEnabled = false };
+            Customer = new Entity { Name = nameof(Customer) };
             Customer.AddBehavior(new TransformBehavior());
             Customer.AddBehavior(new MovableBehavior());
             Customer.AddBehavior(new CustomerBehavior());
@@ -47,16 +47,16 @@ namespace SkiManager.App
                 Size = new Windows.Foundation.Size(1, 1)
             });
 
-            Road = new Entity { Name = nameof(Road), IsEnabled = false };
+            Road = new Entity { Name = nameof(Road) };
             Road.AddBehavior(new TransformBehavior());
             Road.AddBehavior(new RoadBehavior());
 
-            MapIO = new Entity { Name = nameof(MapIO), IsEnabled = false };
+            MapIO = new Entity { Name = nameof(MapIO) };
             MapIO.AddBehavior(new TransformBehavior());
             MapIO.AddBehavior(new GraphConnectorNodeBehavior());
             MapIO.AddBehavior(new SpawnerBehavior());
 
-            ParkingLot = new Entity { Name = nameof(ParkingLot), IsEnabled = false };
+            ParkingLot = new Entity { Name = nameof(ParkingLot) };
             ParkingLot.AddBehavior(new TransformBehavior());
             ParkingLot.AddBehavior(new ParkingLotBehavior());
 
