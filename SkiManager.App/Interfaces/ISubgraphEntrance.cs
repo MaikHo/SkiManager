@@ -1,6 +1,6 @@
 ﻿namespace SkiManager.App.Interfaces
 {
-    interface ISubgraphIONode
+    public interface ISubgraphEntrance : IHasEntity
     {
     }
 }

@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
-using SkiManager.Engine.Behaviors;
+using SkiManager.Engine.Behaviors; 
 
 namespace SkiManager.App.Behaviors
 {

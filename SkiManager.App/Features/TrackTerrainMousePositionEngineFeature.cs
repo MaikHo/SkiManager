@@ -8,18 +8,18 @@ using Windows.UI.Text;
 
 namespace SkiManager.App.Features
 {
-    class TrackTerrainMousePositionEngineFeature : TrackMousePositionEngineFeature
+    public sealed class TrackTerrainMousePositionEngineFeature : TrackMousePositionEngineFeature
     {
-        private ICoordinateSystem _coords;
+        private readonly ICoordinateSystem _coordinateSystem;
 
-        public TrackTerrainMousePositionEngineFeature(ICoordinateSystem coords, bool highlightMousePosition = false) : base(highlightMousePosition)
+        public TrackTerrainMousePositionEngineFeature(ICoordinateSystem coordinateSystem, bool highlightMousePosition = false) : base(highlightMousePosition)
         {
-            _coords = coords;
+            _coordinateSystem = coordinateSystem;
         }
 
         protected override void Draw(EngineDrawEventArgs e)
         {
-            var worldPos = _coords.TransformToWorld3D(LastMouseScreenPosition);
+            var worldPos = _coordinateSystem.TransformToWorld3D(LastMouseScreenPosition);
 
             e.DrawingSession.DrawCircle(LastMouseScreenPosition, 4, Colors.Red);
 

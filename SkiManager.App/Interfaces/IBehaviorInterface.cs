@@ -2,8 +2,8 @@
 
 namespace SkiManager.App.Interfaces
 {
-    public interface IMovable : IHasEntity
+    public interface IHasEntity
     {
-        Entity Target { get; }
+        Entity Entity { get; }
     }
 }

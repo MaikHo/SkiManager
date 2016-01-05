@@ -2,7 +2,6 @@
 using System.Numerics;
 
 using Windows.UI;
-using Windows.UI.Xaml;
 
 namespace SkiManager.Engine.Features
 {
@@ -38,7 +37,7 @@ namespace SkiManager.Engine.Features
 
         private void OnPointerMoved(EnginePointerMovedEventArgs args)
         {
-            LastMouseScreenPosition = args.Arguments.GetCurrentPoint(args.Sender as UIElement).RawPosition.ToVector2();
+            LastMouseScreenPosition = args.Arguments.GetCurrentPoint(args.Sender).RawPosition.ToVector2();
         }
 
         protected virtual void Draw(EngineDrawEventArgs e)

@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Behaviors\CarBehavior.cs" />
+    <Compile Include="Behaviors\CashierBehavior.cs" />
     <Compile Include="Behaviors\CustomerBehavior.cs" />
     <Compile Include="Behaviors\GraphEdgeBehavior.cs" />
     <Compile Include="Behaviors\GraphNodeBehavior.cs" />
@@ -105,19 +106,26 @@
     <Compile Include="Behaviors\ParkingLotBehavior.cs" />
     <Compile Include="Behaviors\RoadBehavior.cs" />
     <Compile Include="Behaviors\SpawnerBehavior.cs" />
+    <Compile Include="Behaviors\SubgraphExitBehavior.cs" />
+    <Compile Include="Behaviors\SubgraphEntranceBehavior.cs" />
     <Compile Include="Behaviors\TargetReachedEngineEventArgs.cs" />
     <Compile Include="Behaviors\TransporterBaseBehavior.cs" />
     <Compile Include="EntityTemplates.cs" />
     <Compile Include="Features\TrackTerrainMousePositionEngineFeature.cs" />
     <Compile Include="GraphExtensions.cs" />
+    <Compile Include="Interfaces\IBehaviorInterface.cs" />
+    <Compile Include="Interfaces\ICashier.cs" />
     <Compile Include="Interfaces\IGraphEdge.cs" />
     <Compile Include="Interfaces\IGraphNode.cs" />
     <Compile Include="Interfaces\ILocation.cs" />
     <Compile Include="Interfaces\IMapExit.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
-    <Compile Include="Interfaces\ISubgraphIONode.cs" />
+    <Compile Include="Interfaces\ISubgraphExit.cs" />
+    <Compile Include="Interfaces\ISubgraphEntrance.cs" />
     <Compile Include="Interfaces\ITransporter.cs" />
     <Compile Include="InvalidLevelConfigurationException.cs" />
+    <Compile Include="Inventory.cs" />
+    <Compile Include="Items.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

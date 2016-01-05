@@ -4,8 +4,6 @@ namespace SkiManager.App.Interfaces
 {
     public interface IGraphEdge : ILocation
     {
-        Entity Entity { get; }
-
         Entity Start { get; }
 
         Entity End { get; }

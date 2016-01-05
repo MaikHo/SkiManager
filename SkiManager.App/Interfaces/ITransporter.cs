@@ -3,7 +3,7 @@ using SkiManager.Engine;
 
 namespace SkiManager.App.Interfaces
 {
-    public interface ITransporter
+    public interface ITransporter : IHasEntity
     {
         int Slots { get; }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SkiManager.App.Interfaces
 {
-    public interface ILocation : IHasEntity
+    public interface ICashier
     {
     }
 }

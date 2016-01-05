@@ -5,8 +5,6 @@ namespace SkiManager.App.Interfaces
 {
     public interface IGraphNode : ILocation
     {
-        Entity Entity { get; }
-
         IList<Entity> AdjacentEdges { get; }
     }
 }
