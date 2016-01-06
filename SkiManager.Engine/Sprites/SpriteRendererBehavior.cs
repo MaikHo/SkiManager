@@ -11,20 +11,14 @@ namespace SkiManager.Engine.Sprites
     [RequiresBehavior(typeof(TransformBehavior))]
     public class SpriteRenderer : ReactiveBehavior
     {
-        private IDisposable _drawSubscription;
         private Transform2DEffect _rotateEffect;
         private SpriteReference _oldSprite;
 
         public SpriteReference Sprite { get; set; }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _drawSubscription = Draw.Subscribe(OnDraw);
-        }
-
-        protected override void Unloading()
-        {
-            _drawSubscription.Dispose();
+            args.TrackSubscription(Draw.Subscribe(OnDraw));
         }
 
         private void OnDraw(EngineDrawEventArgs e)

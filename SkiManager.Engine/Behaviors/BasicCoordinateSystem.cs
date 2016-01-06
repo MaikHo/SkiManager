@@ -12,17 +12,11 @@ namespace SkiManager.Engine.Behaviors
     /// </summary>
     public class BasicCoordinateSystem : ReactiveBehavior, ICoordinateSystem
     {
-        private IDisposable _createResourcesSubscription;
         private CanvasVirtualControl _canvasControl;
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _createResourcesSubscription = CreateResources.Subscribe(OnCreateResources);
-        }
-
-        protected override void Unloading()
-        {
-            _createResourcesSubscription.Dispose();
+            args.TrackSubscription(CreateResources.Subscribe(OnCreateResources));
         }
 
         private void OnCreateResources(EngineCreateResourcesEventArgs e)

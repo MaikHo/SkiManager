@@ -20,9 +20,9 @@ namespace SkiManager.Engine.Behaviors
 
         public ColliderType ColliderTypes { get; set; }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _subscription = PointerMoved.Subscribe(OnPointerMoved);
+            args.TrackSubscription(PointerMoved.Subscribe(OnPointerMoved));
         }
 
         protected override void Destroyed()

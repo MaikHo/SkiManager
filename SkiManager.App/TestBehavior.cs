@@ -13,19 +13,11 @@ namespace SkiManager.App
         private static readonly Random _random = new Random();
 
         private Size _canvasSize;
-        private IDisposable _updateSubscription;
-        private IDisposable _collisionSubscription;
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _updateSubscription = Update.Subscribe(OnUpdate);
-            _collisionSubscription = Entity.GetBehavior<ShapeColliderBehavior>().Collision.Subscribe(_ => Move());
-        }
-
-        protected override void Unloading()
-        {
-            _updateSubscription?.Dispose();
-            _collisionSubscription?.Dispose();
+            args.TrackSubscription(Update.Subscribe(OnUpdate));
+            args.TrackSubscription(Entity.GetBehavior<ShapeColliderBehavior>().Collision.Subscribe(_ => Move()));
         }
 
         private void OnUpdate(EngineUpdateEventArgs args)

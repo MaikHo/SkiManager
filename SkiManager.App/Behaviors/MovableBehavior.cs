@@ -13,7 +13,6 @@ namespace SkiManager.App.Behaviors
     [RequiresBehavior(typeof(TransformBehavior))]
     public class MovableBehavior : ReactiveBehavior, IMovable
     {
-        private IDisposable _subscription;
         private bool _hasTargetReached;
         private Entity _lastTarget;
         private readonly Subject<TargetReachedEngineEventArgs> _targetReached = new Subject<TargetReachedEngineEventArgs>();
@@ -34,20 +33,15 @@ namespace SkiManager.App.Behaviors
             Target = entity;
         }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _subscription = Update.Subscribe(OnUpdate);
+            args.TrackSubscription(Update.Subscribe(OnUpdate));
             // TODO remove debug code
-            Draw.Subscribe(args =>
+            Draw.Subscribe(arguments =>
             {
-                args.DrawingSession.DrawText(Entity?.Name + ", Loc: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
+                arguments.DrawingSession.DrawText(Entity?.Name + ", Loc: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
                     Entity.GetBehavior<TransformBehavior>().Position.XZ() + new Vector2(0, -20), Colors.DarkGray);
             });
-        }
-
-        protected override void Unloading()
-        {
-            _subscription?.Dispose();
         }
 
         protected override void Destroyed()

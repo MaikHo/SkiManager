@@ -110,6 +110,7 @@
     <EmbeddedResource Include="Shaders\TerrainShader.bin" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BehaviorLoadedEventArgs.cs" />
     <Compile Include="Behaviors\BasicCoordinateSystem.cs" />
     <Compile Include="Behaviors\CollisionEventArgs.cs" />
     <Compile Include="Behaviors\LineRendererBehavior.cs" />

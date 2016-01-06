@@ -9,7 +9,6 @@ namespace SkiManager.Engine.Behaviors
 {
     public class TerrainBehavior : ReactiveBehavior, ICoordinateSystem
     {
-        private IDisposable _createResourcesSubscription;
         private Sprite _heightMap;
         private CanvasVirtualControl _canvasControl;
 
@@ -123,14 +122,9 @@ namespace SkiManager.Engine.Behaviors
         public Vector3 Transform2DTo3D(Vector2 worldPosition)
             => new Vector3(worldPosition.X, SampleHeight(worldPosition), worldPosition.Y);
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _createResourcesSubscription = CreateResources.Subscribe(OnCreateResources);
-        }
-
-        protected override void Unloading()
-        {
-            _createResourcesSubscription.Dispose();
+            args.TrackSubscription(CreateResources.Subscribe(OnCreateResources));
         }
 
         private void OnCreateResources(EngineCreateResourcesEventArgs e)

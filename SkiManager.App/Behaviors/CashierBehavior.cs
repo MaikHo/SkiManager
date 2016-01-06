@@ -6,20 +6,13 @@ namespace SkiManager.App.Behaviors
 {
     public sealed class CashierBehavior : ReactiveBehavior, ICashier
     {
-        private IDisposable _childEnterSubscription;
-
         public Func<float> TicketPriceResolver { get; set; }
 
         public IGraphNode NextNode { get; set; }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _childEnterSubscription = ChildEnter.Subscribe(SellTicketAndSetEntityToNextNode);
-        }
-
-        protected override void Unloading()
-        {
-            _childEnterSubscription.Dispose();
+            args.TrackSubscription(ChildEnter.Subscribe(SellTicketAndSetEntityToNextNode));
         }
 
         private void SellTicketAndSetEntityToNextNode(ChildEnterEngineEventArgs args)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
 using Newtonsoft.Json;
 
@@ -7,6 +8,8 @@ namespace SkiManager.Engine
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public abstract class ReactiveBehavior
     {
+        private List<IDisposable> _trackedSubscriptions = new List<IDisposable>();
+
         [JsonProperty]
         public Entity Entity { get; private set; }
 
@@ -36,16 +39,25 @@ namespace SkiManager.Engine
             ChildLeave = Entity.ChildLeave.Where(CanReceiveEvent).Publish().RefCount();
             ParentChanged = Entity.ParentChanged.Where(CanReceiveEvent).Publish().RefCount();
 
-            Loaded();
+            _trackedSubscriptions.Clear();
+            var args = new BehaviorLoadedEventArgs(_trackedSubscriptions);
+
+            Loaded(args);
         }
 
-        protected virtual void Loaded()
+        protected virtual void Loaded(BehaviorLoadedEventArgs args)
         {
         }
 
         internal void UnloadingInternal()
         {
             Unloading();
+
+            foreach (var subscription in _trackedSubscriptions)
+            {
+                subscription?.Dispose();
+            }
+            _trackedSubscriptions.Clear();
         }
 
         protected virtual void Unloading()

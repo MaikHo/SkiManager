@@ -22,9 +22,9 @@ namespace SkiManager.Engine.Behaviors
 
         public bool FillGeometry { get; set; }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            Draw.Where(CanRender).Subscribe(OnRender);
+            args.TrackSubscription(Draw.Where(CanRender).Subscribe(OnRender));
         }
 
         private void OnRender(EngineDrawEventArgs args)

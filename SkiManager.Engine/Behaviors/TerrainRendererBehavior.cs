@@ -14,8 +14,6 @@ namespace SkiManager.Engine.Behaviors
     [RequiresBehavior(typeof(TerrainBehavior))]
     public class TerrainRendererBehavior : ReactiveBehavior
     {
-        private IDisposable _drawSubscription;
-        private IDisposable _createResourcesSubscription;
         private PixelShaderEffect _terrainMap;
         private TerrainBehavior _terrain;
         private Color _grassColor;
@@ -32,18 +30,12 @@ namespace SkiManager.Engine.Behaviors
         public SpriteReference SnowSprite { get; set; }
         public SpriteReference RockSprite { get; set; }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _drawSubscription = Draw.Subscribe(OnDraw);
-            _createResourcesSubscription = CreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e)));
+            args.TrackSubscription(Draw.Subscribe(OnDraw));
+            args.TrackSubscription(CreateResources.Subscribe(e => e.Tasks.Add(OnCreateResourcesAsync(e))));
 
             _terrain = Entity.GetBehavior<TerrainBehavior>();
-        }
-
-        protected override void Unloading()
-        {
-            _drawSubscription.Dispose();
-            _createResourcesSubscription.Dispose();
         }
 
         private void OnDraw(EngineDrawEventArgs e)

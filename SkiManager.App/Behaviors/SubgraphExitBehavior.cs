@@ -8,18 +8,11 @@ namespace SkiManager.App.Behaviors
     [RequiresImplementation(typeof(IGraphNode))]
     public sealed class SubgraphExitBehavior : ReactiveBehavior, ISubgraphExit
     {
-        private IDisposable _toUpperGraphSubscription;
-
         public IGraphNode UpperGraphNode { get; set; }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _toUpperGraphSubscription = ChildEnter.Where(_ => _.OldParent != UpperGraphNode.Entity).Subscribe(TeleportEntityToUpperGraph);
-        }
-
-        protected override void Unloading()
-        {
-            _toUpperGraphSubscription.Dispose();
+            args.TrackSubscription(ChildEnter.Where(_ => _.OldParent != UpperGraphNode.Entity).Subscribe(TeleportEntityToUpperGraph));
         }
 
         private void TeleportEntityToUpperGraph(ChildEnterEngineEventArgs args)

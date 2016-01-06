@@ -11,7 +11,6 @@ namespace SkiManager.Engine.Behaviors
 {
     public sealed class LineRendererBehavior : ReactiveBehavior, IRenderer
     {
-        private IDisposable _drawSubscription;
         private SpriteReference _sprite;
         private ICanvasBrush _spriteBrush;
 
@@ -52,14 +51,9 @@ namespace SkiManager.Engine.Behaviors
             EndPointSelector = endPointSelector;
         }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _drawSubscription = Draw.Where(_ => IsVisible).Subscribe(OnRender);
-        }
-
-        protected override void Unloading()
-        {
-            _drawSubscription.Dispose();
+            args.TrackSubscription(Draw.Where(_ => IsVisible).Subscribe(OnRender));
         }
 
         private void OnRender(EngineDrawEventArgs args)
@@ -93,7 +87,7 @@ namespace SkiManager.Engine.Behaviors
                     brush.ExtendY = Microsoft.Graphics.Canvas.CanvasEdgeBehavior.Wrap;
                     _spriteBrush = brush;
                 }
-                
+
                 args.DrawingSession.DrawLine(startPoint, endPoint, _spriteBrush);
             }
         }

@@ -8,22 +8,15 @@ namespace SkiManager.App.Behaviors
     [RequiresImplementation(typeof(IGraphNode))]
     public sealed class SpawnerBehavior : ReactiveBehavior
     {
-        private IDisposable _subscription;
-
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
             var i = 0;
-            _subscription = Update.Where(_ =>
+            args.TrackSubscription(Update.Where(_ =>
             {
                 var result = i == 0;
                 i = (i + 1) % 200;
                 return result;
-            }).Subscribe(OnUpdate);
-        }
-
-        protected override void Unloading()
-        {
-            _subscription.Dispose();
+            }).Subscribe(OnUpdate));
         }
 
         private void OnUpdate(EngineUpdateEventArgs args)

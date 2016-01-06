@@ -6,16 +6,9 @@ namespace SkiManager.App.Behaviors
 {
     public sealed class MapExitBehavior : ReactiveBehavior, IMapExit
     {
-        private IDisposable _subscription;
-
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _subscription = ChildEnter.Subscribe(OnChildEnter);
-        }
-
-        protected override void Unloading()
-        {
-            _subscription.Dispose();
+            args.TrackSubscription(ChildEnter.Subscribe(OnChildEnter));
         }
 
         private void OnChildEnter(ChildEnterEngineEventArgs args)

@@ -9,23 +9,15 @@ namespace SkiManager.App.Behaviors
     [RequiresBehavior(typeof(MovableBehavior))]
     public sealed class CarBehavior : TransporterBaseBehavior
     {
-        private IDisposable _updateSubscription;
-        private IDisposable _targetReachedSubscription;
         public bool HasBeenParkedAtSomeTime { get; private set; }
 
         public List<Entity> TriedParkingLots { get; } = new List<Entity>();
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _updateSubscription = Update.Subscribe(OnUpdate);
-            _targetReachedSubscription = Entity.GetBehavior<MovableBehavior>().TargetReached.Subscribe(OnTargetReached);
+            args.TrackSubscription(Update.Subscribe(OnUpdate));
+            args.TrackSubscription(Entity.GetBehavior<MovableBehavior>().TargetReached.Subscribe(OnTargetReached));
             SetTargetToNextPointTowardsParkingLot(Entity.Parent.GetImplementation<IGraphNode>());
-        }
-
-        protected override void Unloading()
-        {
-            _updateSubscription.Dispose();
-            _targetReachedSubscription.Dispose();
         }
 
         private void OnUpdate(EngineUpdateEventArgs args)
@@ -82,7 +74,7 @@ namespace SkiManager.App.Behaviors
                 .Take(3)
                 .ToList();
 
-            if (possibleExits.Count == 0)
+            if (!possibleExits.Any())
             {
                 throw new InvalidLevelConfigurationException("Map does not contain any exits.");
             }

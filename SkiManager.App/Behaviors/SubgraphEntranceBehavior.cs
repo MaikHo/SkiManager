@@ -8,18 +8,11 @@ namespace SkiManager.App.Behaviors
     [RequiresImplementation(typeof(IGraphNode))]
     public sealed class SubgraphEntranceBehavior : ReactiveBehavior, ISubgraphEntrance
     {
-        private IDisposable _toSubgraphSubscription;
-
         public IGraphNode SubgraphNode { get; set; }
 
-        protected override void Loaded()
+        protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            _toSubgraphSubscription = ChildEnter.Where(_ => _.OldParent != SubgraphNode.Entity).Subscribe(TeleportEntityToSubgraph);
-        }
-
-        protected override void Unloading()
-        {
-            _toSubgraphSubscription.Dispose();
+            args.TrackSubscription(ChildEnter.Where(_ => _.OldParent != SubgraphNode.Entity).Subscribe(TeleportEntityToSubgraph));
         }
 
         private void TeleportEntityToSubgraph(ChildEnterEngineEventArgs args)
