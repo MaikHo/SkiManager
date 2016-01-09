@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Subjects;
 using Newtonsoft.Json;
 
 namespace SkiManager.Engine
 {
-    [DebuggerDisplay("Entity {Name}")]
+    [DebuggerDisplay("Entity {Name} ({Id})")]
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Entity
     {
+        public Guid Id { get; private set; } = Guid.NewGuid();
+
         [JsonProperty]
         private readonly List<ReactiveBehavior> _behaviors = new List<ReactiveBehavior>();
 
@@ -26,7 +29,7 @@ namespace SkiManager.Engine
         public Entity Parent { get; private set; }
 
         [JsonProperty]
-        private readonly List<Entity> _children = new List<Entity>();
+        internal readonly List<Entity> _children = new List<Entity>();
         public IReadOnlyList<Entity> Children => _children.AsReadOnly();
 
         [JsonProperty]
@@ -74,12 +77,12 @@ namespace SkiManager.Engine
             ParentChanged.Dispose();
         }
 
-        public void SetParent(Entity newParent)
+        public void SetParent(Entity newParent, Reason reason = default(Reason))
         {
             var oldParent = Parent;
             if (oldParent != null)
             {
-                oldParent.ChildLeave.OnNext(new ChildLeaveEngineEventArgs(Engine.Current, this));
+                oldParent.ChildLeave.OnNext(new ChildLeaveEngineEventArgs(Engine.Current, this, reason));
                 if (Parent != oldParent)
                 {
                     // Parent has been set in a childleave handler, therefore return
@@ -93,17 +96,17 @@ namespace SkiManager.Engine
             if (Parent != null)
             {
                 Parent._children.Add(this);
-                newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this, oldParent));
+                newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this, oldParent, reason));
                 if (Parent != newParent)
                 {
                     // Parent has been set in a childenter handler, therefore return
                     return;
                 }
             }
-            ParentChanged.OnNext(new ParentChangedEngineEventArgs(Engine.Current, oldParent, newParent));
+            ParentChanged.OnNext(new ParentChangedEngineEventArgs(Engine.Current, oldParent, newParent, reason));
         }
 
-        internal Entity Clone()
+        public Entity Clone()
         {
             var settings = new JsonSerializerSettings
             {
@@ -112,7 +115,27 @@ namespace SkiManager.Engine
                 TypeNameHandling = TypeNameHandling.All
             };
             var objectString = JsonConvert.SerializeObject(this, Formatting.None, settings);
-            return JsonConvert.DeserializeObject<Entity>(objectString, settings);
+            var clone = JsonConvert.DeserializeObject<Entity>(objectString, settings);
+            SetNewIdsRecursive(clone);
+            return clone;
+        }
+
+        private void SetNewIdsRecursive(Entity entity)
+        {
+            entity.Id = Guid.NewGuid();
+            foreach (var child in entity.Children)
+            {
+                SetNewIdsRecursive(child);
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Entity))
+            {
+                return false;
+            }
+            return (obj as Entity).Id == Id; // TODO check if this is sufficient
         }
     }
 }

@@ -41,7 +41,7 @@ namespace SkiManager.Engine
         /// <typeparam name="T">The type of the interface.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns>True, if the specified entity has any behavior that implements the given interface. False otherwise.</returns>
-        public static bool Implements<T>(this Entity entity) => entity.Behaviors.OfType<T>().Any();
+        public static bool Implements<T>(this Entity entity) where T : class => entity.Behaviors.OfType<T>().Any();
 
         /// <summary>
         /// Gets the behavior that implements the given interface, or null, if no behavior implements it.
@@ -49,7 +49,7 @@ namespace SkiManager.Engine
         /// <typeparam name="T">The type of the interface.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns>The behavior that implements the given interface, or null, if no behavior implements it.</returns>
-        public static T GetImplementation<T>(this Entity entity) => entity.Behaviors.OfType<T>().FirstOrDefault();
+        public static T GetImplementation<T>(this Entity entity) where T : class => entity.Behaviors.OfType<T>().FirstOrDefault();
 
         /// <summary>
         /// Gets an enumeration of all behaviors that implement the given interface.
@@ -57,6 +57,12 @@ namespace SkiManager.Engine
         /// <typeparam name="T">The type of the interface.</typeparam>
         /// <param name="entity">The entity.</param>
         /// <returns>An enumeration of all behaviors that implement the given interface.</returns>
-        public static IEnumerable<T> GetImplementations<T>(this Entity entity) => entity.Behaviors.OfType<T>().ToList();
+        public static IEnumerable<T> GetImplementations<T>(this Entity entity) where T : class => entity.Behaviors.OfType<T>().ToList();
+
+        public static bool ImplementsInChildren<T>(this Entity entity, bool recursive = false) where T : class
+            => entity.Children.Any(_ => _.Implements<T>() || (recursive && _.ImplementsInChildren<T>(true)));
+
+        public static T GetImplementationInChildren<T>(this Entity entity) where T : class
+            => entity.Children.Select(_ => _.GetImplementation<T>()).FirstOrDefault(_ => _ != null);
     }
 }

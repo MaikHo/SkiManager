@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SkiManager.Engine.Behaviors;
+using System.Linq;
 
 namespace SkiManager.Engine
 {
@@ -30,36 +31,72 @@ namespace SkiManager.Engine
         /// <param name="entity">Entity to be cloned</param>
         /// <param name="newEntityParent">Parent of the instantiated entity</param>
         /// <returns>The entity clone</returns>
-        public Entity Instantiate(Entity entity, Entity newEntityParent = null)
+        public Entity Instantiate(Entity entity, Entity newEntityParent = null) => Instantiate(entity, newEntityParent, true);
+
+        private Entity Instantiate(Entity entity, Entity newEntityParent, bool mustBeCloned)
         {
-            var newEntity = entity.Clone();
-            newEntity.Name += " (Clone)";
+            var newEntity = entity;
+
+            if (mustBeCloned)
+            {
+                newEntity = entity.Clone();
+                newEntity.Name += " (Clone)";
+                AddEntity(newEntity);
+            }
+            else
+            {
+                if (!Entities.Contains(newEntity))
+                {
+                    AddEntity(newEntity);
+                }
+            }
+
+            // set parent and position
             newEntity.SetParent(newEntityParent);
             if (newEntityParent != null && newEntityParent.HasBehavior<TransformBehavior>())
             {
                 newEntity.GetBehavior<TransformBehavior>().Position = newEntityParent.GetBehavior<TransformBehavior>().Position;
             }
-            AddEntity(newEntity);
+            if (newEntityParent?.IsLoaded ?? newEntityParent == null)
+                newEntity.IsLoaded = true;
+
             // restore behavior attachment
             foreach (var behavior in newEntity.Behaviors)
             {
                 behavior.Attach(newEntity);
 
-                if (newEntityParent?.IsLoaded ?? false)
+                if (newEntityParent?.IsLoaded ?? newEntityParent == null)
                     behavior.LoadedInternal();
             }
 
-            if (newEntityParent?.IsLoaded ?? false)
-                newEntity.IsLoaded = true;
-
-            // TODO: Deep loading of all descendants and their behaviors
+            // recurse for each child, but do not clone them (they are already)
+            var children = newEntity.Children.ToList();
+            newEntity._children.Clear();
+            foreach (var child in children)
+            {
+                Instantiate(child, newEntity, false);
+            }
 
             return newEntity;
         }
-        
+
         public void Destroy(Entity entity)
         {
-            // TODO: do this hierarchically for the whole subtree
+            if (entity == null)
+            {
+                return;
+            }
+
+            entity.IsEnabled = false;
+            entity.SetParent(null);
+
+            // destroy children first
+            foreach (var child in entity.Children)
+            {
+                Destroy(child);
+            }
+
+            // then remove this entity from the list of entities, unload behaviors and destroy
             if (_entities.Contains(entity))
             {
                 _entities.Remove(entity);
@@ -87,7 +124,7 @@ namespace SkiManager.Engine
 
         internal void Loaded()
         {
-            foreach (var entity in Entities)
+            foreach (var entity in Entities.Where(_ => !_.IsLoaded))
             {
                 foreach (var behavior in entity.Behaviors)
                 {
