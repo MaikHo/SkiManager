@@ -43,12 +43,6 @@ namespace SkiManager.App.Behaviors
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
             args.TrackSubscription(Update.Where(_ => Target != null).Subscribe(OnUpdate));
-            // TODO remove debug code
-            Draw.Subscribe(arguments =>
-            {
-                arguments.DrawingSession.DrawText(Entity?.Name + "[" + Entity?.Id + "], Loc: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
-                    Entity.GetBehavior<TransformBehavior>().Position.XZ() + new Vector2(0, -20), Colors.DarkGray);
-            });
         }
 
         protected override void Destroyed()

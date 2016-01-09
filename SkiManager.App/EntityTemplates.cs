@@ -96,11 +96,22 @@ namespace SkiManager.App
             var cbc1CashierBehavior = cbCashier1.GetBehavior<CashierBehavior>();
             cbc1CashierBehavior.TicketPrice = 42;
             cbc1CashierBehavior.NextNode = CashierBooth.GetImplementation<IGraphNode>();
-            cbc1CashierBehavior.MinimumProcessingSeconds = 15;
-            cbc1CashierBehavior.MaximumProcessingSeconds = 60;
+            cbc1CashierBehavior.MinimumProcessingSeconds = 1;
+            cbc1CashierBehavior.MaximumProcessingSeconds = 5;
             cbc1CashierBehavior.UseWaitingQueueOfParent = true;
             cbCashier1.SetParent(CashierBooth, Reasons.TemplateCreation);
             CashierBooth.GetBehavior<SubgraphEntranceBehavior>().SubgraphNode = cbQueue.GetImplementation<IGraphNode>();
+
+            // TODO remove debug code
+            Car.AddBehavior(new DebugBehavior());
+            Customer.AddBehavior(new DebugBehavior());
+            Road.AddBehavior(new DebugBehavior());
+            MapIO.AddBehavior(new DebugBehavior());
+            ParkingLot.AddBehavior(new DebugBehavior());
+            GraphConnector.AddBehavior(new DebugBehavior());
+            SingleCashier.AddBehavior(new DebugBehavior());
+            WaitingQueue.AddBehavior(new DebugBehavior());
+            CashierBooth.AddBehavior(new DebugBehavior());
         }
     }
 }

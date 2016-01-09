@@ -70,6 +70,11 @@ namespace SkiManager.App
             roadB.IsEnabled = true;
             cashierBooth.IsEnabled = true;
 
+            foreach (var entity in level.Entities.Where(_ => _.Parent == null && !_.HasBehavior<DebugBehavior>()))
+            {
+                entity.AddBehavior(new DebugBehavior());
+            }
+
             Engine.Engine.Current.LoadLevel(level);
 
             Engine.Engine.Current.StartOrResume();

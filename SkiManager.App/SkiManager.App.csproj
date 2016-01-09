@@ -98,6 +98,7 @@
     <Compile Include="Behaviors\CarBehavior.cs" />
     <Compile Include="Behaviors\CashierBehavior.cs" />
     <Compile Include="Behaviors\CustomerBehavior.cs" />
+    <Compile Include="Behaviors\DebugBehavior.cs" />
     <Compile Include="Behaviors\GraphEdgeBehavior.cs" />
     <Compile Include="Behaviors\GraphNodeBehavior.cs" />
     <Compile Include="Behaviors\GraphConnectorNodeBehavior.cs" />
