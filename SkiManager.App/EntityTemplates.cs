@@ -1,5 +1,6 @@
 ﻿using Windows.UI;
 using SkiManager.App.Behaviors;
+using SkiManager.App.Interfaces;
 using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
 
@@ -18,6 +19,12 @@ namespace SkiManager.App
         public static Entity ParkingLot { get; }
 
         public static Entity GraphConnector { get; }
+
+        public static Entity SingleCashier { get; }
+
+        public static Entity WaitingQueue { get; }
+
+        public static Entity CashierBooth { get; }
 
         static EntityTemplates()
         {
@@ -46,6 +53,7 @@ namespace SkiManager.App
                 FillGeometry = true,
                 Size = new Windows.Foundation.Size(1, 1)
             });
+            Customer.GetBehavior<CustomerBehavior>().Inventory.AddItem(Items.Money, 100);
 
             Road = new Entity { Name = nameof(Road) };
             Road.AddBehavior(new TransformBehavior());
@@ -60,9 +68,39 @@ namespace SkiManager.App
             ParkingLot.AddBehavior(new TransformBehavior());
             ParkingLot.AddBehavior(new ParkingLotBehavior());
 
-            GraphConnector = new Entity();
+            GraphConnector = new Entity { Name = nameof(GraphConnector) };
             GraphConnector.AddBehavior(new TransformBehavior());
             GraphConnector.AddBehavior(new GraphConnectorNodeBehavior());
+
+            SingleCashier = new Entity { Name = nameof(SingleCashier) };
+            SingleCashier.AddBehavior(new TransformBehavior());
+            SingleCashier.AddBehavior(new GraphConnectorNodeBehavior());
+            SingleCashier.AddBehavior(new CashierBehavior());
+
+            WaitingQueue = new Entity { Name = nameof(WaitingQueue) };
+            WaitingQueue.AddBehavior(new TransformBehavior());
+            WaitingQueue.AddBehavior(new GraphConnectorNodeBehavior());
+            WaitingQueue.AddBehavior(new WaitingQueueBehavior());
+
+            CashierBooth = new Entity { Name = nameof(CashierBooth) };
+            CashierBooth.AddBehavior(new TransformBehavior());
+            CashierBooth.AddBehavior(new GraphConnectorNodeBehavior());
+            CashierBooth.AddBehavior(new SubgraphEntranceBehavior());
+            var cbQueue = WaitingQueue.Clone();
+            cbQueue.Name = "CashierBooth.WaitingQueue";
+            var cbqQueueBehavior = cbQueue.GetBehavior<WaitingQueueBehavior>();
+            cbqQueueBehavior.MaxQueueSize = 10;
+            cbQueue.SetParent(CashierBooth);
+            var cbCashier1 = SingleCashier.Clone();
+            cbCashier1.Name = "CashierBooth.Cashier1";
+            var cbc1CashierBehavior = cbCashier1.GetBehavior<CashierBehavior>();
+            cbc1CashierBehavior.TicketPrice = 42;
+            cbc1CashierBehavior.NextNode = CashierBooth.GetImplementation<IGraphNode>();
+            cbc1CashierBehavior.MinimumProcessingSeconds = 15;
+            cbc1CashierBehavior.MaximumProcessingSeconds = 60;
+            cbc1CashierBehavior.UseWaitingQueueOfParent = true;
+            cbCashier1.SetParent(CashierBooth);
+            CashierBooth.GetBehavior<SubgraphEntranceBehavior>().SubgraphNode = cbQueue.GetImplementation<IGraphNode>();
         }
     }
 }
