@@ -11,6 +11,7 @@ namespace SkiManager.App.Behaviors
     {
         private Entity _start;
 
+        [JsonProperty]
         public Entity Start
         {
             get { return _start; }
@@ -32,6 +33,7 @@ namespace SkiManager.App.Behaviors
 
         private Entity _end;
 
+        [JsonProperty]
         public Entity End
         {
             get { return _end; }
@@ -51,11 +53,12 @@ namespace SkiManager.App.Behaviors
             }
         }
 
-        [JsonIgnore]
         public float Length => Vector3.Distance(Start.GetBehavior<TransformBehavior>().Position, End.GetBehavior<TransformBehavior>().Position);
 
+        [JsonProperty]
         public bool IsBidirectional { get; set; }
 
+        [JsonProperty]
         public float BaseSpeedModifier { get; set; }
     }
 }

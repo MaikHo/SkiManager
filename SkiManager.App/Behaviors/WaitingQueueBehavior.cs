@@ -37,7 +37,7 @@ namespace SkiManager.App.Behaviors
             if (_queue.Count >= MaxQueueSize)
             {
                 // no space
-                args.EnteringChild.SetParent(args.OldParent);
+                args.EnteringChild.SetParent(args.OldParent, Reasons.NoSpace.InWaitingQueue);
             }
 
             args.EnteringChild.IsEnabled = false;

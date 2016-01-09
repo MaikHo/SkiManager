@@ -67,7 +67,7 @@ namespace SkiManager.App.Behaviors
                     if (!_hasTargetReached)
                     {
                         _hasTargetReached = true;
-                        Entity.SetParent(Target);
+                        Entity.SetParent(Target, Reasons.TargetReached);
                         _targetReached.OnNext(new TargetReachedEngineEventArgs(Engine.Engine.Current, Target));
                     }
                 }
@@ -83,7 +83,7 @@ namespace SkiManager.App.Behaviors
                                 _ =>
                                     (_.GetImplementation<IGraphEdge>().Start == _lastTarget && _.GetImplementation<IGraphEdge>().End == Target)
                                     || (_.GetImplementation<IGraphEdge>().End == _lastTarget && _.GetImplementation<IGraphEdge>().Start == Target));
-                    Entity.SetParent(location);
+                    Entity.SetParent(location, Reasons.MovingStarted);
                 }
                 var movementVector = Vector3.Normalize(targetPosition - thisPosition);
                 var movementFactor = Speed * 0.1f; // TODO add correct timing from eventargs (this assumes 10 updates per second)

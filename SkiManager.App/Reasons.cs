@@ -18,12 +18,29 @@ namespace SkiManager.App
 
         public static class NoSpace
         {
+            public static readonly Reason General = new Reason { Name = nameof(NoSpace) };
             public static readonly Reason InCarParkingLot = new Reason { Name = "No space in car parking lot" };
+            public static readonly Reason InWaitingQueue = new Reason { Name = "No space in waiting queue" };
+        }
+
+        public static class Processing
+        {
+            public static readonly Reason General = new Reason { Name = nameof(Processing) };
+            public static readonly Reason Started = new Reason { Name = "Processing started" };
+            public static readonly Reason Unsuccessful = new Reason { Name = "Processing not succesful" };
+            public static readonly Reason Finished = new Reason { Name = "Processing finished" };
+        }
+
+        public static class Subgraph
+        {
+            public static readonly Reason Entering = new Reason { Name = "Entering subgraph" };
+            public static readonly Reason Leaving = new Reason { Name = "Leaving subgraph" };
         }
 
         public static readonly Reason NotAllowed = new Reason { Name = "NotAllowed" };
-        public static readonly Reason ProcessingUnsuccessful = new Reason { Name = "Processing not succesful" };
-        public static readonly Reason ProcessingFinished = new Reason { Name = "Processing finished" };
         public static readonly Reason DoesNotHaveRequiredItem = new Reason { Name = "Required item is missing" };
+        public static readonly Reason TargetReached = new Reason { Name = "Target reached" };
+        public static readonly Reason MovingStarted = new Reason { Name = "Moving started" };
+        public static readonly Reason TemplateCreation = new Reason { Name = "Template creation" };
     }
 }

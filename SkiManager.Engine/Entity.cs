@@ -77,7 +77,7 @@ namespace SkiManager.Engine
             ParentChanged.Dispose();
         }
 
-        public void SetParent(Entity newParent, Reason reason = default(Reason))
+        public void SetParent(Entity newParent, Reason reason)
         {
             var oldParent = Parent;
             if (oldParent != null)

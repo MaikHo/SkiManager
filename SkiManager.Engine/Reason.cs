@@ -4,6 +4,8 @@
     {
         public static readonly Reason None = new Reason { Name = "None", Parameter = null };
 
+        internal static readonly Reason EngineInternal = new Reason { Name = "EngineInternal", Parameter = null };
+
         public string Name { get; set; }
 
         public object Parameter { get; set; }

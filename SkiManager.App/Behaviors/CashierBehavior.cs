@@ -59,6 +59,7 @@ namespace SkiManager.App.Behaviors
                 return;
             }
 
+            customer.SetParent(Entity, Reasons.Processing.Started);
             await SellTicketAndSetEntityToNextNode(customer);
         }
 
@@ -76,7 +77,7 @@ namespace SkiManager.App.Behaviors
             if (!customer.Inventory.TryTakeItem(Items.Money, TicketPrice))
             {
                 // not enough money -> set forward
-                customer.Entity.SetParent(NextNode.Entity);
+                customer.Entity.SetParent(NextNode.Entity, Reasons.DoesNotHaveRequiredItem);
                 ResetIsProcessingAndCheckForNextCustomer();
                 return;
             }
@@ -84,10 +85,11 @@ namespace SkiManager.App.Behaviors
             // enough money taken -> wait processing time, give ticket and set forward
             if (MaximumProcessingSeconds > 0)
             {
+                // TODO do this in a time-acceleration-aware way
                 await Task.Delay(TimeSpan.FromSeconds(new Random().Next(MinimumProcessingSeconds, MaximumProcessingSeconds)));
             }
             customer.Inventory.AddItem(Items.SkiTicket, 1);
-            customer.Entity.SetParent(NextNode.Entity);
+            customer.Entity.SetParent(NextNode.Entity, Reasons.Processing.Finished);
             ResetIsProcessingAndCheckForNextCustomer();
         }
 

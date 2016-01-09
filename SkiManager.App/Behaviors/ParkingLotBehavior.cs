@@ -35,7 +35,7 @@ namespace SkiManager.App.Behaviors
             else
             {
                 // unknown entity type -> disallow entering
-                args.EnteringChild.SetParent(args.OldParent);
+                args.EnteringChild.SetParent(args.OldParent, Reasons.NotAllowed);
             }
         }
 
@@ -76,7 +76,7 @@ namespace SkiManager.App.Behaviors
                 if (!success)
                 {
                     // could not load into car -> set entity back
-                    args.EnteringChild.SetParent(args.OldParent, Reasons.ProcessingUnsuccessful);
+                    args.EnteringChild.SetParent(args.OldParent, Reasons.Processing.Unsuccessful);
                     return;
                 }
 

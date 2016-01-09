@@ -17,7 +17,7 @@ namespace SkiManager.App.Behaviors
 
         private void TeleportEntityToSubgraph(ChildEnterEngineEventArgs args)
         {
-            args.EnteringChild.SetParent(SubgraphNode.Entity);
+            args.EnteringChild.SetParent(SubgraphNode.Entity, Reasons.Subgraph.Entering);
         }
     }
 }

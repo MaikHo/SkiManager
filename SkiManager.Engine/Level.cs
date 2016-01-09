@@ -52,7 +52,7 @@ namespace SkiManager.Engine
             }
 
             // set parent and position
-            newEntity.SetParent(newEntityParent);
+            newEntity.SetParent(newEntityParent, Reason.EngineInternal);
             if (newEntityParent != null && newEntityParent.HasBehavior<TransformBehavior>())
             {
                 newEntity.GetBehavior<TransformBehavior>().Position = newEntityParent.GetBehavior<TransformBehavior>().Position;
@@ -88,7 +88,7 @@ namespace SkiManager.Engine
             }
 
             entity.IsEnabled = false;
-            entity.SetParent(null);
+            entity.SetParent(null, Reason.EngineInternal);
 
             // destroy children first
             foreach (var child in entity.Children)

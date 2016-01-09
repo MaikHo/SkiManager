@@ -90,7 +90,7 @@ namespace SkiManager.App
             cbQueue.Name = "CashierBooth.WaitingQueue";
             var cbqQueueBehavior = cbQueue.GetBehavior<WaitingQueueBehavior>();
             cbqQueueBehavior.MaxQueueSize = 10;
-            cbQueue.SetParent(CashierBooth);
+            cbQueue.SetParent(CashierBooth, Reasons.TemplateCreation);
             var cbCashier1 = SingleCashier.Clone();
             cbCashier1.Name = "CashierBooth.Cashier1";
             var cbc1CashierBehavior = cbCashier1.GetBehavior<CashierBehavior>();
@@ -99,7 +99,7 @@ namespace SkiManager.App
             cbc1CashierBehavior.MinimumProcessingSeconds = 15;
             cbc1CashierBehavior.MaximumProcessingSeconds = 60;
             cbc1CashierBehavior.UseWaitingQueueOfParent = true;
-            cbCashier1.SetParent(CashierBooth);
+            cbCashier1.SetParent(CashierBooth, Reasons.TemplateCreation);
             CashierBooth.GetBehavior<SubgraphEntranceBehavior>().SubgraphNode = cbQueue.GetImplementation<IGraphNode>();
         }
     }
