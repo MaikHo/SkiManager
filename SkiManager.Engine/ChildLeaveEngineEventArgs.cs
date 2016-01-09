@@ -4,9 +4,12 @@
     {
         public Entity LeavingChild { get; }
 
-        public ChildLeaveEngineEventArgs(Engine engine, Entity leavingChild) : base(engine)
+        public Reason Reason { get; }
+
+        public ChildLeaveEngineEventArgs(Engine engine, Entity leavingChild, Reason reason = default(Reason)) : base(engine)
         {
             LeavingChild = leavingChild;
+            Reason = reason == default(Reason) ? Reason.None : reason;
         }
     }
 }
