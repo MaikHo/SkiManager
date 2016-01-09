@@ -91,6 +91,18 @@ namespace SkiManager.App
             Predecessors = predecessors;
             Path = path;
         }
+
+        public IReadOnlyList<IGraphNode> GetPathTowardsTarget(IGraphNode target)
+        {
+            var temp = target;
+            var path = new List<IGraphNode> { target };
+            while (Predecessors[temp] != null)
+            {
+                temp = Predecessors[temp];
+                path.Insert(0, temp);
+            }
+            return path.AsReadOnly();
+        }
     }
 
     public enum GraphSearchMode

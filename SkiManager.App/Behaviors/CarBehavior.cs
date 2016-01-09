@@ -13,6 +13,12 @@ namespace SkiManager.App.Behaviors
 
         public List<Entity> TriedParkingLots { get; } = new List<Entity>();
 
+        public CarBehavior()
+        {
+            TryLoadReason = Reasons.Loaded.IntoCar;
+            UnloadReason = Reasons.Unloaded.FromCar;
+        }
+
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
             args.TrackSubscription(Update.Subscribe(OnUpdate));
@@ -54,15 +60,9 @@ namespace SkiManager.App.Behaviors
                 SetTargetToNextPointTowardsRandomOfClosestThreeMapExits(currentNode);
             }
 
-            var current = targetedParkingLot.GetImplementation<IGraphNode>();
-            var path = new List<Entity> { targetedParkingLot };
-            while (dijkstraValues.Predecessors[current] != null)
-            {
-                current = dijkstraValues.Predecessors[current];
-                path.Insert(0, current.Entity);
-            }
+            var path = dijkstraValues.GetPathTowardsTarget(targetedParkingLot.GetImplementation<IGraphNode>());
             var movable = Entity.GetBehavior<MovableBehavior>();
-            movable.SetTarget(path.Count > 1 ? path[1] : targetedParkingLot);
+            movable.SetTarget(path.Count > 1 ? path[1].Entity : targetedParkingLot);
         }
 
         internal void SetTargetToNextPointTowardsRandomOfClosestThreeMapExits(IGraphNode currentNode)
