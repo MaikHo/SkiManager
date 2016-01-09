@@ -2,7 +2,7 @@
 using System.Linq;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
-using SkiManager.Engine.Behaviors; 
+using SkiManager.Engine.Behaviors;
 
 namespace SkiManager.App.Behaviors
 {
@@ -26,6 +26,9 @@ namespace SkiManager.App.Behaviors
 
         public Skill RequiredDriverSkills { get; set; }
 
+        protected Reason TryLoadReason { get; set; } = Reasons.Loaded.General;
+        protected Reason UnloadReason { get; set; } = Reasons.Unloaded.General;
+
         public bool TryLoad(Entity entityToLoad)
         {
             if (FreeSlots == 0)
@@ -38,8 +41,11 @@ namespace SkiManager.App.Behaviors
                 return false; // cannot load non-driver into last slot
             }
 
-            entityToLoad.SetParent(Entity);
-            entityToLoad.IsEnabled = false;
+            if (entityToLoad.HasBehavior<MovableBehavior>())
+            {
+                entityToLoad.GetBehavior<MovableBehavior>().SetTarget(null);
+            }
+            entityToLoad.SetParent(Entity, TryLoadReason);
             _passengers.Add(entityToLoad);
             return true;
         }
@@ -48,13 +54,12 @@ namespace SkiManager.App.Behaviors
         {
             _passengers.ForEach(_ =>
             {
-                _.SetParent(target);
+                _.SetParent(target, UnloadReason);
                 _.GetBehavior<MovableBehavior>()?.SetLastTarget(target);
                 if (_.HasBehavior<TransformBehavior>() && target.HasBehavior<TransformBehavior>())
                 {
                     _.GetBehavior<TransformBehavior>().Position = target.GetBehavior<TransformBehavior>().Position;
                 }
-                _.IsEnabled = true;
             });
             _passengers.Clear();
         }

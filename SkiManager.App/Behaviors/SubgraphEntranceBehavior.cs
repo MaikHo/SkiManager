@@ -12,7 +12,7 @@ namespace SkiManager.App.Behaviors
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(ChildEnter.Where(_ => _.OldParent != SubgraphNode.Entity).Subscribe(TeleportEntityToSubgraph));
+            args.TrackSubscription(ChildEnter.Where(_ => SubgraphNode?.Entity != null && _.OldParent != SubgraphNode.Entity).Subscribe(TeleportEntityToSubgraph));
         }
 
         private void TeleportEntityToSubgraph(ChildEnterEngineEventArgs args)

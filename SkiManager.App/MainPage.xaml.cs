@@ -50,6 +50,26 @@ namespace SkiManager.App
             roadB.End = parkingLot;
             road.IsEnabled = true;
 
+            var roadLotToCashier = level.Instantiate(EntityTemplates.Road);
+            roadLotToCashier.Name = "Road between parking lot and cashier booth";
+            roadLotToCashier.AddBehavior(
+                new LineRendererBehavior(
+                    _ => _.GetBehavior<RoadBehavior>().Start.GetBehavior<TransformBehavior>().Position,
+                    _ => _.GetBehavior<RoadBehavior>().End.GetBehavior<TransformBehavior>().Position)
+                {
+                    Color = Colors.DarkGray
+                });
+
+            var cashierBooth = level.Instantiate(EntityTemplates.CashierBooth);
+            cashierBooth.GetBehavior<TransformBehavior>().Position = new Vector3(250, 0, 400);
+            cashierBooth.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Square, Color = Colors.Brown, Size = new Windows.Foundation.Size(15, 6), FillGeometry = true });
+            cashierBooth.GetBehavior<SubgraphEntranceBehavior>().SubgraphNode = cashierBooth.GetImplementationInChildren<IWaitingQueue>().Entity.GetImplementation<IGraphNode>();
+            roadB = roadLotToCashier.GetBehavior<RoadBehavior>();
+            roadB.Start = parkingLot;
+            roadB.End = cashierBooth;
+            roadB.IsEnabled = true;
+            cashierBooth.IsEnabled = true;
+
             Engine.Engine.Current.LoadLevel(level);
 
             Engine.Engine.Current.StartOrResume();

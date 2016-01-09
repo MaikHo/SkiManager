@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
 
@@ -8,7 +9,6 @@ namespace SkiManager.App.Behaviors
 {
     public sealed class ParkingLotBehavior : GraphNodeBehavior
     {
-        private bool _isUnloading;
         private readonly Dictionary<Entity, List<Entity>> _carToPassengerMappings = new Dictionary<Entity, List<Entity>>();
 
         public int Slots { get; set; }
@@ -19,7 +19,7 @@ namespace SkiManager.App.Behaviors
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(ChildEnter.Subscribe(OnChildEnter));
+            args.TrackSubscription(ChildEnter.Where(a => a.Reason != Reasons.Unloaded.FromCar).Subscribe(OnChildEnter));
         }
 
         private void OnChildEnter(ChildEnterEngineEventArgs args)
@@ -47,34 +47,26 @@ namespace SkiManager.App.Behaviors
             {
                 // disallow entering of car since there is no space, mark that it already tried this parkinglot
                 car.TriedParkingLots.Add(Entity);
-                args.EnteringChild.SetParent(args.OldParent);
+                args.EnteringChild.SetParent(args.OldParent, Reasons.NoSpace.InCarParkingLot);
                 car.SetTargetToNextPointTowardsParkingLot(args.OldParent.GetImplementation<IGraphNode>());
                 return;
             }
 
             // there is space -> unload passengers to IO node and increase used slots
             UsedSlots++;
-            car.Entity.IsEnabled = false;
             var passengers = new List<Entity>(car.Passengers);
             _carToPassengerMappings.Add(car.Entity, passengers);
-            _isUnloading = true;
             car.UnloadAllTo(Entity);
-            _isUnloading = false;
+            car.Entity.IsEnabled = false;
         }
 
         private void LoadCustomerIntoHisCarIfPossible(ChildEnterEngineEventArgs args)
         {
-            if (_isUnloading)
-            {
-                // customer enters because he is being unloaded from a car
-                return;
-            }
-
             var correspondingEntry = _carToPassengerMappings.FirstOrDefault(_ => _.Value.Contains(args.EnteringChild));
             if (correspondingEntry.Key == null)
             {
                 // entering customer does not have his car parked here -> disallow entering
-                args.EnteringChild.SetParent(args.OldParent);
+                args.EnteringChild.SetParent(args.OldParent, Reasons.NotAllowed);
             }
             else
             {
@@ -84,7 +76,7 @@ namespace SkiManager.App.Behaviors
                 if (!success)
                 {
                     // could not load into car -> set entity back
-                    args.EnteringChild.SetParent(args.OldParent);
+                    args.EnteringChild.SetParent(args.OldParent, Reasons.ProcessingUnsuccessful);
                     return;
                 }
 

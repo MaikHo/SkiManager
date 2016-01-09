@@ -8,14 +8,14 @@ namespace SkiManager.Engine
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public abstract class ReactiveBehavior
     {
-        private List<IDisposable> _trackedSubscriptions = new List<IDisposable>();
+        private readonly List<IDisposable> _trackedSubscriptions = new List<IDisposable>();
 
         [JsonProperty]
         public Entity Entity { get; private set; }
 
         [JsonProperty]
         public bool IsEnabled { get; set; } = true;
-
+        
         public bool IsEffectivelyEnabled => IsEnabled && (Entity?.IsEffectivelyEnabled ?? false);
 
 

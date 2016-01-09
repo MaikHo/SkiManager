@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace SkiManager.App
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Inventory
     {
-        private readonly Dictionary<Item, float> _store = new Dictionary<Item, float>();
+        [JsonProperty]
+        private readonly Dictionary<string, float> _store = new Dictionary<string, float>();
 
+        [JsonProperty]
+        private readonly List<Item> _storedItemTypes = new List<Item>();
+
+        [JsonProperty]
         public float Capacity { get; set; }
 
-        public float UsedCapacity => _store.Select(kvp => kvp.Key.UsedCapacityPerUnit * kvp.Value).Sum();
+        public float UsedCapacity => _store.Select(kvp => _storedItemTypes.First(_ => _.ToString() == kvp.Key).UsedCapacityPerUnit * kvp.Value).Sum();
 
         public float FreeCapacity => Capacity - UsedCapacity;
 
@@ -55,13 +63,13 @@ namespace SkiManager.App
         private void AddInternal(Item item, float amount)
         {
             EnsureItemStoreSlot(item);
-            _store[item] += amount;
+            _store[item.ToString()] += amount;
         }
 
         private bool HasItemInternal(Item item, float amount)
         {
             EnsureItemStoreSlot(item);
-            return _store[item] >= amount;
+            return _store[item.ToString()] >= amount;
         }
 
         private bool TryTakeItemInternal(Item item, float amount)
@@ -70,25 +78,33 @@ namespace SkiManager.App
             {
                 return false;
             }
-            _store[item] -= amount;
+            _store[item.ToString()] -= amount;
             return true;
         }
 
         private void EnsureItemStoreSlot(Item item)
         {
-            if (!_store.ContainsKey(item))
+            if (_store.All(kvp => kvp.Key != item.ToString()))
             {
-                _store.Add(item, 0.0f);
+                _store.Add(item.ToString(), 0.0f);
+            }
+            if (_storedItemTypes.All(_ => _ != item))
+            {
+                _storedItemTypes.Add(item);
             }
         }
     }
 
+    [JsonObject]
     public struct Item : IEquatable<Item>
     {
+        [JsonProperty]
         public string Name { get; }
 
+        [JsonProperty]
         public ItemUnit Unit { get; }
 
+        [JsonProperty]
         public float UsedCapacityPerUnit { get; }
 
         public Item(string name, ItemUnit unit, float usedCapacityPerUnit)
@@ -110,6 +126,16 @@ namespace SkiManager.App
         }
 
         public bool Equals(Item other) => other.Name == Name && other.Unit == Unit && Math.Abs(other.UsedCapacityPerUnit - UsedCapacityPerUnit) < float.Epsilon;
+
+        public static bool operator ==(Item left, Item right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Item left, Item right)
+        {
+            return !(left == right);
+        }
 
         public override string ToString() => $"{Name} ({UsedCapacityPerUnit} per {(Unit == ItemUnit.Discrete ? "piece" : "unit")})";
     }

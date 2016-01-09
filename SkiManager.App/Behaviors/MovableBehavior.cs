@@ -16,6 +16,7 @@ namespace SkiManager.App.Behaviors
         private bool _hasTargetReached;
         private Entity _lastTarget;
         private readonly Subject<TargetReachedEngineEventArgs> _targetReached = new Subject<TargetReachedEngineEventArgs>();
+        private object _lock = new object();
 
         public Entity Target { get; private set; }
 
@@ -25,6 +26,12 @@ namespace SkiManager.App.Behaviors
 
         public void SetTarget(Entity entity)
         {
+            if (entity == null)
+            {
+                Target = null;
+                return;
+            }
+
             if (!entity.Implements<ILocation>())
             {
                 throw new InvalidOperationException("Target can only be set to ILocations.");
@@ -35,11 +42,11 @@ namespace SkiManager.App.Behaviors
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(Update.Subscribe(OnUpdate));
+            args.TrackSubscription(Update.Where(_ => Target != null).Subscribe(OnUpdate));
             // TODO remove debug code
             Draw.Subscribe(arguments =>
             {
-                arguments.DrawingSession.DrawText(Entity?.Name + ", Loc: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
+                arguments.DrawingSession.DrawText(Entity?.Name + "[" + Entity?.Id + "], Loc: " + (Entity?.Parent?.Name ?? "<none>") + ", Last: " + (_lastTarget?.Name ?? "<none>"),
                     Entity.GetBehavior<TransformBehavior>().Position.XZ() + new Vector2(0, -20), Colors.DarkGray);
             });
         }
@@ -51,20 +58,18 @@ namespace SkiManager.App.Behaviors
 
         private void OnUpdate(EngineUpdateEventArgs args)
         {
-            if (Target == null)
-            {
-                return;
-            }
-
             var thisPosition = Entity.GetBehavior<TransformBehavior>().Position;
             var targetPosition = Target?.GetBehavior<TransformBehavior>()?.Position ?? Vector3.Zero;
             if (Vector3.Distance(thisPosition, targetPosition) <= float.Epsilon)
             {
-                if (!_hasTargetReached)
+                lock (_lock)
                 {
-                    _hasTargetReached = true;
-                    Entity.SetParent(Target);
-                    _targetReached.OnNext(new TargetReachedEngineEventArgs(Engine.Engine.Current, Target));
+                    if (!_hasTargetReached)
+                    {
+                        _hasTargetReached = true;
+                        Entity.SetParent(Target);
+                        _targetReached.OnNext(new TargetReachedEngineEventArgs(Engine.Engine.Current, Target));
+                    }
                 }
             }
             else

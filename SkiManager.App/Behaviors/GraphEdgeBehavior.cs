@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Newtonsoft.Json;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
@@ -50,6 +51,7 @@ namespace SkiManager.App.Behaviors
             }
         }
 
+        [JsonIgnore]
         public float Length => Vector3.Distance(Start.GetBehavior<TransformBehavior>().Position, End.GetBehavior<TransformBehavior>().Position);
 
         public bool IsBidirectional { get; set; }
