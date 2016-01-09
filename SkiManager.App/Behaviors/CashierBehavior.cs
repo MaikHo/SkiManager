@@ -89,6 +89,7 @@ namespace SkiManager.App.Behaviors
                 await Task.Delay(TimeSpan.FromSeconds(new Random().Next(MinimumProcessingSeconds, MaximumProcessingSeconds)));
             }
             customer.Inventory.AddItem(Items.SkiTicket, 1);
+            customer.Entity.IsEnabled = true;
             customer.Entity.SetParent(NextNode.Entity, Reasons.Processing.Finished);
             ResetIsProcessingAndCheckForNextCustomer();
         }

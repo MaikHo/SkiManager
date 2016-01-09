@@ -38,6 +38,7 @@ namespace SkiManager.App.Behaviors
             {
                 // no space
                 args.EnteringChild.SetParent(args.OldParent, Reasons.NoSpace.InWaitingQueue);
+                return;
             }
 
             args.EnteringChild.IsEnabled = false;
