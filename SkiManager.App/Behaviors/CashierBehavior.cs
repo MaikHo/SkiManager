@@ -70,6 +70,7 @@ namespace SkiManager.App.Behaviors
             if (customer == null)
             {
                 // not a customer -> ignore
+                customerEntity.SetParent(NextNode.Entity, Reasons.NotAllowed);
                 ResetIsProcessingAndCheckForNextCustomer();
                 return;
             }
