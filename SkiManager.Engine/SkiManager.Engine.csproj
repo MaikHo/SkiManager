@@ -137,7 +137,11 @@
     <Compile Include="Features\EngineFeature.cs" />
     <Compile Include="EngineStatus.cs" />
     <Compile Include="Features\MissingFeatureException.cs" />
+    <Compile Include="Features\MouseEnterEngineEventArgs.cs" />
+    <Compile Include="Features\MouseInteractionEngineEventArgs.cs" />
     <Compile Include="Features\MouseInteractionFeature.cs" />
+    <Compile Include="Features\MouseLeaveEngineEventArgs.cs" />
+    <Compile Include="Features\MouseMoveOverEngineEventArgs.cs" />
     <Compile Include="IEngineEvents.cs" />
     <Compile Include="IEngineStatus.cs" />
     <Compile Include="EnginePointerMovedEventArgs.cs" />

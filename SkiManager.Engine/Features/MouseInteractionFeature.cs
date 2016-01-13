@@ -10,59 +10,119 @@ namespace SkiManager.Engine.Features
     public sealed class MouseInteractionFeature : EngineFeature
     {
         private readonly Dictionary<Entity, IObservable<MouseEnterEngineEventArgs>> _enterObservablesLookup = new Dictionary<Entity, IObservable<MouseEnterEngineEventArgs>>();
+        private readonly Dictionary<Entity, IObservable<MouseMoveOverEngineEventArgs>> _moveOverObservablesLookup = new Dictionary<Entity, IObservable<MouseMoveOverEngineEventArgs>>();
         private readonly Dictionary<Entity, IObservable<MouseLeaveEngineEventArgs>> _leaveObservablesLookup = new Dictionary<Entity, IObservable<MouseLeaveEngineEventArgs>>();
-        private Entity _currentMouseOverEntity;
-        private Vector3 _lastMousePosition = Vector3.Zero;
+        private readonly Dictionary<Entity, MousePointerOverEntityState> _lastEntityStates = new Dictionary<Entity, MousePointerOverEntityState>();
 
+        private Vector3 _lastMousePosition = Vector3.Zero;
+        private IDisposable _subscription;
+
+
+        public static IObservable<MouseEnterEngineEventArgs> MouseEnterFor(Entity entity)
+        {
+            EnsureAvailabilityOfFeatureAndTransform(entity);
+
+            var feature = Engine.Current.GetFeature<MouseInteractionFeature>();
+
+            if (!feature._enterObservablesLookup.ContainsKey(entity))
+            {
+                feature._enterObservablesLookup.Add(entity, CreateMouseEnterForEntity(entity, feature));
+            }
+            EnsureEntryInLastMousePointerStates(entity, feature);
+
+            return feature._enterObservablesLookup[entity].AsObservable();
+        }
+
+        public static IObservable<MouseMoveOverEngineEventArgs> MouseMoveOverFor(Entity entity)
+        {
+            EnsureAvailabilityOfFeatureAndTransform(entity);
+
+            var feature = Engine.Current.GetFeature<MouseInteractionFeature>();
+
+            if (!feature._moveOverObservablesLookup.ContainsKey(entity))
+            {
+                feature._moveOverObservablesLookup.Add(entity, CreateMouseMoveOverForEntity(entity, feature));
+            }
+            EnsureEntryInLastMousePointerStates(entity, feature);
+
+            return feature._moveOverObservablesLookup[entity].AsObservable();
+        }
+
+        public static IObservable<MouseLeaveEngineEventArgs> MouseLeaveFor(Entity entity)
+        {
+            EnsureAvailabilityOfFeatureAndTransform(entity);
+
+            var feature = Engine.Current.GetFeature<MouseInteractionFeature>();
+
+            if (!feature._leaveObservablesLookup.ContainsKey(entity))
+            {
+                feature._leaveObservablesLookup.Add(entity, CreateMouseLeaveForEntity(entity, feature));
+            }
+            EnsureEntryInLastMousePointerStates(entity, feature);
+
+            return feature._leaveObservablesLookup[entity].AsObservable();
+        }
+
+        private static void EnsureEntryInLastMousePointerStates(Entity entity, MouseInteractionFeature feature)
+        {
+            if (!feature._lastEntityStates.ContainsKey(entity))
+            {
+                feature._lastEntityStates.Add(entity, MousePointerOverEntityState.Unknown);
+            }
+        }
 
         protected override void Attach()
         {
-            // Method intentionally left empty.
+            _subscription = Engine.Events.PointerMoved.Subscribe(StorePointerPosition);
         }
 
         protected override void Detach()
         {
-            // Method intentionally left empty.
+            _subscription.Dispose();
         }
 
-        public static IObservable<MouseEnterEngineEventArgs> MouseEnterFor(Entity entity)
+        private static MouseEnterEngineEventArgs CreateMouseEnterEventArgs(Entity entity, MouseInteractionFeature feature, EngineUpdateEventArgs args)
         {
-            if (!Engine.Current.HasFeature<MouseInteractionFeature>())
-            {
-                throw new MissingFeatureException(typeof(MouseInteractionFeature));
-            }
-
-            if (!entity.Implements<IReadOnlyTransform>())
-            {
-                throw new MissingImplementationException(typeof(IReadOnlyTransform));
-            }
-
-            var feature = Engine.Current.GetFeature<MouseInteractionFeature>();
-            var subjects = feature._enterObservablesLookup;
-            if (!subjects.ContainsKey(entity))
-            {
-                subjects.Add(entity, CreateMouseEnteredForEntity(entity, feature));
-            }
-
-            return subjects[entity].AsObservable();
+            return new MouseEnterEngineEventArgs(Engine.Current, feature._lastMousePosition);
         }
 
-        private static IObservable<MouseEnterEngineEventArgs> CreateMouseEnteredForEntity(Entity entity,
+        private static IObservable<MouseEnterEngineEventArgs> CreateMouseEnterForEntity(Entity entity,
             MouseInteractionFeature feature)
         {
-            var pointerMovedConverted = Engine.Current.Events.PointerMoved.Select(args => new PointerOrUpdateEventArgs { PointerArgs = args });
-            var updateConverted = Engine.Current.Events.Update.Select(args => new PointerOrUpdateEventArgs { UpdateArgs = args });
-            var merged = pointerMovedConverted.Merge(updateConverted);
-            return
-                merged.Where(args => IsMousePointerEnteringEntity(entity, feature, args))
+            return Engine.Current.Events.Update.Where(args => IsMousePointerEnteringEntity(entity, feature, args))
                     .Select(args => CreateMouseEnterEventArgs(entity, feature, args))
                     .Publish()
                     .RefCount();
         }
 
-        private static MouseEnterEngineEventArgs CreateMouseEnterEventArgs(Entity entity, MouseInteractionFeature feature, PointerOrUpdateEventArgs args) => new MouseEnterEngineEventArgs(Engine.Current);
+        private static MouseMoveOverEngineEventArgs CreateMouseMoveOverEventArgs(Entity entity, MouseInteractionFeature feature, EnginePointerMovedEventArgs args)
+        {
+            return new MouseMoveOverEngineEventArgs(Engine.Current, feature._lastMousePosition);
+        }
 
-        public static IObservable<MouseLeaveEngineEventArgs> MouseLeaveFor(Entity entity)
+        private static IObservable<MouseMoveOverEngineEventArgs> CreateMouseMoveOverForEntity(Entity entity, MouseInteractionFeature feature)
+        {
+            return Engine.Current.Events.PointerMoved.Where(args => IsMousePointerMovingOverEntity(entity, feature, args))
+                    .Select(args => CreateMouseMoveOverEventArgs(entity, feature, args))
+                    .Publish()
+                    .RefCount();
+        }
+
+        private static MouseLeaveEngineEventArgs CreateMouseLeaveEventArgs(Entity entity, MouseInteractionFeature feature, EngineUpdateEventArgs args)
+        {
+            return new MouseLeaveEngineEventArgs(Engine.Current, feature._lastMousePosition);
+        }
+
+        private static IObservable<MouseLeaveEngineEventArgs> CreateMouseLeaveForEntity(Entity entity,
+            MouseInteractionFeature feature)
+        {
+            return Engine.Current.Events.Update.Where(args => IsMousePointerLeavingEntity(entity, feature, args))
+                    .Select(args => CreateMouseLeaveEventArgs(entity, feature, args))
+                    .Publish()
+                    .RefCount();
+        }
+
+        private static void EnsureAvailabilityOfFeatureAndTransform(Entity entity)
         {
             if (!Engine.Current.HasFeature<MouseInteractionFeature>())
             {
@@ -73,62 +133,35 @@ namespace SkiManager.Engine.Features
             {
                 throw new MissingImplementationException(typeof(IReadOnlyTransform));
             }
-
-            var feature = Engine.Current.GetFeature<MouseInteractionFeature>();
-            var subjects = feature._leaveObservablesLookup;
-            if (!subjects.ContainsKey(entity))
-            {
-                subjects.Add(entity, CreateMouseLeaveForEntity(entity, feature));
-            }
-
-            return subjects[entity].AsObservable();
         }
 
-        private static IObservable<MouseLeaveEngineEventArgs> CreateMouseLeaveForEntity(Entity entity,
-            MouseInteractionFeature feature)
+        private static bool IsMousePointerEnteringEntity(Entity entity, MouseInteractionFeature feature, EngineUpdateEventArgs args)
         {
-            var pointerMovedConverted = Engine.Current.Events.PointerMoved.Select(args => new PointerOrUpdateEventArgs { PointerArgs = args });
-            var updateConverted = Engine.Current.Events.Update.Select(args => new PointerOrUpdateEventArgs { UpdateArgs = args });
-            var merged = pointerMovedConverted.Merge(updateConverted);
-            return
-                merged.Where(args => IsMousePointerLeavingEntity(entity, feature, args))
-                    .Select(args => CreateMouseLeaveEventArgs(entity, feature, args))
-                    .Publish()
-                    .RefCount();
-        }
-
-        private static MouseLeaveEngineEventArgs CreateMouseLeaveEventArgs(Entity entity, MouseInteractionFeature feature, PointerOrUpdateEventArgs args) => new MouseLeaveEngineEventArgs(Engine.Current);
-
-        private static bool IsMousePointerEnteringEntity(Entity entity, MouseInteractionFeature feature, PointerOrUpdateEventArgs args)
-        {
-            if (args.PointerArgs != null)
+            var isEntering = IsLastMousePositionOverEntity(feature, entity) && feature._lastEntityStates[entity] != MousePointerOverEntityState.Over;
+            if (isEntering)
             {
-                var coordinateSystem = entity.Level.RootEntity.GetImplementation<ICoordinateSystem>(); // TODO this might be better positioned inside the engine?!
-                var mousePosition = coordinateSystem.TransformToWorld3D(args.PointerArgs.Arguments.GetCurrentPoint(args.PointerArgs.Sender).Position.ToVector2());
-                feature._lastMousePosition = mousePosition;
+                feature._lastEntityStates[entity] = MousePointerOverEntityState.Over;
             }
-
-            var isEntering = IsOverEntity(feature, entity) && !Equals(feature._currentMouseOverEntity, entity);
-            feature._currentMouseOverEntity = entity;
             return isEntering;
         }
 
-        private static bool IsMousePointerLeavingEntity(Entity entity, MouseInteractionFeature feature,
-            PointerOrUpdateEventArgs args)
+        private static bool IsMousePointerMovingOverEntity(Entity entity, MouseInteractionFeature feature, EnginePointerMovedEventArgs args)
         {
-            if (args.PointerArgs != null) // TODO refactor to only do this once
-            {
-                var coordinateSystem = entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
-                var mousePosition = coordinateSystem.TransformToWorld3D(args.PointerArgs.Arguments.GetCurrentPoint(args.PointerArgs.Sender).Position.ToVector2());
-                feature._lastMousePosition = mousePosition;
-            }
+            var wasOver = feature._lastEntityStates[entity] == MousePointerOverEntityState.Over;
+            return IsLastMousePositionOverEntity(feature, entity) && wasOver;
+        }
 
-            var isLeaving = !IsOverEntity(feature, entity) && Equals(feature._currentMouseOverEntity, entity);
-            feature._currentMouseOverEntity = null;
+        private static bool IsMousePointerLeavingEntity(Entity entity, MouseInteractionFeature feature, EngineUpdateEventArgs args)
+        {
+            var isLeaving = !IsLastMousePositionOverEntity(feature, entity) && feature._lastEntityStates[entity] == MousePointerOverEntityState.Over;
+            if (isLeaving)
+            {
+                feature._lastEntityStates[entity] = MousePointerOverEntityState.NotOver;
+            }
             return isLeaving;
         }
 
-        private static bool IsOverEntity(MouseInteractionFeature feature, Entity entity)
+        private static bool IsLastMousePositionOverEntity(MouseInteractionFeature feature, Entity entity)
         {
             var transform = entity.GetImplementation<IReadOnlyTransform>();
 
@@ -136,26 +169,18 @@ namespace SkiManager.Engine.Features
             return Vector3.Distance(transform.Position, feature._lastMousePosition) < 6.0f;
         }
 
-        private class PointerOrUpdateEventArgs
+        private void StorePointerPosition(EnginePointerMovedEventArgs args)
         {
-            public EnginePointerMovedEventArgs PointerArgs { get; set; }
-            public EngineUpdateEventArgs UpdateArgs { get; set; }
+            var coordinateSystem = Engine.CurrentLevel.RootEntity.GetImplementation<ICoordinateSystem>(); // TODO this might be better positioned inside the engine?!
+            var mousePosition = coordinateSystem.TransformToWorld3D(args.Arguments.GetCurrentPoint(args.Sender).Position.ToVector2());
+            _lastMousePosition = mousePosition;
         }
-    }
 
-    public sealed class MouseEnterEngineEventArgs : EngineEventArgs
-    {
-        public MouseEnterEngineEventArgs(Engine engine) : base(engine)
+        private enum MousePointerOverEntityState
         {
-
-        }
-    }
-
-    public sealed class MouseLeaveEngineEventArgs : EngineEventArgs
-    {
-        public MouseLeaveEngineEventArgs(Engine engine) : base(engine)
-        {
-
+            Unknown,
+            NotOver,
+            Over
         }
     }
 }

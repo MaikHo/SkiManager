@@ -16,9 +16,9 @@ namespace SkiManager.App
         {
             InitializeComponent();
 
-            Engine.Engine.Current.AddFeature(new MouseInteractionFeature());
-
             Engine.Engine.Current.Attach(Canvas);
+
+            Engine.Engine.Current.AddFeature(new MouseInteractionFeature());
 
             var level = new Level();
 

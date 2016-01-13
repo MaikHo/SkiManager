@@ -60,9 +60,9 @@ namespace SkiManager.Engine
         public static IEnumerable<T> GetImplementations<T>(this Entity entity) where T : class => entity.Behaviors.OfType<T>().ToList();
 
         public static bool ImplementsInChildren<T>(this Entity entity, bool recursive = false) where T : class
-            => entity.Children.Any(_ => _.Implements<T>() || (recursive && _.ImplementsInChildren<T>(true)));
+            => entity.Children.ToList().Any(_ => _.Implements<T>() || (recursive && _.ImplementsInChildren<T>(true)));
 
         public static T GetImplementationInChildren<T>(this Entity entity) where T : class
-            => entity.Children.Select(_ => _.GetImplementation<T>()).FirstOrDefault(_ => _ != null);
+            => entity.Children.ToList().Select(_ => _.GetImplementation<T>()).FirstOrDefault(_ => _ != null);
     }
 }
