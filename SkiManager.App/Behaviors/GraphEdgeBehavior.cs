@@ -1,18 +1,19 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Newtonsoft.Json;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
+using SkiManager.Engine.Interfaces;
 
 namespace SkiManager.App.Behaviors
 {
+    [RequiresImplementation(typeof(ILineTransform))]
     public abstract class GraphEdgeBehavior : ReactiveBehavior, IGraphEdge
     {
-        private Entity _start;
+        private IGraphNode _start;
 
         [JsonProperty]
-        public Entity Start
+        public IGraphNode Start
         {
             get { return _start; }
             set
@@ -21,20 +22,19 @@ namespace SkiManager.App.Behaviors
                 {
                     return;
                 }
-                if (!value.Implements<IGraphNode>())
-                {
-                    throw new InvalidOperationException("Start has to be an IGraphNode!");
-                }
-                _start?.GetImplementation<IGraphNode>().AdjacentEdges.Remove(Entity);
+
+                _start?.Entity?.GetImplementation<IGraphNode>().AdjacentEdges.Remove(Entity);
                 _start = value;
-                _start?.GetImplementation<IGraphNode>().AdjacentEdges.Add(Entity);
+                _start?.Entity?.GetImplementation<IGraphNode>().AdjacentEdges.Add(Entity);
+
+                Entity.GetImplementation<ILineTransform>().Point1 = _start?.Entity?.GetImplementation<ITransform>()?.Position ?? Vector3.Zero;
             }
         }
 
-        private Entity _end;
+        private IGraphNode _end;
 
         [JsonProperty]
-        public Entity End
+        public IGraphNode End
         {
             get { return _end; }
             set
@@ -43,17 +43,16 @@ namespace SkiManager.App.Behaviors
                 {
                     return;
                 }
-                if (!value.Implements<IGraphNode>())
-                {
-                    throw new InvalidOperationException("End has to be an IGraphNode!");
-                }
-                _end?.GetImplementation<IGraphNode>().AdjacentEdges.Remove(Entity);
+
+                _end?.Entity?.GetImplementation<IGraphNode>().AdjacentEdges.Remove(Entity);
                 _end = value;
-                _end?.GetImplementation<IGraphNode>().AdjacentEdges.Add(Entity);
+                _end?.Entity?.GetImplementation<IGraphNode>().AdjacentEdges.Add(Entity);
+
+                Entity.GetImplementation<ILineTransform>().Point2 = _end?.Entity?.GetImplementation<ITransform>()?.Position ?? Vector3.Zero;
             }
         }
 
-        public float Length => Vector3.Distance(Start.GetBehavior<TransformBehavior>().Position, End.GetBehavior<TransformBehavior>().Position);
+        public float Length => Vector3.Distance(Start?.Entity?.GetBehavior<TransformBehavior>().Position ?? Vector3.Zero, End?.Entity?.GetBehavior<TransformBehavior>().Position ?? Vector3.Zero);
 
         [JsonProperty]
         public bool IsBidirectional { get; set; }

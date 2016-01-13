@@ -26,6 +26,8 @@ namespace SkiManager.App
 
         public static Entity CashierBooth { get; }
 
+        public static Entity Slope { get; }
+
         static EntityTemplates()
         {
             Car = new Entity { Name = nameof(Car) };
@@ -56,7 +58,7 @@ namespace SkiManager.App
             Customer.GetBehavior<CustomerBehavior>().Inventory.AddItem(Items.Money, 100);
 
             Road = new Entity { Name = nameof(Road) };
-            Road.AddBehavior(new TransformBehavior());
+            Road.AddBehavior(new LineTransformBehavior());
             Road.AddBehavior(new RoadBehavior());
 
             MapIO = new Entity { Name = nameof(MapIO) };
@@ -102,6 +104,10 @@ namespace SkiManager.App
             cbCashier1.SetParent(CashierBooth, Reasons.TemplateCreation);
             CashierBooth.GetBehavior<SubgraphEntranceBehavior>().SubgraphNode = cbQueue.GetImplementation<IGraphNode>();
 
+            Slope = new Entity { Name = nameof(Slope) };
+            Slope.AddBehavior(new LineTransformBehavior());
+            Slope.AddBehavior(new SlopeBehavior());
+
             // TODO remove debug code
             Car.AddBehavior(new DebugBehavior());
             Customer.AddBehavior(new DebugBehavior());
@@ -112,6 +118,7 @@ namespace SkiManager.App
             SingleCashier.AddBehavior(new DebugBehavior());
             WaitingQueue.AddBehavior(new DebugBehavior());
             CashierBooth.AddBehavior(new DebugBehavior());
+            Slope.AddBehavior(new DebugBehavior());
         }
     }
 }

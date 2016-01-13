@@ -58,12 +58,14 @@ namespace SkiManager.App.Behaviors
             {
                 lock (_lock)
                 {
-                    if (!_hasTargetReached)
+                    if (_hasTargetReached)
                     {
-                        _hasTargetReached = true;
-                        Entity.SetParent(Target, Reasons.TargetReached);
-                        _targetReached.OnNext(new TargetReachedEngineEventArgs(Engine.Engine.Current, Target));
+                        return;
                     }
+
+                    _hasTargetReached = true;
+                    var parentEnterResult = Entity.SetParent(Target, Reasons.TargetReached);
+                    _targetReached.OnNext(new TargetReachedEngineEventArgs(Engine.Engine.Current, Target, parentEnterResult));
                 }
             }
             else
@@ -75,8 +77,8 @@ namespace SkiManager.App.Behaviors
                         _lastTarget?.GetImplementation<IGraphNode>()?
                             .AdjacentEdges.FirstOrDefault(
                                 _ =>
-                                    (_.GetImplementation<IGraphEdge>().Start == _lastTarget && _.GetImplementation<IGraphEdge>().End == Target)
-                                    || (_.GetImplementation<IGraphEdge>().End == _lastTarget && _.GetImplementation<IGraphEdge>().Start == Target));
+                                    (Equals(_.GetImplementation<IGraphEdge>().Start.Entity, _lastTarget) && Equals(_.GetImplementation<IGraphEdge>().End.Entity, Target))
+                                    || (Equals(_.GetImplementation<IGraphEdge>().End.Entity, _lastTarget) && Equals(_.GetImplementation<IGraphEdge>().Start.Entity, Target)));
                     Entity.SetParent(location, Reasons.MovingStarted);
                 }
                 var movementVector = Vector3.Normalize(targetPosition - thisPosition);

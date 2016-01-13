@@ -67,13 +67,13 @@ namespace SkiManager.App
         {
             foreach (var edge in node.AdjacentEdges.Select(_ => _.GetImplementation<IGraphEdge>()))
             {
-                if (edge.Start == node.Entity)
+                if (Equals(edge.Start.Entity, node.Entity))
                 {
-                    yield return Tuple.Create(edge.End.GetImplementation<IGraphNode>(), edge.Length);
+                    yield return Tuple.Create(edge.End, edge.Length);
                 }
                 else if (ignoreDirection || edge.IsBidirectional)
                 {
-                    yield return Tuple.Create(edge.Start.GetImplementation<IGraphNode>(), edge.Length);
+                    yield return Tuple.Create(edge.Start, edge.Length);
                 }
             }
         }

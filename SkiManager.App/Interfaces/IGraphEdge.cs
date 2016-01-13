@@ -4,9 +4,9 @@ namespace SkiManager.App.Interfaces
 {
     public interface IGraphEdge : ILocation
     {
-        Entity Start { get; }
+        IGraphNode Start { get; }
 
-        Entity End { get; }
+        IGraphNode End { get; }
 
         bool IsBidirectional { get; }
 

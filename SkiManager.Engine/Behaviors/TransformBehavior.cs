@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 
 using SkiManager.Engine.Interfaces;
-using System;
 
 namespace SkiManager.Engine.Behaviors
 {

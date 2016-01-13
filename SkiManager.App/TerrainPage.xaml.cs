@@ -9,6 +9,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using SkiManager.App.Interfaces;
 
 namespace SkiManager.App
 {
@@ -49,7 +50,7 @@ namespace SkiManager.App
                 SnowSprite = "Terrain.Snow",
                 RockSprite = "Terrain.Rock"
             };
-            
+
             level.RootEntity.AddBehavior(spriteManager);
             level.RootEntity.AddBehavior(terrain);
             level.RootEntity.AddBehavior(terrainRenderer);
@@ -94,18 +95,16 @@ namespace SkiManager.App
             {
                 var road = container.Level.Instantiate(EntityTemplates.Road, container);
                 road.Name = $"Road{i}";
-                road.AddBehavior(new LineRendererBehavior(
-                    e => e.GetBehavior<GraphEdgeBehavior>().Start.GetBehavior<TransformBehavior>().Position,
-                    e => e.GetBehavior<GraphEdgeBehavior>().End.GetBehavior<TransformBehavior>().Position));
+                road.AddBehavior(new LineRendererBehavior());
                 road.GetBehavior<LineRendererBehavior>().Sprite = "Road";
                 var edge = road.GetBehavior<GraphEdgeBehavior>();
-                edge.Start = connectors[i];
-                edge.End = connectors[i + 1];
+                edge.Start = connectors[i].GetImplementation<IGraphNode>();
+                edge.End = connectors[i + 1].GetImplementation<IGraphNode>();
 
                 return road;
             }).ToArray();
         }
-        
+
         private void scrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             var scaleChangeRatio = canvas.DpiScale / scrollViewer.ZoomFactor;

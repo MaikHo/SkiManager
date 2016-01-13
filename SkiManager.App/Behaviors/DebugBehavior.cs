@@ -15,10 +15,17 @@ namespace SkiManager.App.Behaviors
 
         private void OnDraw(EngineDrawEventArgs args)
         {
-            var entityLabel = Entity?.Name + "[" + Entity?.Id + "], Loc: " + (Entity?.Parent?.Name ?? "<none>");
+            if (Entity == null)
+            {
+                return;
+            }
+
+            var entityLabel = Entity.Name + "[" + Entity.Id + "], Loc: " + (Entity.Parent?.Name ?? "<none>");
             var position = Entity.GetBehavior<TransformBehavior>()?.Position.XZ();
             if (position == null)
+            {
                 return;
+            }
 
             args.DrawingSession.DrawText(
                 entityLabel,

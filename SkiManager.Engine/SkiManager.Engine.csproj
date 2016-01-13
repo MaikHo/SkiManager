@@ -114,6 +114,7 @@
     <Compile Include="Behaviors\BasicCoordinateSystem.cs" />
     <Compile Include="Behaviors\CollisionEventArgs.cs" />
     <Compile Include="Behaviors\LineRendererBehavior.cs" />
+    <Compile Include="Behaviors\LineTransformBehavior.cs" />
     <Compile Include="Behaviors\ShapeColliderBehavior.cs" />
     <Compile Include="Behaviors\SimpleGeometryRendererBehavior.cs" />
     <Compile Include="Behaviors\TerrainBehavior.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="IEngineEvents.cs" />
     <Compile Include="IEngineStatus.cs" />
     <Compile Include="EnginePointerMovedEventArgs.cs" />
+    <Compile Include="Interfaces\IConditionalChildAccess.cs" />
     <Compile Include="Interfaces\ICoordinateSystem.cs" />
     <Compile Include="Interfaces\IRenderer.cs" />
     <Compile Include="Interfaces\ITransform.cs" />

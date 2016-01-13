@@ -81,7 +81,8 @@ namespace SkiManager.Engine
         public SetParentResult SetParent(Entity newParent, Reason reason)
         {
             // check whether operation is allowed
-            if (newParent?.Implements<IConditionalChildAccess>() != true ||
+            if (newParent != null &&
+                newParent.Implements<IConditionalChildAccess>() &&
                 !newParent.GetImplementation<IConditionalChildAccess>().CanEnter(this, reason))
             {
                 return SetParentResult.AccessDenied;

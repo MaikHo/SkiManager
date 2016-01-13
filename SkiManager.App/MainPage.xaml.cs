@@ -39,23 +39,19 @@ namespace SkiManager.App
 
             var road = level.Instantiate(EntityTemplates.Road);
             road.AddBehavior(
-                new LineRendererBehavior(
-                    _ => _.GetBehavior<RoadBehavior>().Start.GetBehavior<TransformBehavior>().Position,
-                    _ => _.GetBehavior<RoadBehavior>().End.GetBehavior<TransformBehavior>().Position)
+                new LineRendererBehavior
                 {
                     Color = Colors.DarkGray
                 });
             var roadB = road.GetBehavior<RoadBehavior>();
-            roadB.Start = mapio;
-            roadB.End = parkingLot;
+            roadB.Start = mapio.GetImplementation<IGraphNode>();
+            roadB.End = parkingLot.GetImplementation<IGraphNode>();
             road.IsEnabled = true;
 
             var roadLotToCashier = level.Instantiate(EntityTemplates.Road);
             roadLotToCashier.Name = "Road between parking lot and cashier booth";
             roadLotToCashier.AddBehavior(
-                new LineRendererBehavior(
-                    _ => _.GetBehavior<RoadBehavior>().Start.GetBehavior<TransformBehavior>().Position,
-                    _ => _.GetBehavior<RoadBehavior>().End.GetBehavior<TransformBehavior>().Position)
+                new LineRendererBehavior
                 {
                     Color = Colors.DarkGray
                 });
@@ -65,8 +61,8 @@ namespace SkiManager.App
             cashierBooth.AddBehavior(new SimpleGeometryRendererBehavior { Geometry = SimpleGeometry.Square, Color = Colors.Brown, Size = new Windows.Foundation.Size(15, 6), FillGeometry = true });
             cashierBooth.GetBehavior<SubgraphEntranceBehavior>().SubgraphNode = cashierBooth.GetImplementationInChildren<IWaitingQueue>().Entity.GetImplementation<IGraphNode>();
             roadB = roadLotToCashier.GetBehavior<RoadBehavior>();
-            roadB.Start = parkingLot;
-            roadB.End = cashierBooth;
+            roadB.Start = parkingLot.GetImplementation<IGraphNode>();
+            roadB.End = cashierBooth.GetImplementation<IGraphNode>();
             roadB.IsEnabled = true;
             cashierBooth.IsEnabled = true;
 
@@ -78,15 +74,6 @@ namespace SkiManager.App
             Engine.Engine.Current.LoadLevel(level);
 
             Engine.Engine.Current.StartOrResume();
-        }
-
-        private void SelectNewTarget(TargetReachedEngineEventArgs args)
-        {
-            Engine.Engine.Current.CurrentLevel.Entities.First(_ => _.Name == "Movable")
-                .GetBehavior<MovableBehavior>()
-                .SetTarget(args.ReachedTarget.Name == "Node1"
-                    ? Engine.Engine.Current.CurrentLevel.Entities.First(_ => _.Name == "Node2")
-                    : Engine.Engine.Current.CurrentLevel.Entities.First(_ => _.Name == "Node1"));
         }
 
         private void Button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Graphics.Canvas.Brushes;
 using System;
-using System.Numerics;
 using System.Reactive.Linq;
 using Windows.UI;
 
@@ -9,14 +8,11 @@ using SkiManager.Engine.Sprites;
 
 namespace SkiManager.Engine.Behaviors
 {
+    [RequiresImplementation(typeof(ILineTransform))]
     public sealed class LineRendererBehavior : ReactiveBehavior, IRenderer
     {
         private SpriteReference _sprite;
         private ICanvasBrush _spriteBrush;
-
-        public Func<Entity, Vector3> StartPointSelector { get; set; }
-
-        public Func<Entity, Vector3> EndPointSelector { get; set; }
 
         /// <summary>
         /// The line color. This value is ignored when a sprite is specified.
@@ -42,15 +38,6 @@ namespace SkiManager.Engine.Behaviors
 
         public bool IsVisible { get; set; } = true;
 
-        public LineRendererBehavior() : this(null, null)
-        { }
-
-        public LineRendererBehavior(Func<Entity, Vector3> startPointSelector, Func<Entity, Vector3> endPointSelector)
-        {
-            StartPointSelector = startPointSelector;
-            EndPointSelector = endPointSelector;
-        }
-
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
             args.TrackSubscription(Draw.Where(_ => IsVisible).Subscribe(OnRender));
@@ -58,14 +45,16 @@ namespace SkiManager.Engine.Behaviors
 
         private void OnRender(EngineDrawEventArgs args)
         {
-            if (StartPointSelector == null || EndPointSelector == null)
+            var coordinateSystem = Entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
+            var lineTransform = Entity.GetImplementation<ILineTransform>();
+
+            if (coordinateSystem == null || lineTransform == null)
             {
                 return;
             }
 
-            var coordinateSystem = Entity.Level.RootEntity.GetImplementation<ICoordinateSystem>();
-            var startPoint = coordinateSystem.TransformToDips(StartPointSelector(Entity));
-            var endPoint = coordinateSystem.TransformToDips(EndPointSelector(Entity));
+            var startPoint = coordinateSystem.TransformToDips(lineTransform.Point1);
+            var endPoint = coordinateSystem.TransformToDips(lineTransform.Point2);
 
             var sprite = Sprite.Resolve(Entity);
 

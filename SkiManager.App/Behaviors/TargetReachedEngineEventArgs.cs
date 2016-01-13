@@ -6,9 +6,12 @@ namespace SkiManager.App.Behaviors
     {
         public Entity ReachedTarget { get; }
 
-        public TargetReachedEngineEventArgs(Engine.Engine engine, Entity reachedTarget) : base(engine)
+        public SetParentResult ParentEnterResult { get; }
+
+        public TargetReachedEngineEventArgs(Engine.Engine engine, Entity reachedTarget, SetParentResult parentEnterResult) : base(engine)
         {
             ReachedTarget = reachedTarget;
+            ParentEnterResult = parentEnterResult;
         }
     }
 }

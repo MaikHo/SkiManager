@@ -105,6 +105,7 @@
     <Compile Include="Behaviors\MapExitBehavior.cs" />
     <Compile Include="Behaviors\MovableBehavior.cs" />
     <Compile Include="Behaviors\ParkingLotBehavior.cs" />
+    <Compile Include="Behaviors\SlopeBehavior.cs" />
     <Compile Include="Behaviors\WaitingQueueBehavior.cs" />
     <Compile Include="Behaviors\RoadBehavior.cs" />
     <Compile Include="Behaviors\SpawnerBehavior.cs" />
