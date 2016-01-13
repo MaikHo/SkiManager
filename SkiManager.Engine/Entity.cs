@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reactive.Subjects;
 using Newtonsoft.Json;
+using SkiManager.Engine.Interfaces;
 
 namespace SkiManager.Engine
 {
@@ -77,8 +78,16 @@ namespace SkiManager.Engine
             ParentChanged.Dispose();
         }
 
-        public void SetParent(Entity newParent, Reason reason)
+        public SetParentResult SetParent(Entity newParent, Reason reason)
         {
+            // check whether operation is allowed
+            if (newParent?.Implements<IConditionalChildAccess>() != true ||
+                !newParent.GetImplementation<IConditionalChildAccess>().CanEnter(this, reason))
+            {
+                return SetParentResult.AccessDenied;
+            }
+
+            // remove from old parent and set parent
             var oldParent = Parent;
             if (oldParent != null)
             {
@@ -86,7 +95,7 @@ namespace SkiManager.Engine
                 if (Parent != oldParent)
                 {
                     // Parent has been set in a childleave handler, therefore return
-                    return;
+                    return SetParentResult.RedirectedOnLeave;
                 }
                 Parent._children.Remove(this);
             }
@@ -100,10 +109,11 @@ namespace SkiManager.Engine
                 if (Parent != newParent)
                 {
                     // Parent has been set in a childenter handler, therefore return
-                    return;
+                    return SetParentResult.RedirectedOnEnter;
                 }
             }
             ParentChanged.OnNext(new ParentChangedEngineEventArgs(Engine.Current, oldParent, newParent, reason));
+            return SetParentResult.Set;
         }
 
         public Entity Clone()
@@ -137,5 +147,13 @@ namespace SkiManager.Engine
             }
             return (obj as Entity).Id == Id; // TODO check if this is sufficient
         }
+    }
+
+    public enum SetParentResult
+    {
+        Set,
+        AccessDenied,
+        RedirectedOnLeave,
+        RedirectedOnEnter
     }
 }
