@@ -6,19 +6,18 @@ using SkiManager.App.Behaviors;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+using SkiManager.Engine.Features;
 
 namespace SkiManager.App
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public MainPage()
         {
             InitializeComponent();
+
+            Engine.Engine.Current.AddFeature(new MouseInteractionFeature());
+
             Engine.Engine.Current.Attach(Canvas);
 
             var level = new Level();

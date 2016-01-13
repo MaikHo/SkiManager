@@ -115,6 +115,8 @@
     <Compile Include="Behaviors\CollisionEventArgs.cs" />
     <Compile Include="Behaviors\LineRendererBehavior.cs" />
     <Compile Include="Behaviors\LineTransformBehavior.cs" />
+    <Compile Include="Behaviors\MissingBehaviorException.cs" />
+    <Compile Include="Behaviors\MissingImplementationException.cs" />
     <Compile Include="Behaviors\ShapeColliderBehavior.cs" />
     <Compile Include="Behaviors\SimpleGeometryRendererBehavior.cs" />
     <Compile Include="Behaviors\TerrainBehavior.cs" />
@@ -134,6 +136,8 @@
     <Compile Include="Entity.cs" />
     <Compile Include="Features\EngineFeature.cs" />
     <Compile Include="EngineStatus.cs" />
+    <Compile Include="Features\MissingFeatureException.cs" />
+    <Compile Include="Features\MouseInteractionFeature.cs" />
     <Compile Include="IEngineEvents.cs" />
     <Compile Include="IEngineStatus.cs" />
     <Compile Include="EnginePointerMovedEventArgs.cs" />
