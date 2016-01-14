@@ -69,7 +69,6 @@ namespace SkiManager.Engine
                 .Subscribe(async _ => await control.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, control.Invalidate));
 
             // create update observable
-            // TODO: Correct arguments, make interval configurable
             Update = Observable.Interval(TimeSpan.FromMilliseconds(50))
                 .Select(_ =>
                 {
