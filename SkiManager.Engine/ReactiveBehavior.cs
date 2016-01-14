@@ -15,7 +15,7 @@ namespace SkiManager.Engine
 
         [JsonProperty]
         public bool IsEnabled { get; set; } = true;
-        
+
         public bool IsEffectivelyEnabled => IsEnabled && (Entity?.IsEffectivelyEnabled ?? false);
 
 
@@ -30,14 +30,14 @@ namespace SkiManager.Engine
 
         internal void LoadedInternal()
         {
-            Draw = Engine.Current.Events.Draw.Where(CanReceiveEvent).Publish().RefCount();
-            Update = Engine.Current.Events.Update.Where(CanReceiveEvent).Publish().RefCount();
-            EarlyCreateResources = Engine.Current.Events.EarlyCreateResources.Where(CanReceiveEvent).Publish().RefCount();
-            CreateResources = Engine.Current.Events.CreateResources.Where(CanReceiveEvent).Publish().RefCount();
-            PointerMoved = Engine.Current.Events.PointerMoved.Where(CanReceiveEvent).Publish().RefCount();
-            ChildEnter = Entity.ChildEnter.Where(CanReceiveEvent).Publish().RefCount();
-            ChildLeave = Entity.ChildLeave.Where(CanReceiveEvent).Publish().RefCount();
-            ParentChanged = Entity.ParentChanged.Where(CanReceiveEvent).Publish().RefCount();
+            Draw = Engine.Current.Events.Draw.Where(_ => CanReceiveEvent(_, true)).Publish().RefCount();
+            Update = Engine.Current.Events.Update.Where(_ => CanReceiveEvent(_, false)).Publish().RefCount();
+            EarlyCreateResources = Engine.Current.Events.EarlyCreateResources.Where(_ => CanReceiveEvent(_, false)).Publish().RefCount();
+            CreateResources = Engine.Current.Events.CreateResources.Where(_ => CanReceiveEvent(_, false)).Publish().RefCount();
+            PointerMoved = Engine.Current.Events.PointerMoved.Where(_ => CanReceiveEvent(_, false)).Publish().RefCount();
+            ChildEnter = Entity.ChildEnter.Where(_ => CanReceiveEvent(_, false)).Publish().RefCount();
+            ChildLeave = Entity.ChildLeave.Where(_ => CanReceiveEvent(_, false)).Publish().RefCount();
+            ParentChanged = Entity.ParentChanged.Where(_ => CanReceiveEvent(_, false)).Publish().RefCount();
 
             _trackedSubscriptions.Clear();
             var args = new BehaviorLoadedEventArgs(_trackedSubscriptions);
@@ -83,7 +83,7 @@ namespace SkiManager.Engine
             Entity = null;
         }
 
-        private bool CanReceiveEvent(EngineEventArgs args) => IsEffectivelyEnabled;
+        private bool CanReceiveEvent(EngineEventArgs args, bool ignoreEnginePause) => IsEffectivelyEnabled && (ignoreEnginePause || !Engine.Current.Status.IsPaused);
     }
 }
     ;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SkiManager.Engine.Behaviors;
 using System.Linq;
 
@@ -6,6 +7,12 @@ namespace SkiManager.Engine
 {
     public sealed class Level
     {
+        public DateTime StartDate { get; internal set; } = DateTime.MinValue;
+
+        public TimeSpan GameTime { get; internal set; } = TimeSpan.Zero;
+
+        public float TimeScale { get; set; } = 1.0f;
+
         public Entity RootEntity { get; }
 
         private readonly List<Entity> _entities;

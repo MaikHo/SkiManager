@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using SkiManager.App.Behaviors;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
@@ -74,12 +76,35 @@ namespace SkiManager.App
 
             Engine.Engine.Current.LoadLevel(level);
 
-            Engine.Engine.Current.StartOrResume();
+            Engine.Engine.Current.Events.Update.Subscribe(async args =>
+            {
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () => TimingBlock.Text = $"GameTime: {args.GameTime}{Environment.NewLine}DeltaTime: {args.DeltaTime}");
+            });
+
+            //Engine.Engine.Current.StartOrResume();
         }
 
         private void Button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             Frame.Navigate(typeof(TerrainPage));
+        }
+
+        private void ToggleButton_Checked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Engine.Engine.Current.StartOrResume();
+        }
+
+        private void ToggleButton_Unchecked(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Engine.Engine.Current.Pause();
+        }
+
+        private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (Engine.Engine.Current?.CurrentLevel?.TimeScale != null)
+            {
+                Engine.Engine.Current.CurrentLevel.TimeScale = (float)e.NewValue;
+            }
         }
     }
 }

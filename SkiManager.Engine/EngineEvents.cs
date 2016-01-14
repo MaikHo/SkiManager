@@ -16,6 +16,8 @@ namespace SkiManager.Engine
         private Engine _engine;
         private readonly HashSet<RenderLayer> _renderLayers = new HashSet<RenderLayer>();
 
+        internal DateTime LastUpdateTime { get; set; }
+
         private readonly Subject<EngineDrawEventArgs> _draw = new Subject<EngineDrawEventArgs>();
         public IObservable<EngineDrawEventArgs> Draw => _draw.AsObservable();
 
@@ -41,18 +43,25 @@ namespace SkiManager.Engine
                 _engine = engine
             };
 
+            events.AttachCore(engine, control);
+
+            return events;
+        }
+
+        private void AttachCore(Engine engine, CanvasVirtualControl control)
+        {
             // register default RenderLayers
             foreach (var layer in RenderLayers.GetAllLayers())
             {
-                events.RegisterRenderLayer(layer);
+                RegisterRenderLayer(layer);
             }
 
             // attach to events
-            control.RegionsInvalidated += events.RaiseDrawOnRegionsInvalidated;
+            control.RegionsInvalidated += RaiseDrawOnRegionsInvalidated;
 
-            control.CreateResources += events.RaiseCreateResources;
+            control.CreateResources += RaiseCreateResources;
 
-            control.PointerMoved += events.RaisePointerMoved;
+            control.PointerMoved += RaisePointerMoved;
 
             // force regular draw
             // TODO make configurable
@@ -61,9 +70,19 @@ namespace SkiManager.Engine
 
             // create update observable
             // TODO: Correct arguments, make interval configurable
-            events.Update = Observable.Interval(TimeSpan.FromMilliseconds(100)).Select(_ => new EngineUpdateEventArgs(Engine.Current, null, null)).Publish().RefCount();
-
-            return events;
+            Update = Observable.Interval(TimeSpan.FromMilliseconds(100))
+                .Select(_ =>
+                {
+                    var now = DateTime.Now;
+                    var delta = now - LastUpdateTime;
+                    delta = new TimeSpan((long)(delta.Ticks * _engine.CurrentLevel.TimeScale));
+                    if (!_engine.Status.IsPaused)
+                    {
+                        _engine.CurrentLevel.GameTime = _engine.CurrentLevel.GameTime + delta;
+                    }
+                    LastUpdateTime = now;
+                    return new EngineUpdateEventArgs(Engine.Current, null, null, delta, _engine.CurrentLevel.GameTime);
+                }).Publish().RefCount();
         }
 
         private void RaisePointerMoved(object sender, PointerRoutedEventArgs e)

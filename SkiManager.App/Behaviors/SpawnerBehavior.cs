@@ -8,16 +8,16 @@ namespace SkiManager.App.Behaviors
     [RequiresImplementation(typeof(IGraphNode))]
     public sealed class SpawnerBehavior : ReactiveBehavior
     {
-        private DateTime _lastUpdate = DateTime.Now.Subtract(TimeSpan.FromSeconds(20));
+        private TimeSpan _timeSinceLastSpawn = TimeSpan.FromSeconds(15);
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(Update.Where(_ =>
+            args.TrackSubscription(Update.Where(a =>
             {
-                var now = DateTime.Now;
-                var result = (now - _lastUpdate).TotalSeconds > 20;
+                _timeSinceLastSpawn += a.DeltaTime;
+                var result = _timeSinceLastSpawn.TotalSeconds > 20;
                 if (result)
-                    _lastUpdate = now;
+                    _timeSinceLastSpawn = TimeSpan.Zero;
                 return result;
             }).Subscribe(OnUpdate));
         }

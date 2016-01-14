@@ -77,11 +77,17 @@ namespace SkiManager.Engine
 
             CurrentLevel = level;
 
+            if (level.StartDate == DateTime.MinValue)
+            {
+                level.StartDate = DateTime.Now;
+            }
+
             CurrentLevel?.Loaded();
         }
 
         public void StartOrResume()
         {
+            _events.LastUpdateTime = DateTime.Now;
             _status.IsPaused = false;
         }
 

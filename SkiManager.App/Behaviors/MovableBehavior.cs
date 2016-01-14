@@ -82,7 +82,7 @@ namespace SkiManager.App.Behaviors
                     Entity.SetParent(location, Reasons.MovingStarted);
                 }
                 var movementVector = Vector3.Normalize(targetPosition - thisPosition);
-                var movementFactor = Speed * 0.1f; // TODO add correct timing from eventargs (this assumes 10 updates per second)
+                var movementFactor = Speed * (float)args.DeltaTime.TotalSeconds;
                 var maxMovementFactor = Vector3.Distance(thisPosition, targetPosition);
                 var newPosition = thisPosition + Math.Min(movementFactor, maxMovementFactor) * movementVector;
                 Entity.GetBehavior<TransformBehavior>().Position = newPosition;
