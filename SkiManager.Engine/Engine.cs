@@ -35,6 +35,20 @@ namespace SkiManager.Engine
             _status.IsPaused = true;
         }
 
+        public void RegisterRenderLayer(RenderLayer renderLayer)
+        {
+            if (Events == null)
+            {
+                throw new InvalidOperationException("Engine has to be attached to register render layers.");
+            }
+            if (!_status.IsPaused)
+            {
+                throw new InvalidOperationException("Engine may not be running when registering render layers.");
+            }
+
+            _events.RegisterRenderLayer(renderLayer);
+        }
+
         public void AddFeature(EngineFeature feature)
         {
             if (feature.IsAttached)

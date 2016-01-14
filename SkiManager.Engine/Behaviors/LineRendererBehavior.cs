@@ -37,10 +37,11 @@ namespace SkiManager.Engine.Behaviors
         }
 
         public bool IsVisible { get; set; } = true;
+        public RenderLayer RenderLayer { get; set; } = RenderLayer.Default;
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(Draw.Where(_ => IsVisible).Subscribe(OnRender));
+            args.TrackSubscription(Draw.WhereShouldRender(this).Subscribe(OnRender));
         }
 
         private void OnRender(EngineDrawEventArgs args)

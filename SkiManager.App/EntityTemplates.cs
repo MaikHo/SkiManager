@@ -111,14 +111,6 @@ namespace SkiManager.App
             // TODO remove debug code
             Car.AddBehavior(new DebugBehavior());
             Customer.AddBehavior(new DebugBehavior());
-            Road.AddBehavior(new DebugBehavior());
-            MapIO.AddBehavior(new DebugBehavior());
-            ParkingLot.AddBehavior(new DebugBehavior());
-            GraphConnector.AddBehavior(new DebugBehavior());
-            SingleCashier.AddBehavior(new DebugBehavior());
-            WaitingQueue.AddBehavior(new DebugBehavior());
-            CashierBooth.AddBehavior(new DebugBehavior());
-            Slope.AddBehavior(new DebugBehavior());
         }
     }
 }

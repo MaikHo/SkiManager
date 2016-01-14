@@ -9,9 +9,12 @@ namespace SkiManager.Engine
 
         public CanvasDrawingSession DrawingSession { get; internal set; }
 
-        public EngineDrawEventArgs(Engine engine, CanvasVirtualControl sender, CanvasRegionsInvalidatedEventArgs args) : base(engine, sender)
+        public RenderLayer RenderLayer { get; }
+
+        public EngineDrawEventArgs(Engine engine, CanvasVirtualControl sender, CanvasRegionsInvalidatedEventArgs args, RenderLayer renderLayer) : base(engine, sender)
         {
             Arguments = args;
+            RenderLayer = renderLayer;
         }
     }
 }

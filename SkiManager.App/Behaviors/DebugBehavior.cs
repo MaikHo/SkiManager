@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
+using System.Reactive.Linq;
 using Windows.UI;
+using Microsoft.Graphics.Canvas.Text;
 using SkiManager.Engine;
 using SkiManager.Engine.Behaviors;
 using SkiManager.Engine.Features;
@@ -15,7 +17,7 @@ namespace SkiManager.App.Behaviors
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(Draw.Subscribe(OnDraw));
+            args.TrackSubscription(Draw.Where(a => a.RenderLayer == RenderLayers.TopMost).Subscribe(OnDraw));
             if (Entity.Implements<IReadOnlyTransform>())
             {
                 args.TrackSubscription(MouseInteractionFeature.MouseEnterFor(Entity).Subscribe(OnMouseEnter));
@@ -54,14 +56,14 @@ namespace SkiManager.App.Behaviors
                 return;
             }
 
-            args.DrawingSession.DrawText(
-                entityLabel,
-                position.Value + new Vector2(0, -20),
-                Colors.DarkGray,
-                new Microsoft.Graphics.Canvas.Text.CanvasTextFormat
-                {
-                    FontSize = 11
-                });
+            using (var format = new CanvasTextFormat { FontSize = 11 })
+            {
+                args.DrawingSession.DrawText(
+                    entityLabel,
+                    position.Value + new Vector2(0, -20),
+                    Colors.DarkGray,
+                    format);
+            }
 
             if (_isMouseOver)
             {

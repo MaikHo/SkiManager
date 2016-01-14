@@ -157,6 +157,8 @@
     <Compile Include="Features\TrackMousePositionEngineFeatureEngineExtensions.cs" />
     <Compile Include="ReactiveBehavior.cs" />
     <Compile Include="Reason.cs" />
+    <Compile Include="RenderLayer.cs" />
+    <Compile Include="RenderLayers.cs" />
     <Compile Include="RequiresBehaviorAttribute.cs" />
     <Compile Include="RequiresImplementationAttribute.cs" />
     <Compile Include="Sprites\Sprite.cs" />

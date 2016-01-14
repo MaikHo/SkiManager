@@ -40,7 +40,8 @@ namespace SkiManager.App
             road.AddBehavior(
                 new LineRendererBehavior
                 {
-                    Color = Colors.DarkGray
+                    Color = Colors.DarkGray,
+                    RenderLayer = RenderLayers.Terrain
                 });
             var roadB = road.GetBehavior<RoadBehavior>();
             roadB.Start = mapio.GetImplementation<IGraphNode>();
@@ -52,7 +53,8 @@ namespace SkiManager.App
             roadLotToCashier.AddBehavior(
                 new LineRendererBehavior
                 {
-                    Color = Colors.DarkGray
+                    Color = Colors.DarkGray,
+                    RenderLayer = RenderLayers.Terrain
                 });
 
             var cashierBooth = level.Instantiate(EntityTemplates.CashierBooth);

@@ -18,13 +18,15 @@ namespace SkiManager.Engine.Behaviors
 
         public bool IsVisible { get; set; } = true;
 
+        public RenderLayer RenderLayer { get; set; } = RenderLayer.Default;
+
         public bool DrawCenter { get; set; } = true;
 
         public bool FillGeometry { get; set; }
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(Draw.Where(CanRender).Subscribe(OnRender));
+            args.TrackSubscription(Draw.WhereLayerIsCorrect(this).Where(CanRender).Subscribe(OnRender));
         }
 
         private void OnRender(EngineDrawEventArgs args)
