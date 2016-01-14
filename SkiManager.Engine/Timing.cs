@@ -14,13 +14,15 @@ namespace SkiManager.Engine
 
         public static async Task DelayUntil(Func<bool> condition)
         {
-            await Engine.Current.Events.Update.Where(_ => condition()).FirstAsync();
+            // TODO prevent this from hanging when engine is shutting down
+            await Engine.Current.Events.Update.Where(_ => condition() && !Engine.Current.Status.IsPaused).FirstAsync();
         }
 
         public static async Task DelayUntilWithTimeout(Func<bool> condition, TimeSpan gameTimeTimeout)
         {
             var start = Engine.Current.CurrentLevel.GameTime;
-            await Engine.Current.Events.Update.Where(args => condition() || (args.GameTime - start > gameTimeTimeout)).FirstAsync();
+            // TODO prevent this from hanging when engine is shutting down
+            await Engine.Current.Events.Update.Where(args => (condition() || (args.GameTime - start > gameTimeTimeout)) && !Engine.Current.Status.IsPaused).FirstAsync();
         }
     }
 }
