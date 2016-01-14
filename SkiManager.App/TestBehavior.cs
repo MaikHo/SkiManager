@@ -16,11 +16,11 @@ namespace SkiManager.App
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
-            args.TrackSubscription(Update.Subscribe(OnUpdate));
+            args.TrackSubscription(Draw.Subscribe(OnDraw));
             args.TrackSubscription(Entity.GetBehavior<ShapeColliderBehavior>().Collision.Subscribe(_ => Move()));
         }
 
-        private void OnUpdate(EngineUpdateEventArgs args)
+        private void OnDraw(EngineDrawEventArgs args)
         {
             _canvasSize = args.Sender.Size;
         }

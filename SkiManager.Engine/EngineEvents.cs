@@ -70,7 +70,7 @@ namespace SkiManager.Engine
 
             // create update observable
             // TODO: Correct arguments, make interval configurable
-            Update = Observable.Interval(TimeSpan.FromMilliseconds(100))
+            Update = Observable.Interval(TimeSpan.FromMilliseconds(50))
                 .Select(_ =>
                 {
                     var now = DateTime.Now;
@@ -81,7 +81,7 @@ namespace SkiManager.Engine
                         _engine.CurrentLevel.GameTime = _engine.CurrentLevel.GameTime + delta;
                     }
                     LastUpdateTime = now;
-                    return new EngineUpdateEventArgs(Engine.Current, null, null, delta, _engine.CurrentLevel.GameTime);
+                    return new EngineUpdateEventArgs(Engine.Current, delta, _engine.CurrentLevel.GameTime);
                 }).Publish().RefCount();
         }
 

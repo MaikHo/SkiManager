@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -86,8 +87,8 @@ namespace SkiManager.App.Behaviors
             // enough money taken -> wait processing time, give ticket and set forward
             if (MaximumProcessingSeconds > 0)
             {
-                // TODO do this in a time-acceleration-aware way
-                await Task.Delay(TimeSpan.FromSeconds(new Random().Next(MinimumProcessingSeconds, MaximumProcessingSeconds)));
+                var waitTime = TimeSpan.FromSeconds(new Random().Next(MinimumProcessingSeconds, MaximumProcessingSeconds));
+                await Timing.Delay(waitTime);
             }
             customer.Inventory.AddItem(Items.SkiTicket, 1);
             customer.Entity.IsEnabled = true;
