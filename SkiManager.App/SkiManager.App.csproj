@@ -106,6 +106,7 @@
     <Compile Include="Behaviors\MovableBehavior.cs" />
     <Compile Include="Behaviors\ParkingLotBehavior.cs" />
     <Compile Include="Behaviors\SlopeBehavior.cs" />
+    <Compile Include="Behaviors\TerrainRendererBehavior.cs" />
     <Compile Include="Behaviors\WaitingQueueBehavior.cs" />
     <Compile Include="Behaviors\RoadBehavior.cs" />
     <Compile Include="Behaviors\SpawnerBehavior.cs" />
@@ -145,6 +146,9 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Shaders\CompileShaders.cmd" />
+    <Content Include="Shaders\NormalMapFromHeightMapShader.bin" />
+    <Content Include="Shaders\TerrainShader.bin" />
     <None Include="SkiManager.App_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +169,8 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <None Include="Shaders\TerrainShader.hlsl" />
+    <None Include="Shaders\NormalMapFromHeightMapShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -190,6 +196,10 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>cd "$(ProjectDir)Shaders"
+call CompileShaders.cmd</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

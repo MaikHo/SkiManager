@@ -1,15 +1,14 @@
 ﻿using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Effects;
-using SkiManager.Engine.Interfaces;
+using SkiManager.Engine;
+using SkiManager.Engine.Behaviors;
 using SkiManager.Engine.Sprites;
 using System;
-using System.Numerics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
-using Windows.UI.Xaml;
 
-namespace SkiManager.Engine.Behaviors
+namespace SkiManager.App.Behaviors
 {
     [RequiresBehavior(typeof(TerrainBehavior))]
     public class TerrainRendererBehavior : ReactiveBehavior
@@ -73,7 +72,7 @@ namespace SkiManager.Engine.Behaviors
             var snowTiled = new BorderEffect { Source = snow.Image, ExtendX = wrap, ExtendY = wrap, CacheOutput = true };
             var rockTiled = new BorderEffect { Source = rock.Image, ExtendX = wrap, ExtendY = wrap, CacheOutput = true };
 
-            var shaderBytes = await Utilities.ReadBytesFromEmbeddedResourceAsync("SkiManager.Engine.Shaders.TerrainShader.bin");
+            var shaderBytes = await Utilities.ReadBytesFromUriAsync(new Uri("ms-appx:///Shaders/TerrainShader.bin"));
 
             _terrainMap = new PixelShaderEffect(shaderBytes)
             {
@@ -105,7 +104,7 @@ namespace SkiManager.Engine.Behaviors
         /// <returns>A combination of a normal map and the height map</returns>
         private static async Task<CanvasBitmap> RenderNormalHeightMapAsync(ICanvasResourceCreatorWithDpi resourceCreator, CanvasBitmap heightMap, float heightDifference)
         {
-            var bytes = await Utilities.ReadBytesFromEmbeddedResourceAsync("SkiManager.Engine.Shaders.NormalMapFromHeightMapShader.bin");
+            var bytes = await Utilities.ReadBytesFromUriAsync(new Uri("ms-appx:///Shaders/NormalMapFromHeightMapShader.bin"));
 
             var heightMapConverterEffect = new PixelShaderEffect(bytes)
             {
