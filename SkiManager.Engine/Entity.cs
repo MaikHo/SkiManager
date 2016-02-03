@@ -11,6 +11,7 @@ namespace SkiManager.Engine
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Entity
     {
+        [JsonProperty]
         public Guid Id { get; private set; } = Guid.NewGuid();
 
         [JsonProperty]
@@ -78,7 +79,9 @@ namespace SkiManager.Engine
             ParentChanged.Dispose();
         }
 
-        public SetParentResult SetParent(Entity newParent, Reason reason)
+        public SetParentResult SetParent(Entity newParent, Reason reason) => SetParent(newParent, reason, SetParentFlags.None);
+
+        public SetParentResult SetParent(Entity newParent, Reason reason, SetParentFlags flags)
         {
             // check whether operation is allowed
             if (newParent != null &&
@@ -92,13 +95,18 @@ namespace SkiManager.Engine
             var oldParent = Parent;
             if (oldParent != null)
             {
-                oldParent.ChildLeave.OnNext(new ChildLeaveEngineEventArgs(Engine.Current, this, reason));
-                if (Parent != oldParent)
+                if (!flags.HasFlag(SetParentFlags.SuppressChildLeave))
                 {
-                    // Parent has been set in a childleave handler, therefore return
-                    return SetParentResult.RedirectedOnLeave;
+                    oldParent.ChildLeave.OnNext(new ChildLeaveEngineEventArgs(Engine.Current, this, reason));
+                    if (Parent != oldParent)
+                    {
+                        // Parent has been set in a childleave handler, therefore return
+                        return SetParentResult.RedirectedOnLeave;
+                    }
                 }
-                Parent._children.Remove(this);
+                var index = Parent._children.IndexOf(this);
+                if (index > 0 && index < Parent._children.Count)
+                    Parent._children.RemoveAt(index);
             }
 
             Parent = newParent;
@@ -106,14 +114,20 @@ namespace SkiManager.Engine
             if (Parent != null)
             {
                 Parent._children.Add(this);
-                newParent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this, oldParent, reason));
-                if (Parent != newParent)
+                if (!flags.HasFlag(SetParentFlags.SuppressChildEnter))
                 {
-                    // Parent has been set in a childenter handler, therefore return
-                    return SetParentResult.RedirectedOnEnter;
+                    Parent.ChildEnter.OnNext(new ChildEnterEngineEventArgs(Engine.Current, this, oldParent, reason));
+                    if (Parent != newParent)
+                    {
+                        // Parent has been set in a childenter handler, therefore return
+                        return SetParentResult.RedirectedOnEnter;
+                    }
                 }
             }
-            ParentChanged.OnNext(new ParentChangedEngineEventArgs(Engine.Current, oldParent, newParent, reason));
+            if (!flags.HasFlag(SetParentFlags.SuppressParentChanged))
+            {
+                ParentChanged.OnNext(new ParentChangedEngineEventArgs(Engine.Current, oldParent, newParent, reason));
+            }
             return SetParentResult.Set;
         }
 
@@ -156,5 +170,14 @@ namespace SkiManager.Engine
         AccessDenied,
         RedirectedOnLeave,
         RedirectedOnEnter
+    }
+
+    [Flags]
+    public enum SetParentFlags
+    {
+        None = 0,
+        SuppressChildLeave = 2,
+        SuppressChildEnter = 4,
+        SuppressParentChanged = 8
     }
 }

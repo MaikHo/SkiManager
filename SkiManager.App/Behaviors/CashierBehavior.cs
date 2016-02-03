@@ -15,13 +15,13 @@ namespace SkiManager.App.Behaviors
         public float TicketPrice { get; set; }
 
         [JsonProperty]
-        public int MinimumProcessingSeconds { get; set; } = 0;
+        public int MinimumProcessingSeconds { get; set; }
 
         [JsonProperty]
-        public int MaximumProcessingSeconds { get; set; } = 0;
+        public int MaximumProcessingSeconds { get; set; }
 
         [JsonProperty]
-        public bool UseWaitingQueueOfParent { get; set; } = false;
+        public bool UseWaitingQueueOfParent { get; set; }
 
         [JsonProperty]
         public bool IsProcessing { get; private set; }
@@ -29,8 +29,7 @@ namespace SkiManager.App.Behaviors
         [JsonProperty]
         public IGraphNode NextNode { get; set; }
 
-        [JsonProperty]
-        public IReadOnlyList<Item> SoldItems { get; private set; } = new List<Item> { Items.SkiTicket }.AsReadOnly();
+        public IReadOnlyList<Item> SoldItems { get; } = new List<Item> { Items.SkiTicket }.AsReadOnly();
 
         public Cost GetCostForItem(Item item)
         {
@@ -65,7 +64,7 @@ namespace SkiManager.App.Behaviors
                 return;
             }
 
-            var customer = Entity.Parent.GetImplementationInChildren<IWaitingQueue>().GetDisabledEntitiesFromQueue().FirstOrDefault();
+            var customer = Entity.Parent.GetImplementationInChildren<IWaitingQueue>().GetEntitiesFromQueue(1).FirstOrDefault();
             if (customer == null)
             {
                 return;
@@ -104,7 +103,7 @@ namespace SkiManager.App.Behaviors
             }
             customer.Inventory.AddItem(Items.SkiTicket, 1);
             customer.Entity.IsEnabled = true;
-            customer.Entity.SetParent(NextNode.Entity, Reasons.Processing.Finished);
+            customer.Entity.SetParent(NextNode.Entity, Reasons.Processing.Finished, SetParentFlags.SuppressChildEnter);
             ResetIsProcessingAndCheckForNextCustomer();
         }
 

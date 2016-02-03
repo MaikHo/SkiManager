@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using Newtonsoft.Json;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
+using SkiManager.Engine.Interfaces;
 
 namespace SkiManager.App.Behaviors
 {
@@ -18,7 +19,7 @@ namespace SkiManager.App.Behaviors
         public IObservable<Entity> WaitingEntityArrived => _waitingEntityArrivedSubject.AsObservable();
 
         [JsonProperty]
-        private List<Entity> _queue = new List<Entity>();
+        private readonly List<Entity> _queue = new List<Entity>();
         private readonly Subject<Entity> _waitingEntityArrivedSubject = new Subject<Entity>();
 
         protected override void Loaded(BehaviorLoadedEventArgs args)
@@ -39,12 +40,19 @@ namespace SkiManager.App.Behaviors
                 args.EnteringChild.SetParent(args.OldParent, Reasons.NoSpace.InWaitingQueue);
                 return;
             }
-
-            args.EnteringChild.IsEnabled = false;
+            
             _queue.Add(args.EnteringChild);
             _waitingEntityArrivedSubject.OnNext(args.EnteringChild);
         }
 
-        public IEnumerable<Entity> GetDisabledEntitiesFromQueue(int count = 1) => _queue.Take(count).ToList().AsReadOnly();
+        public IEnumerable<Entity> GetEntitiesFromQueue(int count = 1)
+        {
+            for (var i = 0; i < count && _queue.Count > 0; i++)
+            {
+                var current = _queue.First();
+                _queue.RemoveAt(0);
+                yield return current;
+            }
+        }
     }
 }

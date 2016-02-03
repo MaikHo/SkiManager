@@ -167,7 +167,9 @@
     <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="Properties\SkiManager.Engine.rd.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Behaviors\ArtificialIntelligence\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

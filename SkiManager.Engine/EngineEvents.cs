@@ -70,6 +70,7 @@ namespace SkiManager.Engine
 
             // create update observable
             Update = Observable.Interval(TimeSpan.FromMilliseconds(50))
+                .Where(_ => _engine.CurrentLevel != null)
                 .Select(_ =>
                 {
                     var now = DateTime.Now;

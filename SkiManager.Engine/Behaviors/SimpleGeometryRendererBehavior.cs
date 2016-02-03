@@ -18,6 +18,8 @@ namespace SkiManager.Engine.Behaviors
 
         public bool IsVisible { get; set; } = true;
 
+        public bool IsEffectivelyVisible => IsVisible && Entity.Parent == null;
+
         public RenderLayer RenderLayer { get; set; } = RenderLayer.Default;
 
         public bool DrawCenter { get; set; } = true;
@@ -68,7 +70,7 @@ namespace SkiManager.Engine.Behaviors
             }
         }
 
-        private bool CanRender(EngineDrawEventArgs args) => IsVisible;
+        private bool CanRender(EngineDrawEventArgs args) => IsEffectivelyVisible;
     }
 
     public enum SimpleGeometry
