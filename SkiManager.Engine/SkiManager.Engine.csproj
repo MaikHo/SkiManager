@@ -105,9 +105,6 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
-    <None Include="Shaders\CompileShaders.cmd" />
-    <EmbeddedResource Include="Shaders\NormalMapFromHeightMapShader.bin" />
-    <EmbeddedResource Include="Shaders\TerrainShader.bin" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BehaviorLoadedEventArgs.cs" />
@@ -120,7 +117,6 @@
     <Compile Include="Behaviors\ShapeColliderBehavior.cs" />
     <Compile Include="Behaviors\SimpleGeometryRendererBehavior.cs" />
     <Compile Include="Behaviors\TerrainBehavior.cs" />
-    <Compile Include="Behaviors\TerrainRendererBehavior.cs" />
     <Compile Include="Behaviors\TransformBehavior.cs" />
     <Compile Include="CanvasEngineEventsArgs.cs" />
     <Compile Include="EngineCreateResourcesEventArgs.cs" />
@@ -172,17 +168,13 @@
     <EmbeddedResource Include="Properties\SkiManager.Engine.rd.xml" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <None Include="Shaders\NormalMapFromHeightMapShader.hlsl" />
-    <None Include="Shaders\TerrainShader.hlsl" />
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>cd "$(ProjectDir)Shaders"
-call CompileShaders.cmd</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

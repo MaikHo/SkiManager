@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
@@ -18,7 +17,7 @@ namespace SkiManager.Engine
         /// </summary>
         /// <param name="uri">File URI</param>
         /// <returns>Byte array</returns>
-        public static async Task<byte[]> ReadBytesAsync(Uri uri)
+        public static async Task<byte[]> ReadBytesFromUriAsync(Uri uri)
         {
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
             var buffer = await FileIO.ReadBufferAsync(file);
