@@ -6,10 +6,13 @@ using SkiManager.App.Interfaces;
 
 namespace SkiManager.App.Behaviors
 {
-    public sealed class CustomerBehavior : ReactiveBehavior
+    public sealed class CustomerBehavior : ReactiveBehavior, IItemBuyer
     {
         [JsonProperty]
-        public Inventory Inventory { get; set; } = new Inventory();
+        public Inventory Inventory { get; } = new Inventory();
+
+        [JsonProperty]
+        public ItemRequest CurrentItemRequest { get; private set; }
 
         [JsonProperty]
         private IGraphNode _myParkingLot;
@@ -25,6 +28,7 @@ namespace SkiManager.App.Behaviors
             {
                 // unloaded on parking lot
                 _myParkingLot = args.NewParent.GetImplementation<IGraphNode>();
+                CurrentItemRequest = new ItemRequest(Items.SkiTicket, 1.0f);
                 SetTargetToNextPointTowardsCashierOrCashierBooth();
             }
         }
@@ -36,10 +40,12 @@ namespace SkiManager.App.Behaviors
                 .Where(_ => _.Implements<ICashier>() || _.ImplementsInChildren<ICashier>())
                 .OrderBy(_ => dijkstraValues.Distances[_.GetImplementation<IGraphNode>()])
                 .FirstOrDefault();
+
             if (targetedCashier == null)
             {
                 // no cashier can be found -> return to car
-
+                var pathToParkingLot = dijkstraValues.GetPathTowardsTarget(_myParkingLot);
+                Entity.GetBehavior<MovableBehavior>().SetTarget(pathToParkingLot.Count > 1 ? pathToParkingLot[1].Entity : _myParkingLot.Entity);
             }
 
             var path = dijkstraValues.GetPathTowardsTarget(targetedCashier.GetImplementation<IGraphNode>());

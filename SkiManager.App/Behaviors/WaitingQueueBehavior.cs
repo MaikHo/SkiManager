@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using SkiManager.App.Interfaces;
 using SkiManager.Engine;
@@ -46,6 +45,6 @@ namespace SkiManager.App.Behaviors
             _waitingEntityArrivedSubject.OnNext(args.EnteringChild);
         }
 
-        public IReadOnlyList<Entity> GetDisabledEntitiesFromQueue(int count = 1) => _queue.Take(count).ToList().AsReadOnly();
+        public IEnumerable<Entity> GetDisabledEntitiesFromQueue(int count = 1) => _queue.Take(count).ToList().AsReadOnly();
     }
 }

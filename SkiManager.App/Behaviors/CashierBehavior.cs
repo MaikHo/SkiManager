@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -29,6 +29,18 @@ namespace SkiManager.App.Behaviors
         [JsonProperty]
         public IGraphNode NextNode { get; set; }
 
+        [JsonProperty]
+        public IReadOnlyList<Item> SoldItems { get; private set; } = new List<Item> { Items.SkiTicket }.AsReadOnly();
+
+        public Cost GetCostForItem(Item item)
+        {
+            if (item != Items.SkiTicket)
+            {
+                throw new InvalidOperationException($"This item seller does not sell item {item.Name}.");
+            }
+            return new Cost(Items.Money, TicketPrice);
+        }
+
         protected override void Loaded(BehaviorLoadedEventArgs args)
         {
             if (!UseWaitingQueueOfParent)
@@ -37,8 +49,7 @@ namespace SkiManager.App.Behaviors
             }
             else
             {
-                var waitingQueue = Entity.Parent.GetImplementationInChildren<IWaitingQueue>();
-                args.TrackSubscription(waitingQueue.WaitingEntityArrived.Where(_ => !IsProcessing).Subscribe(_ => TakeCustomerFromQueueAndProcess()));
+                args.TrackSubscription(Update.Where(_ => !IsProcessing).Subscribe(_ => TakeCustomerFromQueueAndProcess()));
             }
         }
 
@@ -60,6 +71,7 @@ namespace SkiManager.App.Behaviors
                 return;
             }
 
+            IsProcessing = true;
             customer.SetParent(Entity, Reasons.Processing.Started);
             await SellTicketAndSetEntityToNextNode(customer);
         }

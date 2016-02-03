@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SkiManager.App.Interfaces
+﻿namespace SkiManager.App.Interfaces
 {
-    public interface ICashier
+    public interface ICashier : IItemSeller
     {
-        float TicketPrice { get; set; }
-
         int MinimumProcessingSeconds { get; set; }
 
         int MaximumProcessingSeconds { get; set; }

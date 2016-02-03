@@ -8,11 +8,11 @@ namespace SkiManager.App
 {
     public static class GraphExtensions
     {
-        public static DijkstraValues GetDijkstraValues(this IGraphNode node, IGraphNode target = null, bool ignoreDirection = false, GraphSearchMode searchMode = GraphSearchMode.ShortestPath)
+        public static DijkstraValues GetDijkstraValues(this IGraphNode node, bool ignoreDirection = false, GraphSearchMode searchMode = GraphSearchMode.ShortestPath)
         {
             if (searchMode != GraphSearchMode.ShortestPath)
             {
-                throw new InvalidOperationException();
+                throw new NotImplementedException();
             }
 
             var allGraphNodes =
@@ -48,19 +48,7 @@ namespace SkiManager.App
                 }
             }
 
-            var path = new List<IGraphNode>();
-            if (target != null)
-            {
-                path.Add(target);
-                var current = target;
-                while (predecessors[current] != null)
-                {
-                    current = predecessors[current];
-                    path.Insert(0, current);
-                }
-            }
-
-            return new DijkstraValues(distances, predecessors, path);
+            return new DijkstraValues(distances, predecessors);
         }
 
         private static IEnumerable<Tuple<IGraphNode, float>> GetNeighbors(IGraphNode node, bool ignoreDirection)
@@ -83,13 +71,11 @@ namespace SkiManager.App
     {
         public Dictionary<IGraphNode, float> Distances { get; }
         public Dictionary<IGraphNode, IGraphNode> Predecessors { get; }
-        public IReadOnlyList<IGraphNode> Path { get; }
 
-        public DijkstraValues(Dictionary<IGraphNode, float> distances, Dictionary<IGraphNode, IGraphNode> predecessors, IReadOnlyList<IGraphNode> path)
+        public DijkstraValues(Dictionary<IGraphNode, float> distances, Dictionary<IGraphNode, IGraphNode> predecessors)
         {
             Distances = distances;
             Predecessors = predecessors;
-            Path = path;
         }
 
         public IReadOnlyList<IGraphNode> GetPathTowardsTarget(IGraphNode target)
@@ -107,7 +93,6 @@ namespace SkiManager.App
 
     public enum GraphSearchMode
     {
-        ShortestPath = 0,
-        LowestCost = 1
+        ShortestPath = 0
     }
 }

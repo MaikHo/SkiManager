@@ -14,6 +14,6 @@ namespace SkiManager.App.Interfaces
 
         IObservable<Entity> WaitingEntityArrived { get; }
 
-        IReadOnlyList<Entity> GetDisabledEntitiesFromQueue(int count = 1);
+        IEnumerable<Entity> GetDisabledEntitiesFromQueue(int count = 1);
     }
 }

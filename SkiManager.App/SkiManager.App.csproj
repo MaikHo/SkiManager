@@ -120,6 +120,9 @@
     <Compile Include="Interfaces\ICashier.cs" />
     <Compile Include="Interfaces\IGraphEdge.cs" />
     <Compile Include="Interfaces\IGraphNode.cs" />
+    <Compile Include="Interfaces\IInventoryCarrier.cs" />
+    <Compile Include="Interfaces\IItemBuyer.cs" />
+    <Compile Include="Interfaces\IItemSeller.cs" />
     <Compile Include="Interfaces\ILocation.cs" />
     <Compile Include="Interfaces\IMapExit.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
