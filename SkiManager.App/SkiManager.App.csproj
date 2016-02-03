@@ -117,7 +117,6 @@
     <Compile Include="EntityTemplates.cs" />
     <Compile Include="Features\TrackTerrainMousePositionEngineFeature.cs" />
     <Compile Include="GraphExtensions.cs" />
-    <Compile Include="Interfaces\IBehaviorInterface.cs" />
     <Compile Include="Interfaces\ICashier.cs" />
     <Compile Include="Interfaces\IGraphEdge.cs" />
     <Compile Include="Interfaces\IGraphNode.cs" />

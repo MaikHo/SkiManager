@@ -1,6 +1,4 @@
-﻿using SkiManager.Engine;
-
-namespace SkiManager.App.Interfaces
+﻿namespace SkiManager.Engine.Interfaces
 {
     public interface IHasEntity
     {

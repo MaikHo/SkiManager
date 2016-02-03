@@ -107,7 +107,19 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArtificialIntelligence\AmbiguousTransitionException.cs" />
+    <Compile Include="ArtificialIntelligence\IArtificialIntelligenceTransition.cs" />
+    <Compile Include="ArtificialIntelligence\IArtificialIntelligenceTransitionTrigger.cs" />
+    <Compile Include="ArtificialIntelligence\StateTransition.cs" />
+    <Compile Include="ArtificialIntelligence\TransitionBase.cs" />
+    <Compile Include="ArtificialIntelligence\TransitionTriggerBase.cs" />
     <Compile Include="BehaviorLoadedEventArgs.cs" />
+    <Compile Include="ArtificialIntelligence\ArtificialIntelligenceBehavior.cs" />
+    <Compile Include="ArtificialIntelligence\StateBase.cs" />
+    <Compile Include="ArtificialIntelligence\StateEnterArgs.cs" />
+    <Compile Include="ArtificialIntelligence\StrategyBase.cs" />
+    <Compile Include="ArtificialIntelligence\IArtificialIntelligenceState.cs" />
+    <Compile Include="ArtificialIntelligence\IArtificialIntelligenceStrategy.cs" />
     <Compile Include="Behaviors\BasicCoordinateSystem.cs" />
     <Compile Include="Behaviors\CollisionEventArgs.cs" />
     <Compile Include="Behaviors\LineRendererBehavior.cs" />
@@ -141,8 +153,10 @@
     <Compile Include="IEngineEvents.cs" />
     <Compile Include="IEngineStatus.cs" />
     <Compile Include="EnginePointerMovedEventArgs.cs" />
+    <Compile Include="ArtificialIntelligence\IArtificialIntelligence.cs" />
     <Compile Include="Interfaces\IConditionalChildAccess.cs" />
     <Compile Include="Interfaces\ICoordinateSystem.cs" />
+    <Compile Include="Interfaces\IHasEntity.cs" />
     <Compile Include="Interfaces\IRenderer.cs" />
     <Compile Include="Interfaces\ITransform.cs" />
     <Compile Include="Level.cs" />
@@ -167,9 +181,7 @@
     <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="Properties\SkiManager.Engine.rd.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Behaviors\ArtificialIntelligence\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

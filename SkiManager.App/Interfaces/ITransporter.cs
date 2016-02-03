@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SkiManager.Engine;
+using SkiManager.Engine.Interfaces;
 
 namespace SkiManager.App.Interfaces
 {
